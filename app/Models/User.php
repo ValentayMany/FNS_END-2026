@@ -2,47 +2,77 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
+    public $timestamps = false;
+
     protected $fillable = [
-        'name',
-        'email',
+        'username',
+        'full_name',
         'password',
+        'role_id',
+        'department_id',
+        'is_active',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
-     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
     protected function casts(): array
     {
         return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
+            'password'  => 'hashed',
+            'is_active' => 'boolean',
         ];
+    }
+
+    // ---- Relationships ----
+    public function role()
+    {
+        return $this->belongsTo(Role::class);
+    }
+
+    public function department()
+    {
+        return $this->belongsTo(Department::class);
+    }
+
+    // ---- Role Helpers ----
+    public function hasRole(string $roleName): bool
+    {
+        return $this->role?->role_name === $roleName;
+    }
+
+    public function isAdmin(): bool          { return $this->hasRole('admin'); }
+    public function isRequester(): bool      { return $this->hasRole('requester'); }
+    public function isCashier(): bool        { return $this->hasRole('cashier'); }
+    public function isRevenueOfficer(): bool { return $this->hasRole('revenue_officer'); }
+    public function isAccountant(): bool     { return $this->hasRole('accountant'); }
+    public function isHeadOfFinance(): bool  { return $this->hasRole('head_of_finance'); }
+    public function isDeputyHead(): bool     { return $this->hasRole('deputy_head_of_faculty'); }
+    public function isFacultyHead(): bool    { return $this->hasRole('head_of_faculty'); }
+
+    public function isApprover(): bool
+    {
+        return in_array($this->role?->role_name, [
+            'accountant',
+            'head_of_finance',
+            'deputy_head_of_faculty',
+            'head_of_faculty',
+        ]);
+    }
+
+    // ใช้ username แทน email สำหรับ login
+    public function getAuthIdentifierName(): string
+    {
+        return 'username';
     }
 }
