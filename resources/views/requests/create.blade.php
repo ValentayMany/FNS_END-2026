@@ -30,7 +30,7 @@
                         </tr>
                     </thead>
                     <tbody class="divide-y">
-                        @forelse($requests as $req)
+                        @forelse($myRequests ?? [] as $req)
                         <tr class="hover:bg-gray-50">
                             <td class="px-4 py-3 text-gray-400">#{{ $req->id }}</td>
                             <td class="px-4 py-3 text-gray-600">
@@ -82,7 +82,7 @@
                         @endforelse
                     </tbody>
                 </table>
-                @if($requests->hasPages())
+                @if(isset($requests) && $requests->hasPages())
                 <div class="px-4 py-3 border-t">{{ $requests->links() }}</div>
                 @endif
             </div>
