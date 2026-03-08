@@ -3,11 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\AdvanceRequest;
-use App\Models\Department;
 use App\Services\WorkflowService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Exception;
 
 class RequestController extends Controller
 {
@@ -16,7 +14,8 @@ class RequestController extends Controller
     /** หน้าสร้างคำขอใหม่ */
     public function create()
     {
-        $departments = Department::all();
+        $departments = \App\Models\Department::all();
+
         return view('requests.create', compact('departments'));
     }
 
@@ -24,23 +23,23 @@ class RequestController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'department_id'    => 'required|exists:departments,id',
+            'department_id' => 'required|exists:departments,id',
+            'description' => 'required|string|max:1000',
             'requested_amount' => 'required|numeric|min:1',
-            'description'      => 'required|string|max:500',
-            'request_date'     => 'required|date',
+            'request_date' => 'required|date',
         ]);
 
         AdvanceRequest::create([
-            'requester_id'     => Auth::id(),
-            'department_id'    => $request->department_id,
+            'requester_id' => Auth::id(),
+            'department_id' => $request->department_id,
+            'description' => $request->description,
             'requested_amount' => $request->requested_amount,
-            'description'      => $request->description,
-            'request_date'     => $request->request_date,
-            'status'           => 'draft',
+            'request_date' => $request->request_date,
+            'status' => 'draft',
         ]);
 
         return redirect()->route('requests.index')
-            ->with('success', 'ສ້າງຄຳຂໍສຳເລັດແລ້ວ');
+            ->with('success', 'ສ້າງຄຳຂໍສຳເລັດ ກະລຸນາກວດສອບແລ້ວສົ່ງ');
     }
 
     /** รายการคำขอของ Requester */
@@ -48,7 +47,7 @@ class RequestController extends Controller
     {
         $requests = AdvanceRequest::where('requester_id', Auth::id())
             ->with('department')
-           ->latest('request_date')  // ← เปลี่ยนตรงนี้
+            ->latest('request_date')  // ← เปลี่ยนตรงนี้
             ->paginate(10);
 
         $statusLabels = AdvanceRequest::statusLabels();
@@ -59,12 +58,12 @@ class RequestController extends Controller
     /** รายละเอียดคำขอ */
     public function show(AdvanceRequest $advanceRequest)
     {
-        // Requester เห็นแค่ของตัวเอง
+        // ตรวจสอบว่าเป็นของ requester คนนี้เท่านั้น
         if ($advanceRequest->requester_id !== Auth::id()) {
             abort(403);
         }
 
-        $advanceRequest->load('department', 'workflowLogs.actor.role');
+        $advanceRequest->load('requester.role', 'department', 'workflowLogs.actor.role');
 
         return view('requests.show', compact('advanceRequest'));
     }
@@ -78,8 +77,10 @@ class RequestController extends Controller
 
         try {
             $this->workflow->submit($advanceRequest, Auth::user());
-            return back()->with('success', 'ສົ່ງຄຳຂໍສຳເລັດ ລໍຖ້າການກວດສອບ');
-        } catch (Exception $e) {
+
+            return redirect()->route('requests.show', $advanceRequest)
+                ->with('success', 'ສົ່ງຄຳຂໍສຳເລັດ ກຳລັງລໍຖ້າການກວດສອບ');
+        } catch (\Exception $e) {
             return back()->with('error', $e->getMessage());
         }
     }

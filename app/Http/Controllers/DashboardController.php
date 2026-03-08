@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\AdvanceRequest;
 use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
@@ -12,34 +11,23 @@ class DashboardController extends Controller
         $user = Auth::user();
         $role = $user->role?->role_name;
 
-        // Action List สำหรับ Approver
-        $pendingMap = [
-            'accountant'             => 'pending_accountant_review',
-            'head_of_finance'        => 'pending_finance_head_review',
-            'deputy_head_of_faculty' => 'pending_deputy_head_approval',
-            'head_of_faculty'        => 'pending_faculty_head_approval',
-        ];
-
-        $actionList = null;
-        if (isset($pendingMap[$role])) {
-            $actionList = AdvanceRequest::where('status', $pendingMap[$role])
-                ->with('requester', 'department')
-                ->latest()
-                ->paginate(10);
-        }
-
-        // คำขอของ Requester
-        $myRequests = null;
-        if ($role === 'requester') {
-            $myRequests = AdvanceRequest::where('requester_id', $user->id)
-                ->with('department')
-                ->latest('request_date')  // ← เปลี่ยนตรงนี้
-                ->limit(5)
-                ->get();
-        }
-
-        $statusLabels = AdvanceRequest::statusLabels();
-
-        return view('dashboard', compact('user', 'actionList', 'myRequests', 'statusLabels'));
+        return match($role) {
+            'requester'                       => redirect()->route('requests.index'),
+            'accountant',
+            'head_of_finance',
+            'deputy_head_of_faculty',
+            'head_of_faculty'                 => redirect()->route('approval.index'),
+            'cashier'                         => redirect()->route('cashier.index'),
+            'revenue_officer'                 => redirect()->route('revenue.index'),
+            'treasurer'                       => redirect()->route('treasurer.index'),
+            'treasury_reconciliation_officer' => redirect()->route('treasury.index'),
+            'admin'                           => redirect()->route('admin.users'),
+            default                           => view('dashboard', [
+                'user'         => $user,
+                'actionList'   => null,
+                'myRequests'   => null,
+                'statusLabels' => [],
+            ]),
+        };
     }
 }

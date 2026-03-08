@@ -13,31 +13,29 @@ class ApprovalController extends Controller
     public function __construct(private WorkflowService $workflow) {}
 
     /** Action List — รายการที่ต้องอนุมัติ */
-    public function index()
-    {
-        $user = Auth::user();
-        $role = $user->role?->role_name;
+   public function index()
+{
+    $user = Auth::user();
+    $role = $user->role?->role_name;
 
-        $statusMap = [
-            'accountant'             => 'pending_accountant_review',
-            'head_of_finance'        => 'pending_finance_head_review',
-            'deputy_head_of_faculty' => 'pending_deputy_head_approval',
-            'head_of_faculty'        => 'pending_faculty_head_approval',
-        ];
+    $statusMap = [
+        'accountant'             => 'pending_accountant_review',
+        'head_of_finance'        => 'pending_finance_head_review',
+        'deputy_head_of_faculty' => 'pending_deputy_head_approval',
+        'head_of_faculty'        => 'pending_faculty_head_approval',
+    ];
 
-        $pendingStatus = $statusMap[$role] ?? null;
+    $pendingStatus = $statusMap[$role] ?? null;
 
-        $requests = $pendingStatus
-            ? AdvanceRequest::where('status', $pendingStatus)
-                ->with('requester', 'department')
-                ->latest('request_date')
-                ->paginate(15)
-            : collect();
+    $requests = $pendingStatus
+        ? AdvanceRequest::where('status', $pendingStatus)
+            ->with('requester', 'department')
+            ->latest('request_date')
+            ->paginate(15)
+        : collect();
 
-        $statusLabels = AdvanceRequest::statusLabels();
-
-        return view('approvals.index', compact('requests', 'statusLabels', 'user'));
-    }
+    return view('approvals.index', compact('requests', 'user'));
+}
 
     /** อนุมัติ */
     public function approve(Request $request, AdvanceRequest $advanceRequest)
@@ -69,4 +67,5 @@ class ApprovalController extends Controller
         $advanceRequest->load('requester.role', 'department', 'workflowLogs.actor.role');
         return view('approvals.show', compact('advanceRequest'));
     }
+
 }

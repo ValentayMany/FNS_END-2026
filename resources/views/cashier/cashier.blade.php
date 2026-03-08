@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800">⚡ ລາຍການທີ່ຕ້ອງອະນຸມັດ</h2>
+        <h2 class="font-semibold text-xl text-gray-800">💵 ລາຍການທີ່ຕ້ອງຈ່າຍເງິນ</h2>
     </x-slot>
 
     <div class="py-6">
@@ -44,22 +44,25 @@
                                     {{ $req->request_date?->format('d/m/Y') }}
                                 </td>
                                 <td class="px-4 py-3 text-center">
-                                    <a href="{{ route('approval.show', $req->id) }}"
-                                        style="background:#4f46e5;color:white;padding:4px 12px;border-radius:4px;font-size:12px;text-decoration:none;">
-                                        ກວດສອບ
-                                    </a>
+                                    <form method="POST" action="{{ route('cashier.pay', $req) }}">
+                                        @csrf
+                                        <button type="submit"
+                                            style="background:#16a34a;color:white;padding:4px 12px;border-radius:4px;font-size:12px;border:none;cursor:pointer;">
+                                            💵 ຈ່າຍເງິນ
+                                        </button>
+                                    </form>
                                 </td>
                             </tr>
                         @empty
                             <tr>
                                 <td colspan="7" class="px-4 py-8 text-center text-gray-400">
-                                    ✅ ບໍ່ມີລາຍການທີ່ຕ້ອງດຳເນີນການ
+                                    ✅ ບໍ່ມີລາຍການທີ່ຕ້ອງຈ່າຍ
                                 </td>
                             </tr>
                         @endforelse
                     </tbody>
                 </table>
-                @if ($requests instanceof \Illuminate\Pagination\LengthAwarePaginator && $requests->hasPages())
+                @if ($requests->hasPages())
                     <div class="px-4 py-3 border-t">{{ $requests->links() }}</div>
                 @endif
             </div>

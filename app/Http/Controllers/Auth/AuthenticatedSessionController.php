@@ -20,7 +20,7 @@ class AuthenticatedSessionController extends Controller
             'password' => 'required|string',
         ]);
 
-        if (!Auth::attempt(
+        if (! Auth::attempt(
             ['username' => $request->username, 'password' => $request->password],
             $request->boolean('remember')
         )) {
@@ -34,26 +34,29 @@ class AuthenticatedSessionController extends Controller
         return redirect($this->redirectByRole(Auth::user()->role?->role_name));
     }
 
-    private function redirectByRole(?string $role): string
-    {
-        return match($role) {
-            'admin'                  => '/dashboard',
-            'head_of_faculty'        => '/dashboard',
-            'deputy_head_of_faculty' => '/dashboard',
-            'head_of_finance'        => '/dashboard',
-            'accountant'             => '/dashboard',
-            'cashier'                => '/dashboard',
-            'revenue_officer'        => '/dashboard',
-            'requester'              => '/dashboard',
-            default                  => '/dashboard',
-        };
-    }
-
-public function destroy(Request $request)
+   private function redirectByRole(?string $role): string
 {
-    Auth::guard('web')->logout();
-    $request->session()->flush();  // ← เปลี่ยนจาก invalidate() เป็น flush()
-    $request->session()->regenerateToken();
-    return redirect()->route('login');
+    return match ($role) {
+        'requester'                       => route('requests.index'),
+        'accountant'                      => route('approval.index'),
+        'head_of_finance'                 => route('approval.index'),
+        'deputy_head_of_faculty'          => route('approval.index'),
+        'head_of_faculty'                 => route('approval.index'),
+        'cashier'                         => route('cashier.index'),
+        'revenue_officer'                 => route('revenue.index'),
+        'treasurer'                       => route('treasurer.index'),  // ← เอาแค่อันนี้
+        'treasury_reconciliation_officer' => route('treasury.index'),
+        'admin'                           => route('admin.users'),
+        default                           => route('dashboard'),
+    };
 }
+
+    public function destroy(Request $request)
+    {
+        Auth::guard('web')->logout();
+        $request->session()->flush();  // ← เปลี่ยนจาก invalidate() เป็น flush()
+        $request->session()->regenerateToken();
+
+        return redirect()->route('login');
+    }
 }

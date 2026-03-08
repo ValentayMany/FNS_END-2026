@@ -6,8 +6,8 @@ use App\Models\AdvanceRequest;
 use App\Models\RequestWorkflowLog;
 use App\Models\Transaction;
 use App\Models\User;
-use Illuminate\Support\Facades\DB;
 use Exception;
+use Illuminate\Support\Facades\DB;
 
 class WorkflowService
 {
@@ -30,7 +30,7 @@ class WorkflowService
         $this->ensureCanAct($request, $actor);
 
         $next = $this->nextStatus($request->status);
-        if (!$next) {
+        if (! $next) {
             throw new Exception('ບໍ່ສາມາດອະນຸມັດໃນສະຖານະນີ້ໄດ້');
         }
 
@@ -62,14 +62,13 @@ class WorkflowService
             // สร้าง Transaction การจ่ายเงิน
             $txn = Transaction::create([
                 'transaction_date' => now()->toDateString(),
-                'description'      => 'ຈ່າຍເງິນລ່ວງໜ້າ: ' . $request->description,
-                'amount'           => $request->requested_amount,
-                'account_id'       => 1, // ปรับตาม account จริง
-                'department_id'    => $request->department_id,
+                'description' => $request->description,  // ← เอาแค่ description อย่างเดียว
+                'amount' => $request->requested_amount,
+                'account_id' => 1,
+                'department_id' => $request->department_id,
             ]);
-
             $request->update([
-                'status'                 => 'paid',
+                'status' => 'paid',
                 'payment_transaction_id' => $txn->id,
             ]);
 
@@ -96,7 +95,7 @@ class WorkflowService
         if ($request->status !== 'pending_clearing') {
             throw new Exception('ສະຖານະບໍ່ຖືກຕ້ອງ');
         }
-        if (!$actor->isAccountant()) {
+        if (! $actor->isAccountant()) {
             throw new Exception('ສິດທິ Accountant ເທົ່ານັ້ນ');
         }
 
@@ -114,35 +113,35 @@ class WorkflowService
     {
         RequestWorkflowLog::create([
             'request_id' => $request->id,
-            'user_id'    => $actor->id,
-            'action'     => $action,
-            'timestamp'  => now(),
-            'comments'   => $comments,
+            'user_id' => $actor->id,
+            'action' => $action,
+            'timestamp' => now(),
+            'comments' => $comments,
         ]);
     }
 
     private function nextStatus(string $current): ?string
     {
         return [
-            'pending_accountant_review'    => 'pending_finance_head_review',
-            'pending_finance_head_review'  => 'pending_deputy_head_approval',
+            'pending_accountant_review' => 'pending_finance_head_review',
+            'pending_finance_head_review' => 'pending_deputy_head_approval',
             'pending_deputy_head_approval' => 'pending_faculty_head_approval',
-            'pending_faculty_head_approval'=> 'approved',
+            'pending_faculty_head_approval' => 'approved',
         ][$current] ?? null;
     }
 
     private function ensureCanAct(AdvanceRequest $request, User $actor): void
     {
         $map = [
-            'pending_accountant_review'    => 'accountant',
-            'pending_finance_head_review'  => 'head_of_finance',
+            'pending_accountant_review' => 'accountant',
+            'pending_finance_head_review' => 'head_of_finance',
             'pending_deputy_head_approval' => 'deputy_head_of_faculty',
-            'pending_faculty_head_approval'=> 'head_of_faculty',
+            'pending_faculty_head_approval' => 'head_of_faculty',
         ];
 
         $required = $map[$request->status] ?? null;
 
-        if (!$required || !$actor->hasRole($required)) {
+        if (! $required || ! $actor->hasRole($required)) {
             throw new Exception('ທ່ານບໍ່ມີສິດດຳເນີນການໃນຂັ້ນຕອນນີ້');
         }
     }

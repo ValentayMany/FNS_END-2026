@@ -29,7 +29,7 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
-            'password'  => 'hashed',
+            'password' => 'hashed',
             'is_active' => 'boolean',
         ];
     }
@@ -46,19 +46,62 @@ class User extends Authenticatable
     }
 
     // ---- Role Helpers ----
+    // ---- Role Helpers ----
     public function hasRole(string $roleName): bool
     {
         return $this->role?->role_name === $roleName;
     }
 
-    public function isAdmin(): bool          { return $this->hasRole('admin'); }
-    public function isRequester(): bool      { return $this->hasRole('requester'); }
-    public function isCashier(): bool        { return $this->hasRole('cashier'); }
-    public function isRevenueOfficer(): bool { return $this->hasRole('revenue_officer'); }
-    public function isAccountant(): bool     { return $this->hasRole('accountant'); }
-    public function isHeadOfFinance(): bool  { return $this->hasRole('head_of_finance'); }
-    public function isDeputyHead(): bool     { return $this->hasRole('deputy_head_of_faculty'); }
-    public function isFacultyHead(): bool    { return $this->hasRole('head_of_faculty'); }
+    public function isAdmin(): bool
+    {
+        return $this->hasRole('admin');
+    }
+
+    public function isRequester(): bool
+    {
+        return $this->hasRole('requester');
+    }
+
+    public function isCashier(): bool
+    {
+        return $this->hasRole('cashier');
+    }
+
+    public function isRevenueOfficer(): bool
+    {
+        return $this->hasRole('revenue_officer');
+    }
+
+    public function isAccountant(): bool
+    {
+        return $this->hasRole('accountant');
+    }
+
+    public function isHeadOfFinance(): bool
+    {
+        return $this->hasRole('head_of_finance');
+    }
+
+    public function isDeputyHead(): bool
+    {
+        return $this->hasRole('deputy_head_of_faculty');
+    }
+
+    public function isFacultyHead(): bool
+    {
+        return $this->hasRole('head_of_faculty');
+    }
+
+    // ---- เพิ่ม 2 บรรทัดนี้ ----
+    public function isTreasurer(): bool
+    {
+        return $this->hasRole('treasurer');
+    }
+
+    public function isTreasuryReconciliation(): bool
+    {
+        return $this->hasRole('treasury_reconciliation_officer');
+    }
 
     public function isApprover(): bool
     {
@@ -68,11 +111,5 @@ class User extends Authenticatable
             'deputy_head_of_faculty',
             'head_of_faculty',
         ]);
-    }
-
-    // ใช้ username แทน email สำหรับ login
-    public function getAuthIdentifierName(): string
-    {
-        return 'username';
     }
 }

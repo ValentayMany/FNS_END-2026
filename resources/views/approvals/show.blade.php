@@ -1,6 +1,9 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800">📄 ກວດສອບຄຳຂໍ #{{ $advanceRequest->id }}</h2>
+        <div class="flex justify-between items-center">
+            <h2 class="font-semibold text-xl text-gray-800">📄 ກວດສອບຄຳຂໍ #{{ $advanceRequest->id }}</h2>
+            <a href="{{ route('approval.index') }}" class="text-sm text-indigo-600 hover:underline">← ກັບຄືນ</a>
+        </div>
     </x-slot>
 
     <div class="py-6">
@@ -13,36 +16,45 @@
             <div class="p-3 bg-red-100 text-red-700 rounded-lg text-sm">❌ {{ session('error') }}</div>
             @endif
 
-            {{-- Detail --}}
-            <div class="bg-white rounded-xl shadow p-6 grid grid-cols-2 gap-4 text-sm">
-                <div>
-                    <p class="text-gray-400 text-xs mb-0.5">ຜູ້ຂໍ</p>
-                    <p class="font-medium">{{ $advanceRequest->requester?->full_name ?? $advanceRequest->requester?->username }}</p>
-                </div>
-                <div>
-                    <p class="text-gray-400 text-xs mb-0.5">ຈຳນວນເງິນ</p>
-                    <p class="font-bold text-lg">{{ number_format($advanceRequest->requested_amount, 2) }} ກີບ</p>
-                </div>
-                <div>
-                    <p class="text-gray-400 text-xs mb-0.5">ພາກສ່ວນ</p>
-                    <p>{{ $advanceRequest->department?->department_name }}</p>
-                </div>
-                <div>
-                    <p class="text-gray-400 text-xs mb-0.5">ວັນທີຄຳຂໍ</p>
-                    <p>{{ $advanceRequest->request_date?->format('d/m/Y') }}</p>
-                </div>
-                <div class="col-span-2">
-                    <p class="text-gray-400 text-xs mb-0.5">ລາຍລະອຽດ</p>
-                    <p>{{ $advanceRequest->description }}</p>
+            {{-- ລາຍລະອຽດ --}}
+            <div class="bg-white rounded-xl shadow p-6">
+                <h3 class="font-semibold text-gray-700 mb-4 pb-2 border-b">ຂໍ້ມູນຄຳຂໍ</h3>
+                <div class="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                        <p class="text-gray-400 text-xs mb-0.5">ຜູ້ຂໍ</p>
+                        <p class="font-medium">{{ $advanceRequest->requester?->full_name ?? $advanceRequest->requester?->username }}</p>
+                    </div>
+                    <div>
+                        <p class="text-gray-400 text-xs mb-0.5">ສະຖານະ</p>
+                        <span class="px-2 py-0.5 rounded text-xs bg-yellow-100 text-yellow-700">
+                            {{ $advanceRequest->status }}
+                        </span>
+                    </div>
+                    <div>
+                        <p class="text-gray-400 text-xs mb-0.5">ພາກສ່ວນ</p>
+                        <p>{{ $advanceRequest->department?->department_name }}</p>
+                    </div>
+                    <div>
+                        <p class="text-gray-400 text-xs mb-0.5">ວັນທີຄຳຂໍ</p>
+                        <p>{{ $advanceRequest->request_date?->format('d/m/Y') }}</p>
+                    </div>
+                    <div>
+                        <p class="text-gray-400 text-xs mb-0.5">ຈຳນວນເງິນ</p>
+                        <p class="font-bold text-lg">{{ number_format($advanceRequest->requested_amount, 2) }} ກີບ</p>
+                    </div>
+                    <div class="col-span-2">
+                        <p class="text-gray-400 text-xs mb-0.5">ລາຍລະອຽດ</p>
+                        <p>{{ $advanceRequest->description }}</p>
+                    </div>
                 </div>
             </div>
 
-            {{-- Action Buttons --}}
+            {{-- ປຸ່ມອະນຸມັດ/ປະຕິເສດ --}}
             @if($advanceRequest->canBeActedBy(Auth::user()))
             <div class="bg-white rounded-xl shadow p-6 space-y-4">
-                <h3 class="font-semibold text-gray-800">ດຳເນີນການ</h3>
+                <h3 class="font-semibold text-gray-700">ດຳເນີນການ</h3>
 
-                {{-- Approve --}}
+                {{-- ອະນຸມັດ --}}
                 <form method="POST" action="{{ route('approval.approve', $advanceRequest) }}" class="flex gap-2">
                     @csrf
                     <input type="text" name="comment" placeholder="ໝາຍເຫດ (ຖ້າມີ)"
@@ -52,7 +64,7 @@
                     </button>
                 </form>
 
-                {{-- Reject --}}
+                {{-- ປະຕິເສດ --}}
                 <form method="POST" action="{{ route('approval.reject', $advanceRequest) }}" class="flex gap-2">
                     @csrf
                     <input type="text" name="comment" placeholder="ເຫດຜົນການປະຕິເສດ *" required
@@ -62,11 +74,15 @@
                     </button>
                 </form>
             </div>
+            @else
+            <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-4 text-sm text-yellow-700">
+                ⚠️ ທ່ານບໍ່ມີສິດດຳເນີນການໃນຂັ້ນຕອນນີ້
+            </div>
             @endif
 
             {{-- Workflow Timeline --}}
             <div class="bg-white rounded-xl shadow p-6">
-                <h3 class="font-semibold text-gray-800 mb-4">📜 ປະຫວັດການດຳເນີນການ</h3>
+                <h3 class="font-semibold text-gray-700 mb-4">📜 ປະຫວັດການດຳເນີນການ</h3>
                 @forelse($advanceRequest->workflowLogs as $log)
                 <div class="flex gap-3 mb-3 last:mb-0">
                     <div class="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-sm shrink-0">
@@ -74,7 +90,8 @@
                         @elseif(str_contains($log->action, 'rejected')) ❌
                         @elseif(str_contains($log->action, 'paid')) 💵
                         @elseif(str_contains($log->action, 'clearing')) 🧾
-                        @else 📤 @endif
+                        @elseif(str_contains($log->action, 'submitted')) 📤
+                        @else 📝 @endif
                     </div>
                     <div>
                         <p class="text-sm font-medium">
@@ -94,7 +111,6 @@
                 @endforelse
             </div>
 
-            <a href="{{ route('approval.index') }}" class="text-sm text-indigo-600 hover:underline">← ກັບຄືນ</a>
         </div>
     </div>
 </x-app-layout>
