@@ -1,3 +1,40 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@keyframes wave-light {
+    0% {
+        left: -100%;
+    }
+    100% {
+        left: 150%;
+    }
+}
+
+.btn-wave {
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-wave::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: -100%;
+    width: 60%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.15),
+        rgba(255, 255, 255, 0.4),
+        rgba(255, 255, 255, 0.15),
+        transparent
+    );
+    transform: translateY(-50%) skewX(-20deg);
+    animation: wave-light 2.5s infinite;
+}
+
+.btn-wave:hover::before {
+    animation-duration: 1.2s;
+}
