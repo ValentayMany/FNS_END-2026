@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800">📊 ບັນທຶກລາຍຮັບ</h2>
+        <h2 class="font-semibold text-xl text-gray-800">💸 ບັນທຶກລາຍຈ່າຍ</h2>
     </x-slot>
 
     <div class="py-6">
@@ -10,10 +10,10 @@
                 <div class="p-3 bg-green-100 text-green-700 rounded-lg text-sm">✅ {{ session('success') }}</div>
             @endif
 
-            {{-- Form ບັນທຶກລາຍຮັບ --}}
+            {{-- Form ບັນທຶກລາຍຈ່າຍ --}}
             <div class="bg-white rounded-xl shadow p-6">
-                <h3 class="font-semibold text-gray-800 mb-4">➕ ບັນທຶກລາຍຮັບໃໝ່</h3>
-                <form method="POST" action="{{ route('revenue.store') }}" class="space-y-4">
+                <h3 class="font-semibold text-gray-800 mb-4">➕ ບັນທຶກລາຍຈ່າຍໃໝ່</h3>
+                <form method="POST" action="{{ route('expense.store') }}" class="space-y-4">
                     @csrf
 
                     <div>
@@ -24,41 +24,37 @@
                     </div>
 
                     <div>
-                        <x-input-label for="category" value="ປະເພດລາຍຮັບ *" />
+                        <x-input-label for="category" value="ປະເພດລາຍຈ່າຍ *" />
                         <select id="category" name="category" required
-                            class="block mt-1 w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
-                            <option value="">-- ເລືອກປະເພດລາຍຮັບ --</option>
-                            <option value="ຄ່າບຳລຸງຫ້ອງທົດລອງ"
-                                {{ old('category') == 'ຄ່າບຳລຸງຫ້ອງທົດລອງ' ? 'selected' : '' }}>
-                                ຄ່າບຳລຸງຫ້ອງທົດລອງ
+                            class="block mt-1 w-full border-gray-300 rounded-md shadow-sm focus:ring-red-500 focus:border-red-500">
+                            <option value="">-- ເລືອກປະເພດລາຍຈ່າຍ --</option>
+                            <option value="ເງິນອຸດໜູນ ແລະ ນະໂຍບາຍ"
+                                {{ old('category') == 'ເງິນອຸດໜູນ ແລະ ນະໂຍບາຍ' ? 'selected' : '' }}>
+                                ເງິນອຸດໜູນ ແລະ ນະໂຍບາຍ
                             </option>
-                            <option value="ຄ່າລົງທະບຽນປະລິນຍາຕີ"
-                                {{ old('category') == 'ຄ່າລົງທະບຽນປະລິນຍາຕີ' ? 'selected' : '' }}>
-                                ຄ່າລົງທະບຽນປະລິນຍາຕີ
+                            <option value="ການຊື້ ແລະ ການຊົມໃຊ້"
+                                {{ old('category') == 'ການຊື້ ແລະ ການຊົມໃຊ້' ? 'selected' : '' }}>
+                                ການຊື້ ແລະ ການຊົມໃຊ້
                             </option>
-                            <option value="ຄ່າຮັກສາສະຖານະພາບ"
-                                {{ old('category') == 'ຄ່າຮັກສາສະຖານະພາບ' ? 'selected' : '' }}>
-                                ຄ່າຮັກສາສະຖານະພາບ
+                            <option value="ການບໍລິການຈາກທາງນອກ"
+                                {{ old('category') == 'ການບໍລິການຈາກທາງນອກ' ? 'selected' : '' }}>
+                                ການບໍລິການຈາກທາງນອກ
                             </option>
-                            <option value="ຄ່າໜ່ວຍກິດປະລິນຍາຕີ"
-                                {{ old('category') == 'ຄ່າໜ່ວຍກິດປະລິນຍາຕີ' ? 'selected' : '' }}>
-                                ຄ່າໜ່ວຍກິດປະລິນຍາຕີ
+                            <option value="ລາຍຈ່າຍກອງປະຊຸມ ສຳມະນາ ແລະ ຝຶກອົບຮົມ"
+                                {{ old('category') == 'ລາຍຈ່າຍກອງປະຊຸມ ສຳມະນາ ແລະ ຝຶກອົບຮົມ' ? 'selected' : '' }}>
+                                ລາຍຈ່າຍກອງປະຊຸມ ສຳມະນາ ແລະ ຝຶກອົບຮົມ
                             </option>
-                            <option value="ຄ່າໜ່ວຍກິດປະລິນຍາໂທ"
-                                {{ old('category') == 'ຄ່າໜ່ວຍກິດປະລິນຍາໂທ' ? 'selected' : '' }}>
-                                ຄ່າໜ່ວຍກິດປະລິນຍາໂທ
+                            <option value="ດັດສົມ ແລະ ສົ່ງເສີມວັດທະນະທຳ - ສັງຄົມ"
+                                {{ old('category') == 'ດັດສົມ ແລະ ສົ່ງເສີມວັດທະນະທຳ - ສັງຄົມ' ? 'selected' : '' }}>
+                                ດັດສົມ ແລະ ສົ່ງເສີມວັດທະນະທຳ - ສັງຄົມ
                             </option>
-                            <option value="ຄ່າລົງທະບຽນອັບເກຣດ"
-                                {{ old('category') == 'ຄ່າລົງທະບຽນອັບເກຣດ' ? 'selected' : '' }}>
-                                ຄ່າລົງທະບຽນອັບເກຣດ
+                            <option value="ລາຍຈ່າຍບໍລິຫານປົກກະຕິອື່ນໆ"
+                                {{ old('category') == 'ລາຍຈ່າຍບໍລິຫານປົກກະຕິອື່ນໆ' ? 'selected' : '' }}>
+                                ລາຍຈ່າຍບໍລິຫານປົກກະຕິອື່ນໆ
                             </option>
-                            <option value="ຄ່າບໍລິການວິຊາການ"
-                                {{ old('category') == 'ຄ່າບໍລິການວິຊາການ' ? 'selected' : '' }}>
-                                ຄ່າບໍລິການວິຊາການ
-                            </option>
-                            <option value="ແຫຼ່ງລາຍຮັບອື່ນໆ"
-                                {{ old('category') == 'ແຫຼ່ງລາຍຮັບອື່ນໆ' ? 'selected' : '' }}>
-                                ແຫຼ່ງລາຍຮັບອື່ນໆ (ຖ້າມີ)
+                            <option value="ຊື້ຊັບສົມບັດຄົງທີ່"
+                                {{ old('category') == 'ຊື້ຊັບສົມບັດຄົງທີ່' ? 'selected' : '' }}>
+                                ຊື້ຊັບສົມບັດຄົງທີ່
                             </option>
                         </select>
                         <x-input-error :messages="$errors->get('category')" class="mt-2" />
@@ -67,7 +63,7 @@
                     <div>
                         <x-input-label for="description" value="ລາຍລະອຽດ *" />
                         <textarea id="description" name="description" rows="2" required
-                            class="block mt-1 w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">{{ old('description') }}</textarea>
+                            class="block mt-1 w-full border-gray-300 rounded-md shadow-sm focus:ring-red-500 focus:border-red-500">{{ old('description') }}</textarea>
                         <x-input-error :messages="$errors->get('description')" class="mt-2" />
                     </div>
 
@@ -81,7 +77,7 @@
                     <div>
                         <x-input-label for="account_id" value="ໝວດບັນຊີ *" />
                         <select id="account_id" name="account_id" required
-                            class="block mt-1 w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                            class="block mt-1 w-full border-gray-300 rounded-md shadow-sm focus:ring-red-500 focus:border-red-500">
                             <option value="">-- ເລືອກໝວດບັນຊີ --</option>
                             @foreach ($accounts as $acc)
                                 <option value="{{ $acc->id }}"
@@ -96,7 +92,7 @@
                     <div>
                         <x-input-label for="department_id" value="ພາກສ່ວນ *" />
                         <select id="department_id" name="department_id" required
-                            class="block mt-1 w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                            class="block mt-1 w-full border-gray-300 rounded-md shadow-sm focus:ring-red-500 focus:border-red-500">
                             <option value="">-- ເລືອກພາກສ່ວນ --</option>
                             @foreach ($departments as $dept)
                                 <option value="{{ $dept->id }}"
@@ -108,20 +104,23 @@
                         <x-input-error :messages="$errors->get('department_id')" class="mt-2" />
                     </div>
 
-                    <x-primary-button>ບັນທຶກ</x-primary-button>
+                    <button type="submit"
+                        class="inline-flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg text-sm transition">
+                        💾 ບັນທຶກລາຍຈ່າຍ
+                    </button>
                 </form>
             </div>
 
             {{-- ລາຍການລ່າສຸດ --}}
             <div class="bg-white rounded-xl shadow overflow-hidden">
-                <div class="px-5 py-4 border-b">
-                    <h3 class="font-semibold text-gray-800">📋 ລາຍການລ່າສຸດ</h3>
+                <div class="px-5 py-4 border-b bg-red-50">
+                    <h3 class="font-semibold text-red-700">📋 ລາຍການລ່າສຸດ</h3>
                 </div>
                 <table class="w-full text-sm">
                     <thead class="bg-gray-50 text-gray-500 uppercase text-xs">
                         <tr>
                             <th class="px-4 py-3 text-left">ວັນທີ</th>
-                            <th class="px-4 py-3 text-left">ປະເພດລາຍຮັບ</th>
+                            <th class="px-4 py-3 text-left">ປະເພດລາຍຈ່າຍ</th>
                             <th class="px-4 py-3 text-left">ລາຍລະອຽດ</th>
                             <th class="px-4 py-3 text-right">ຈຳນວນ (ກີບ)</th>
                             <th class="px-4 py-3 text-left">ພາກສ່ວນ</th>
@@ -134,12 +133,12 @@
                                     {{ $txn->transaction_date?->format('d/m/Y') }}
                                 </td>
                                 <td class="px-4 py-3">
-                                    <span class="inline-block bg-indigo-50 text-indigo-700 text-xs px-2 py-0.5 rounded-full">
+                                    <span class="inline-block bg-red-50 text-red-700 text-xs px-2 py-0.5 rounded-full">
                                         {{ $txn->category ?? '-' }}
                                     </span>
                                 </td>
                                 <td class="px-4 py-3">{{ $txn->description }}</td>
-                                <td class="px-4 py-3 text-right font-semibold text-green-600">
+                                <td class="px-4 py-3 text-right font-semibold text-red-600">
                                     {{ number_format($txn->amount, 2) }}
                                 </td>
                                 <td class="px-4 py-3 text-gray-600">
@@ -153,7 +152,15 @@
                         @endforelse
                     </tbody>
                 </table>
+
+                {{-- Pagination --}}
+                @if($transactions->hasPages())
+                    <div class="px-4 py-3 border-t">
+                        {{ $transactions->links() }}
+                    </div>
+                @endif
             </div>
+
         </div>
     </div>
 </x-app-layout>

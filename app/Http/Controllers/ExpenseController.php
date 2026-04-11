@@ -8,37 +8,36 @@ use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
-class RevenueController extends Controller
+class ExpenseController extends Controller
 {
     public function index()
     {
         $transactions = Transaction::with('department', 'chartOfAccount')
-            ->where('type', 'income')
+            ->where('type', 'expense')
             ->latest('transaction_date')
             ->paginate(15);
 
         $accounts = ChartOfAccount::orderBy('account_code')->get();
         $departments = Department::all();
 
-        return view('revenue.revenue', compact('transactions', 'accounts', 'departments'));
+        return view('expense.expense', compact('transactions', 'accounts', 'departments'));
     }
 
     public function store(Request $request)
     {
-        $incomeCategories = [
-            'ຄ່າບຳລຸງຫ້ອງທົດລອງ',
-            'ຄ່າລົງທະບຽນປະລິນຍາຕີ',
-            'ຄ່າຮັກສາສະຖານະພາບ',
-            'ຄ່າໜ່ວຍກິດປະລິນຍາຕີ',
-            'ຄ່າໜ່ວຍກິດປະລິນຍາໂທ',
-            'ຄ່າລົງທະບຽນອັບເກຣດ',
-            'ຄ່າບໍລິການວິຊາການ',
-            'ແຫຼ່ງລາຍຮັບອື່ນໆ',
+        $expenseCategories = [
+            'ເງິນອຸດໜູນ ແລະ ນະໂຍບາຍ',
+            'ການຊື້ ແລະ ການຊົມໃຊ້',
+            'ການບໍລິການຈາກທາງນອກ',
+            'ລາຍຈ່າຍກອງປະຊຸມ ສຳມະນາ ແລະ ຝຶກອົບຮົມ',
+            'ດັດສົມ ແລະ ສົ່ງເສີມວັດທະນະທຳ - ສັງຄົມ',
+            'ລາຍຈ່າຍບໍລິຫານປົກກະຕິອື່ນໆ',
+            'ຊື້ຊັບສົມບັດຄົງທີ່',
         ];
 
         $request->validate([
             'transaction_date' => 'required|date',
-            'category'         => ['required', Rule::in($incomeCategories)],
+            'category'         => ['required', Rule::in($expenseCategories)],
             'description'      => 'required|string|max:500',
             'amount'           => 'required|numeric|min:1',
             'account_id'       => 'required|exists:chart_of_accounts,id',
@@ -47,9 +46,9 @@ class RevenueController extends Controller
 
         Transaction::create([
             ...$request->only(['transaction_date', 'category', 'description', 'amount', 'account_id', 'department_id']),
-            'type' => 'income',
+            'type' => 'expense',
         ]);
 
-        return back()->with('success', 'ບັນທຶກລາຍຮັບສຳເລັດ');
+        return back()->with('success', 'ບັນທຶກລາຍຈ່າຍສຳເລັດ');
     }
 }

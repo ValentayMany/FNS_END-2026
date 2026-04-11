@@ -6,6 +6,7 @@ use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\CashierController;
 use App\Http\Controllers\ClearingController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\RequestController;
 use App\Http\Controllers\RevenueController;
@@ -31,6 +32,7 @@ Route::middleware(['auth', 'role:requester'])->group(function () {
     // Clearing
     Route::get('/clearing', [ClearingController::class, 'index'])->name('clearing.index');
     Route::post('/clearing/{advanceRequest}/submit', [ClearingController::class, 'submit'])->name('clearing.submit');
+    Route::get('/clearing/attachment/{attachment}/download', [ClearingController::class, 'downloadAttachment'])->name('clearing.attachment.download');
 });
 
 // ---- Approvers ----
@@ -42,10 +44,13 @@ Route::middleware(['auth', 'role:accountant,head_of_finance,deputy_head_of_facul
         Route::post('/approvals/{advanceRequest}/reject', [ApprovalController::class, 'reject'])->name('approval.reject');
     });
 
-// ---- Accountant เพิ่มเติม (Confirm Clearing) ----
+// ---- Accountant เพิ่มเติม (Confirm Clearing + บันทึกรายจ่าย) ----
 Route::middleware(['auth', 'role:accountant'])->group(function () {
     Route::get('/clearing/pending', [ClearingController::class, 'pendingIndex'])->name('clearing.pending');
     Route::post('/clearing/{advanceRequest}/confirm', [ClearingController::class, 'confirm'])->name('clearing.confirm');
+
+    Route::get('/expense', [ExpenseController::class, 'index'])->name('expense.index');
+    Route::post('/expense', [ExpenseController::class, 'store'])->name('expense.store');
 });
 
 // ---- Cashier ----
@@ -74,16 +79,13 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 // ---- Treasury Reconciliation ----
 Route::middleware(['auth', 'role:treasury_reconciliation_officer'])->group(function () {
     Route::get('/treasury', [TreasuryController::class, 'index'])->name('treasury.index');
-});
-
-Route::middleware(['auth', 'role:admin,accountant,head_of_finance,treasurer,revenue_officer'])
-    ->group(function () {
-        Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
-    });
-
-Route::middleware(['auth', 'role:treasury_reconciliation_officer'])->group(function () {
-    Route::get('/treasury', [TreasuryController::class, 'index'])->name('treasury.index');
     Route::post('/treasury', [TreasuryController::class, 'store'])->name('treasury.store');
 });
+
+Route::middleware(['auth', 'role:admin,accountant,head_of_finance,deputy_head_of_faculty,head_of_faculty,treasurer,revenue_officer'])
+    ->group(function () {
+        Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+        Route::get('/reports/export', [ReportController::class, 'exportCsv'])->name('reports.export');
+    });
 
 require __DIR__.'/auth.php';

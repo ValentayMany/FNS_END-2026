@@ -66,6 +66,11 @@ class AdvanceRequest extends Model
         return $this->hasMany(AdvanceClearingItem::class, 'advance_request_id');
     }
 
+    public function clearingAttachments()
+    {
+        return $this->hasMany(AdvanceClearingAttachment::class, 'advance_request_id');
+    }
+
     // ---- Helpers ----
     public function canBeActedBy(User $user): bool
     {

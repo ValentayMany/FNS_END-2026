@@ -59,16 +59,17 @@ class WorkflowService
         }
 
         DB::transaction(function () use ($request, $actor) {
-            // สร้าง Transaction การจ่ายเงิน
             $txn = Transaction::create([
                 'transaction_date' => now()->toDateString(),
-                'description' => $request->description,  // ← เอาแค่ description อย่างเดียว
-                'amount' => $request->requested_amount,
-                'account_id' => 1,
-                'department_id' => $request->department_id,
+                'description'      => 'ຈ່າຍເງິນສຳລັບ: ' . $request->description,
+                'amount'           => $request->requested_amount,
+                'account_id'       => null,
+                'department_id'    => $request->department_id,
+                'type'             => 'expense',
             ]);
+
             $request->update([
-                'status' => 'paid',
+                'status'                 => 'paid',
                 'payment_transaction_id' => $txn->id,
             ]);
 
