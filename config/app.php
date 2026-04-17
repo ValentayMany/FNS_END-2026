@@ -65,7 +65,8 @@ return [
     |
     */
 
-    'timezone' => 'UTC',
+    // Use local timezone (override via APP_TIMEZONE in .env if needed)
+    'timezone' => env('APP_TIMEZONE', 'Asia/Vientiane'),
 
     /*
     |--------------------------------------------------------------------------

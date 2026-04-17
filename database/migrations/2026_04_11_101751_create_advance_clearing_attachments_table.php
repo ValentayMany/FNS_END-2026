@@ -1,5 +1,6 @@
 <?php
 
+use App\Database\MigrationAdvanceRequestForeignKey;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -11,9 +12,18 @@ return new class extends Migration
      */
     public function up(): void
     {
+        if (Schema::hasTable('advance_clearing_attachments')) {
+            return;
+        }
+
         Schema::create('advance_clearing_attachments', function (Blueprint $table) {
             $table->id();
-            $table->timestamps();
+            MigrationAdvanceRequestForeignKey::addColumnAndForeignKey($table, 'id');
+            $table->string('original_name');
+            $table->string('stored_name');
+            $table->string('mime_type')->nullable();
+            $table->unsignedBigInteger('file_size')->nullable();
+            $table->timestamp('uploaded_at')->nullable();
         });
     }
 

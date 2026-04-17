@@ -2,6 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Viewport / horizontal scroll — phones & small tablets */
+html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+}
+
+[x-cloak] {
+    display: none !important;
+}
+
 @keyframes wave-light {
     0% {
         left: -100%;

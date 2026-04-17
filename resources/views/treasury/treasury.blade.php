@@ -1,17 +1,17 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800">🏛️ ບັນທຶກການສະສາງກັບຄັງເງິນຊາດ</h2>
+        <h2 class="font-semibold text-lg sm:text-xl text-gray-800 break-words">🏛️ ບັນທຶກການສະສາງກັບຄັງເງິນຊາດ</h2>
     </x-slot>
 
-    <div class="py-6">
-        <div class="max-w-4xl mx-auto px-4 space-y-5">
+    <div class="py-4 sm:py-6 w-full min-w-0">
+        <div class="max-w-4xl mx-auto w-full min-w-0 px-3 sm:px-4 lg:px-6 space-y-5">
 
             @if(session('success'))
             <div class="p-3 bg-green-100 text-green-700 rounded-lg text-sm">✅ {{ session('success') }}</div>
             @endif
 
             {{-- Form --}}
-            <div class="bg-white rounded-xl shadow p-6">
+            <div class="bg-white rounded-xl shadow p-4 sm:p-6">
                 <h3 class="font-semibold text-gray-800 mb-4">➕ ບັນທຶກການສະສາງໃໝ່</h3>
                 <form method="POST" action="{{ route('treasury.store') }}" class="space-y-4">
                     @csrf
@@ -42,10 +42,11 @@
 
             {{-- รายการล่าสุด --}}
             <div class="bg-white rounded-xl shadow overflow-hidden">
-                <div class="px-5 py-4 border-b">
+                <div class="px-4 sm:px-5 py-4 border-b">
                     <h3 class="font-semibold text-gray-800">📋 ລາຍການສະສາງລ່າສຸດ</h3>
                 </div>
-                <table class="w-full text-sm">
+                <div class="overflow-x-auto touch-pan-x">
+                <table class="w-full text-sm min-w-[32rem]">
                     <thead class="bg-gray-50 text-gray-500 uppercase text-xs">
                         <tr>
                             <th class="px-4 py-3 text-left">ວັນທີ</th>
@@ -77,6 +78,7 @@
                         @endforelse
                     </tbody>
                 </table>
+                </div>
             </div>
 
         </div>

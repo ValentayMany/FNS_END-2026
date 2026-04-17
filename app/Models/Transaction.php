@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Support\LaoText;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 
 class Transaction extends Model
@@ -21,6 +23,14 @@ class Transaction extends Model
     protected $casts = [
         'transaction_date' => 'date',
     ];
+
+    /** Fix ລຽ້ງ-style mark order for display (DB may store wrong keyboard order). */
+    protected function description(): Attribute
+    {
+        return Attribute::make(
+            get: fn (?string $value) => LaoText::normalize($value),
+        );
+    }
 
     public function chartOfAccount()
     {

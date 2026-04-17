@@ -35,11 +35,13 @@
     </style>
 </head>
 
-<body class="bg-blur font-sans text-gray-900 antialiased">
+<body class="bg-blur font-sans text-gray-900 antialiased overflow-x-hidden min-h-dvh">
 
     <div class="fixed inset-0" style="z-index: 1; background: rgba(15, 39, 68, 0.5);"></div>
 
-    <div class="relative min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0" style="z-index: 2;">
+    <div
+        class="relative min-h-dvh flex flex-col justify-center items-stretch sm:items-center px-3 sm:px-6 py-6 sm:py-10 pb-[max(1.5rem,env(safe-area-inset-bottom))] w-full max-w-full min-w-0"
+        style="z-index: 2;">
         {{ $slot }}
     </div>
 

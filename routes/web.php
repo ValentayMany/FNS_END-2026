@@ -85,7 +85,7 @@ Route::middleware(['auth', 'role:treasury_reconciliation_officer'])->group(funct
 Route::middleware(['auth', 'role:admin,accountant,head_of_finance,deputy_head_of_faculty,head_of_faculty,treasurer,revenue_officer'])
     ->group(function () {
         Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
-        Route::get('/reports/export', [ReportController::class, 'exportCsv'])->name('reports.export');
+        Route::get('/reports/export', [ReportController::class, 'export'])->name('reports.export');
     });
 
 require __DIR__.'/auth.php';

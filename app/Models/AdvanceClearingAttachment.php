@@ -24,14 +24,19 @@ class AdvanceClearingAttachment extends Model
 
     public function advanceRequest()
     {
-        return $this->belongsTo(AdvanceRequest::class);
+        return $this->belongsTo(AdvanceRequest::class, 'advance_request_id');
     }
 
     public function getFileSizeForHumansAttribute(): string
     {
         $bytes = $this->file_size ?? 0;
-        if ($bytes >= 1048576) return round($bytes / 1048576, 1) . ' MB';
-        if ($bytes >= 1024)    return round($bytes / 1024, 1) . ' KB';
-        return $bytes . ' B';
+        if ($bytes >= 1048576) {
+            return round($bytes / 1048576, 1).' MB';
+        }
+        if ($bytes >= 1024) {
+            return round($bytes / 1024, 1).' KB';
+        }
+
+        return $bytes.' B';
     }
 }

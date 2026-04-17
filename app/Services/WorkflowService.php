@@ -61,15 +61,15 @@ class WorkflowService
         DB::transaction(function () use ($request, $actor) {
             $txn = Transaction::create([
                 'transaction_date' => now()->toDateString(),
-                'description'      => 'ຈ່າຍເງິນສຳລັບ: ' . $request->description,
-                'amount'           => $request->requested_amount,
-                'account_id'       => null,
-                'department_id'    => $request->department_id,
-                'type'             => 'expense',
+                'description' => 'ຈ່າຍເງິນສຳລັບ: '.$request->description,
+                'amount' => $request->requested_amount,
+                'account_id' => null,
+                'department_id' => $request->department_id,
+                'type' => 'expense',
             ]);
 
             $request->update([
-                'status'                 => 'paid',
+                'status' => 'paid',
                 'payment_transaction_id' => $txn->id,
             ]);
 
@@ -115,6 +115,7 @@ class WorkflowService
         RequestWorkflowLog::create([
             'request_id' => $request->id,
             'user_id' => $actor->id,
+            'actor_role_name' => $actor->role?->role_name,
             'action' => $action,
             'timestamp' => now(),
             'comments' => $comments,

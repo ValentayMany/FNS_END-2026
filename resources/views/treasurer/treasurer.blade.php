@@ -1,13 +1,13 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800">🏦 ສະຖານະເງິນໃນຄັງ</h2>
+        <h2 class="font-semibold text-lg sm:text-xl text-gray-800 break-words">🏦 ສະຖານະເງິນໃນຄັງ</h2>
     </x-slot>
 
-    <div class="py-6">
-        <div class="max-w-6xl mx-auto px-4 space-y-5">
+    <div class="py-4 sm:py-6 w-full min-w-0">
+        <div class="max-w-6xl mx-auto w-full min-w-0 px-3 sm:px-4 lg:px-6 space-y-5">
 
             {{-- สรุปยอด --}}
-            <div class="grid grid-cols-3 gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
                 <div class="bg-white rounded-xl shadow p-5 text-center">
                     <p class="text-gray-400 text-sm mb-1">ລາຍຮັບທັງໝົດ</p>
                     <p class="text-2xl font-bold text-green-600">{{ number_format($totalIncome, 2) }}</p>
@@ -27,10 +27,11 @@
 
             {{-- รายการ Transaction ล่าสุด --}}
             <div class="bg-white rounded-xl shadow overflow-hidden">
-                <div class="px-5 py-4 border-b">
+                <div class="px-4 sm:px-5 py-4 border-b">
                     <h3 class="font-semibold text-gray-800">📋 ການເຄື່ອນໄຫວເງິນລ່າສຸດ</h3>
                 </div>
-                <table class="w-full text-sm">
+                <div class="overflow-x-auto touch-pan-x">
+                <table class="w-full text-sm min-w-[36rem]">
                     <thead class="bg-gray-50 text-gray-500 uppercase text-xs">
                         <tr>
                             <th class="px-4 py-3 text-left">ວັນທີ</th>
@@ -50,7 +51,7 @@
                                 {{ number_format($txn->amount, 2) }}
                             </td>
                             <td class="px-4 py-3 text-gray-600">
-                                {{ $txn->department?->department_name }}
+                                {{ $txn->department?->displayName() }}
                             </td>
                         </tr>
                         @empty
@@ -60,6 +61,7 @@
                         @endforelse
                     </tbody>
                 </table>
+                </div>
             </div>
         </div>
     </div>

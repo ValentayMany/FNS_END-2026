@@ -3,15 +3,16 @@
         <h2 class="font-semibold text-xl text-gray-800">👥 ຈັດການຜູ້ໃຊ້</h2>
     </x-slot>
 
-    <div class="py-6">
-        <div class="max-w-6xl mx-auto px-4">
+    <div class="py-4 sm:py-6">
+        <div class="max-w-6xl mx-auto w-full min-w-0 px-3 sm:px-4 lg:px-6">
 
             @if(session('success'))
             <div class="mb-4 p-3 bg-green-100 text-green-700 rounded-lg text-sm">✅ {{ session('success') }}</div>
             @endif
 
             <div class="bg-white rounded-xl shadow overflow-hidden">
-                <table class="w-full text-sm">
+                <div class="overflow-x-auto touch-pan-x -mx-px">
+                <table class="w-full text-sm min-w-[44rem]">
                     <thead class="bg-gray-50 text-gray-500 uppercase text-xs">
                         <tr>
                             <th class="px-4 py-3 text-left">#</th>
@@ -34,7 +35,7 @@
                                     {{ $user->role?->role_name ?? '-' }}
                                 </span>
                             </td>
-                            <td class="px-4 py-3 text-gray-500">{{ $user->department?->department_name ?? '-' }}</td>
+                            <td class="px-4 py-3 text-gray-500">{{ $user->department?->displayName() ?? '-' }}</td>
                             <td class="px-4 py-3">
                                 @if($user->is_active)
                                     <span style="background:#dcfce7;color:#16a34a;padding:2px 8px;border-radius:999px;font-size:12px;">ໃຊ້ງານ</span>
@@ -64,6 +65,7 @@
                         @endforeach
                     </tbody>
                 </table>
+                </div>
             </div>
 
         </div>

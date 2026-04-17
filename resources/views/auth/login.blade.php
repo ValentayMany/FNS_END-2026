@@ -8,19 +8,19 @@
         }
     </style>
 
-    <div lang="lo" class="w-full max-w-md mx-auto rounded-xl overflow-hidden shadow-2xl">
+    <div lang="lo" class="w-full max-w-md mx-auto min-w-0 rounded-xl overflow-hidden shadow-2xl">
 
         {{-- Header --}}
-        <div class="px-8 py-6 text-center relative bg-white">
-            <img src="{{ asset('image/Logo.jpg') }}" alt="Logo" class="mx-auto mb-3"
-                style="height: 160px; width: 160px;">
-            <h1 class="text-xl font-bold tracking-widest lowercase" style="color: #eab308;">
+        <div class="px-5 sm:px-8 py-5 sm:py-6 text-center relative bg-white">
+            <img src="{{ asset('image/Logo.jpg') }}" alt="Logo"
+                class="mx-auto mb-3 w-[min(140px,40vw)] h-[min(140px,40vw)] sm:w-40 sm:h-40 object-contain">
+            <h1 class="text-lg sm:text-xl font-bold tracking-widest lowercase break-words px-1" style="color: #eab308;">
                 ລະບົບລາຍຮັບ ແລະ ລາຍຈ່າຍຂອງຄະນະ
             </h1>
         </div>
 
         {{-- Body --}}
-        <div class="bg-white px-8 py-2 pb-2 ">
+        <div class="bg-white px-5 sm:px-8 py-2 pb-4 sm:pb-2">
             <form method="POST" action="{{ route('login') }}">
                 @csrf
 
