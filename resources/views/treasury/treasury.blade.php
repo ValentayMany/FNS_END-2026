@@ -1,86 +1,104 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-lg sm:text-xl text-gray-800 break-words">🏛️ ບັນທຶກການສະສາງກັບຄັງເງິນຊາດ</h2>
+        <div class="flex flex-col gap-0.5">
+            <p class="text-xs font-medium text-indigo-400 uppercase tracking-widest">ຄັງເງິນຊາດ</p>
+            <h2 class="text-lg sm:text-xl font-bold text-gray-800">ບັນທຶກການສະສາງກັບຄັງເງິນຊາດ</h2>
+        </div>
     </x-slot>
 
-    <div class="py-4 sm:py-6 w-full min-w-0">
+    <div class="py-6 sm:py-8 w-full min-w-0">
         <div class="max-w-4xl mx-auto w-full min-w-0 px-3 sm:px-4 lg:px-6 space-y-5">
 
             @if(session('success'))
-            <div class="p-3 bg-green-100 text-green-700 rounded-lg text-sm">✅ {{ session('success') }}</div>
+                <div class="fns-alert fns-alert-success fns-animate">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    {{ session('success') }}
+                </div>
             @endif
 
             {{-- Form --}}
-            <div class="bg-white rounded-xl shadow p-4 sm:p-6">
-                <h3 class="font-semibold text-gray-800 mb-4">➕ ບັນທຶກການສະສາງໃໝ່</h3>
-                <form method="POST" action="{{ route('treasury.store') }}" class="space-y-4">
-                    @csrf
-
-                    <div>
-                        <x-input-label for="reconciliation_date" value="ວັນທີ *" />
-                        <x-text-input id="reconciliation_date" name="reconciliation_date" type="date"
-                            class="block mt-1 w-full"
-                            :value="old('reconciliation_date', today()->toDateString())" required />
+            <div class="fns-card fns-animate">
+                <div class="fns-card-header">
+                    <div class="flex items-center gap-3">
+                        <div class="fns-card-header-icon" style="background:#f5f3ff; color:#7c3aed;">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
+                        </div>
+                        <div>
+                            <h3 class="fns-card-title">ບັນທຶກການສະສາງໃໝ່</h3>
+                        </div>
                     </div>
+                </div>
+                <div class="fns-card-body">
+                    <form method="POST" action="{{ route('treasury.store') }}" class="space-y-4">
+                        @csrf
 
-                    <div>
-                        <x-input-label for="transaction_id" value="ລາຍການ Transaction *" />
-                        <select id="transaction_id" name="transaction_id" required
-                            class="block mt-1 w-full border-gray-300 rounded-md shadow-sm text-sm focus:ring-indigo-500 focus:border-indigo-500">
-                            <option value="">-- ເລືອກລາຍການ --</option>
-                            @foreach($transactions as $txn)
-                            <option value="{{ $txn->id }}" {{ old('transaction_id') == $txn->id ? 'selected' : '' }}>
-                                #{{ $txn->id }} | {{ $txn->transaction_date?->format('d/m/Y') }} | {{ $txn->description }} | {{ number_format($txn->amount, 2) }} ກີບ
-                            </option>
-                            @endforeach
-                        </select>
-                    </div>
+                        <div>
+                            <label for="reconciliation_date" class="fns-label">ວັນທີ *</label>
+                            <input id="reconciliation_date" name="reconciliation_date" type="date"
+                                class="fns-input" value="{{ old('reconciliation_date', today()->toDateString()) }}" required />
+                        </div>
 
-                    <x-primary-button>💾 ບັນທຶກ</x-primary-button>
-                </form>
+                        <div>
+                            <label for="transaction_id" class="fns-label">ລາຍການ Transaction *</label>
+                            <select id="transaction_id" name="transaction_id" required class="fns-select">
+                                <option value="">-- ເລືອກລາຍການ --</option>
+                                @foreach($transactions as $txn)
+                                <option value="{{ $txn->id }}" {{ old('transaction_id') == $txn->id ? 'selected' : '' }}>
+                                    #{{ $txn->id }} | {{ $txn->transaction_date?->format('d/m/Y') }} | {{ $txn->description }} | {{ number_format($txn->amount, 2) }} ກີບ
+                                </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <button type="submit" class="fns-btn fns-btn-primary">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+                            ບັນທຶກ
+                        </button>
+                    </form>
+                </div>
             </div>
 
-            {{-- รายการล่าสุด --}}
-            <div class="bg-white rounded-xl shadow overflow-hidden">
-                <div class="px-4 sm:px-5 py-4 border-b">
-                    <h3 class="font-semibold text-gray-800">📋 ລາຍການສະສາງລ່າສຸດ</h3>
+            {{-- Table --}}
+            <div class="fns-card fns-animate fns-animate-delay-1">
+                <div class="fns-card-header">
+                    <div class="flex items-center gap-3">
+                        <div class="fns-card-header-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.25 6.75h12M8.25 12h12M8.25 17.25h12M3.75 6.75h.007v.008H3.75V6.75zm0 5.25h.007v.008H3.75V12zm0 5.25h.007v.008H3.75v-.008z" /></svg>
+                        </div>
+                        <div>
+                            <h3 class="fns-card-title">ລາຍການສະສາງລ່າສຸດ</h3>
+                        </div>
+                    </div>
                 </div>
                 <div class="overflow-x-auto touch-pan-x">
-                <table class="w-full text-sm min-w-[32rem]">
-                    <thead class="bg-gray-50 text-gray-500 uppercase text-xs">
-                        <tr>
-                            <th class="px-4 py-3 text-left">ວັນທີ</th>
-                            <th class="px-4 py-3 text-left">ລາຍການ</th>
-                            <th class="px-4 py-3 text-right">ຈຳນວນ (ກີບ)</th>
-                            <th class="px-4 py-3 text-left">ຜູ້ບັນທຶກ</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y">
-                        @forelse($items as $item)
-                        <tr class="hover:bg-gray-50">
-                            <td class="px-4 py-3 text-gray-400 text-xs">
-                                {{ $item->reconciliation_date?->format('d/m/Y') }}
-                            </td>
-                            <td class="px-4 py-3">{{ $item->transaction?->description }}</td>
-                            <td class="px-4 py-3 text-right font-semibold">
-                                {{ number_format($item->transaction?->amount, 2) }}
-                            </td>
-                            <td class="px-4 py-3 text-gray-600">
-                                {{ $item->user?->full_name }}
-                            </td>
-                        </tr>
-                        @empty
-                        <tr>
-                            <td colspan="4" class="px-4 py-6 text-center text-gray-400">
-                                ຍັງບໍ່ມີລາຍການ
-                            </td>
-                        </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+                    <table class="fns-table" style="min-width:32rem;">
+                        <thead>
+                            <tr>
+                                <th>ວັນທີ</th>
+                                <th>ລາຍການ</th>
+                                <th class="th-right">ຈຳນວນ (ກີບ)</th>
+                                <th>ຜູ້ບັນທຶກ</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($items as $item)
+                            <tr>
+                                <td class="fns-cell-date">{{ $item->reconciliation_date?->format('d/m/Y') }}</td>
+                                <td class="text-gray-700 text-sm">{{ $item->transaction?->description }}</td>
+                                <td class="text-right"><span class="fns-cell-amount">{{ number_format($item->transaction?->amount, 2) }}</span></td>
+                                <td class="text-gray-500 text-sm">{{ $item->user?->full_name }}</td>
+                            </tr>
+                            @empty
+                            <tr>
+                                <td colspan="4">
+                                    <div class="fns-empty"><p class="fns-empty-text">ຍັງບໍ່ມີລາຍການ</p></div>
+                                </td>
+                            </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
                 </div>
             </div>
-
         </div>
     </div>
 </x-app-layout>

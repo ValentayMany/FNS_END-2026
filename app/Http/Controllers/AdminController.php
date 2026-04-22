@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 
 class AdminController extends Controller
 {
-    public function users()
+    public function index()
     {
         $users = User::with('role', 'department')->paginate(20);
         $roles = Role::all();
@@ -18,6 +18,11 @@ class AdminController extends Controller
 
     public function updateRole(Request $request, User $user)
     {
+        // ป้องกัน admin เปลี่ยน role ตัวเอง
+        if ($user->id === $request->user()->id) {
+            return back()->with('error', 'ບໍ່ສາມາດປ່ຽນ Role ຂອງຕົນເອງໄດ້');
+        }
+
         $request->validate([
             'role_id' => 'required|exists:roles,id',
         ]);

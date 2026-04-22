@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\AdvanceRequest;
+use App\Models\Department;
 use App\Services\WorkflowService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -14,7 +15,7 @@ class RequestController extends Controller
     /** หน้าสร้างคำขอใหม่ */
     public function create()
     {
-        $departments = \App\Models\Department::all();
+        $departments = Department::all();
 
         return view('requests.create', compact('departments'));
     }
@@ -66,6 +67,62 @@ class RequestController extends Controller
         $advanceRequest->load('requester.role', 'department', 'workflowLogs.actor.role');
 
         return view('requests.show', compact('advanceRequest'));
+    }
+
+    /** หน้าแก้ไขคำขอ (draft เท่านั้น) */
+    public function edit(AdvanceRequest $advanceRequest)
+    {
+        if ($advanceRequest->requester_id !== Auth::id()) {
+            abort(403);
+        }
+        if ($advanceRequest->status !== 'draft') {
+            return back()->with('error', 'ສາມາດແກ້ໄຂໄດ້ສະເພາະສະຖານະ draft ເທົ່ານັ້ນ');
+        }
+
+        $departments = Department::all();
+
+        return view('requests.edit', compact('advanceRequest', 'departments'));
+    }
+
+    /** อัปเดตคำขอ (draft เท่านั้น) */
+    public function update(Request $request, AdvanceRequest $advanceRequest)
+    {
+        if ($advanceRequest->requester_id !== Auth::id()) {
+            abort(403);
+        }
+        if ($advanceRequest->status !== 'draft') {
+            return back()->with('error', 'ສາມາດແກ້ໄຂໄດ້ສະເພາະສະຖານະ draft ເທົ່ານັ້ນ');
+        }
+
+        $request->validate([
+            'department_id'    => 'required|exists:departments,id',
+            'description'      => 'required|string|max:1000',
+            'requested_amount' => 'required|numeric|min:1',
+            'request_date'     => 'required|date',
+        ]);
+
+        $advanceRequest->update($request->only([
+            'department_id', 'description', 'requested_amount', 'request_date',
+        ]));
+
+        return redirect()->route('requests.show', $advanceRequest)
+            ->with('success', 'ແກ້ໄຂຄຳຂໍສຳເລັດ');
+    }
+
+    /** ลบคำขอ (draft เท่านั้น) */
+    public function destroy(AdvanceRequest $advanceRequest)
+    {
+        if ($advanceRequest->requester_id !== Auth::id()) {
+            abort(403);
+        }
+        if ($advanceRequest->status !== 'draft') {
+            return back()->with('error', 'ສາມາດລຶບໄດ້ສະເພາະສະຖານະ draft ເທົ່ານັ້ນ');
+        }
+
+        $advanceRequest->delete();
+
+        return redirect()->route('requests.index')
+            ->with('success', 'ລຶບຄຳຂໍສຳເລັດ');
     }
 
     /** ส่งคำขอเข้า Workflow */

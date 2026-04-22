@@ -1,73 +1,83 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800">👥 ຈັດການຜູ້ໃຊ້</h2>
+        <div class="flex flex-col gap-0.5">
+            <p class="text-xs font-medium text-indigo-400 uppercase tracking-widest">ແອດມິນ</p>
+            <h2 class="text-lg sm:text-xl font-bold text-gray-800">ຈັດການຜູ້ໃຊ້</h2>
+        </div>
     </x-slot>
 
-    <div class="py-4 sm:py-6">
+    <div class="py-6 sm:py-8 w-full min-w-0">
         <div class="max-w-6xl mx-auto w-full min-w-0 px-3 sm:px-4 lg:px-6">
 
             @if(session('success'))
-            <div class="mb-4 p-3 bg-green-100 text-green-700 rounded-lg text-sm">✅ {{ session('success') }}</div>
+                <div class="fns-alert fns-alert-success fns-animate mb-5">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    {{ session('success') }}
+                </div>
             @endif
 
-            <div class="bg-white rounded-xl shadow overflow-hidden">
-                <div class="overflow-x-auto touch-pan-x -mx-px">
-                <table class="w-full text-sm min-w-[44rem]">
-                    <thead class="bg-gray-50 text-gray-500 uppercase text-xs">
-                        <tr>
-                            <th class="px-4 py-3 text-left">#</th>
-                            <th class="px-4 py-3 text-left">ຊື່</th>
-                            <th class="px-4 py-3 text-left">USERNAME</th>
-                            <th class="px-4 py-3 text-left">ROLE</th>
-                            <th class="px-4 py-3 text-left">ພາກສ່ວນ</th>
-                            <th class="px-4 py-3 text-left">ສະຖານະ</th>
-                            <th class="px-4 py-3 text-left">ແກ້ໄຂ ROLE</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y">
-                        @foreach($users as $user)
-                        <tr class="hover:bg-gray-50">
-                            <td class="px-4 py-3 text-gray-400">#{{ $user->id }}</td>
-                            <td class="px-4 py-3 font-medium">{{ $user->full_name }}</td>
-                            <td class="px-4 py-3 text-gray-500">{{ $user->username }}</td>
-                            <td class="px-4 py-3">
-                                <span style="background:#e0e7ff;color:#4f46e5;padding:2px 8px;border-radius:999px;font-size:12px;">
-                                    {{ $user->role?->role_name ?? '-' }}
-                                </span>
-                            </td>
-                            <td class="px-4 py-3 text-gray-500">{{ $user->department?->displayName() ?? '-' }}</td>
-                            <td class="px-4 py-3">
-                                @if($user->is_active)
-                                    <span style="background:#dcfce7;color:#16a34a;padding:2px 8px;border-radius:999px;font-size:12px;">ໃຊ້ງານ</span>
-                                @else
-                                    <span style="background:#fee2e2;color:#dc2626;padding:2px 8px;border-radius:999px;font-size:12px;">ປິດ</span>
-                                @endif
-                            </td>
-                            <td class="px-4 py-3">
-                                <form method="POST" action="{{ route('admin.users.role', $user->id) }}" class="flex items-center gap-2">
-                                    @csrf
-                                    @method('PATCH')
-                                    <select name="role_id"
-                                        class="border-gray-300 rounded-md shadow-sm text-sm focus:ring-indigo-500 focus:border-indigo-500">
-                                        @foreach($roles as $role)
-                                        <option value="{{ $role->id }}" {{ $user->role_id == $role->id ? 'selected' : '' }}>
-                                            {{ $role->role_name }}
-                                        </option>
-                                        @endforeach
-                                    </select>
-                                    <button type="submit"
-                                        style="background:#4f46e5;color:white;padding:4px 12px;border-radius:6px;font-size:12px;border:none;cursor:pointer;">
-                                        ✅ ຢືນຢັນ
-                                    </button>
-                                </form>
-                            </td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+            <div class="fns-card fns-animate">
+                <div class="fns-card-header">
+                    <div class="flex items-center gap-3">
+                        <div class="fns-card-header-icon" style="background:#f5f3ff; color:#7c3aed;">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.956" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.875 6.75a3.375 3.375 0 116.75 0 3.375 3.375 0 01-6.75 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 19.5a6 6 0 0112 0v.75H3v-.75z" /></svg>
+                        </div>
+                        <div>
+                            <h3 class="fns-card-title">ລາຍຊື່ຜູ້ໃຊ້ທັງໝົດ</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="overflow-x-auto touch-pan-x">
+                    <table class="fns-table" style="min-width:44rem;">
+                        <thead>
+                            <tr>
+                                <th style="width:50px;">#</th>
+                                <th>ຊື່</th>
+                                <th>USERNAME</th>
+                                <th>ROLE</th>
+                                <th>ພາກສ່ວນ</th>
+                                <th>ສະຖານະ</th>
+                                <th>ແກ້ໄຂ ROLE</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($users as $user)
+                            <tr>
+                                <td><span class="fns-cell-id">#{{ $user->id }}</span></td>
+                                <td><span class="fns-cell-name">{{ $user->full_name }}</span></td>
+                                <td class="text-gray-500 text-sm">{{ $user->username }}</td>
+                                <td>
+                                    <span class="fns-badge fns-badge-deputy">{{ $user->role?->role_name ?? '-' }}</span>
+                                </td>
+                                <td class="text-gray-500 text-sm">{{ $user->department?->displayName() ?? '-' }}</td>
+                                <td>
+                                    @if($user->is_active)
+                                        <span class="fns-badge fns-badge-approved">ໃຊ້ງານ</span>
+                                    @else
+                                        <span class="fns-badge fns-badge-rejected">ປິດ</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    <form method="POST" action="{{ route('admin.updateRole', $user->id) }}" class="flex items-center gap-2">
+                                        @csrf
+                                        <select name="role_id" class="fns-select" style="width: auto; min-width: 140px; padding: 6px 10px; font-size: 0.75rem;">
+                                            @foreach($roles as $role)
+                                            <option value="{{ $role->id }}" {{ $user->role_id == $role->id ? 'selected' : '' }}>
+                                                {{ $role->role_name }}
+                                            </option>
+                                            @endforeach
+                                        </select>
+                                        <button type="submit" class="fns-btn fns-btn-primary" style="padding:6px 12px; font-size:0.7rem;">
+                                            ຢືນຢັນ
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
                 </div>
             </div>
-
         </div>
     </div>
 </x-app-layout>

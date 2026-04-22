@@ -1,0 +1,110 @@
+# 📊 Task Dashboard — FNS_END-2026
+
+> **สถานะรวม**: ✅ เสร็จสิ้น 18/18 ข้อ | **อัปเดตล่าสุด**: 20/04/2026 10:35
+
+---
+
+## 🔴 รอบ 1 — Critical Bugs (4/4 ✅)
+
+| # | สถานะ | ปัญหา | ไฟล์ที่แก้ |
+|---|--------|--------|---------|
+| 1 | ✅ | `TransactionAttachment` relationship อ้างอิง Model ที่ไม่มี → ระบบ crash | [Transaction.php](file:///d:/FNS/FNS_END-2026/app/Models/Transaction.php) |
+| 2 | ✅ | TreasurerController คำนวณ Income/Expense ผิด (รวมทุก type) | [TreasurerController.php](file:///d:/FNS/FNS_END-2026/app/Http/Controllers/TreasurerController.php) |
+| 3 | ✅ | ไฟล์แนบ Clearing อยู่ `public` disk → ใครก็เข้าถึงได้ | [ClearingController.php](file:///d:/FNS/FNS_END-2026/app/Http/Controllers/ClearingController.php) |
+| 4 | ✅ | ApprovalController ไม่ตรวจสิทธิ์ก่อน approve/reject | [ApprovalController.php](file:///d:/FNS/FNS_END-2026/app/Http/Controllers/ApprovalController.php) |
+
+---
+
+## 🟡 รอบ 1 — Medium Issues (6/6 ✅)
+
+| # | สถานะ | ปัญหา | ไฟล์ที่แก้ |
+|---|--------|--------|---------|
+| 5 | ✅ | ไม่มี Edit/Delete สำหรับ draft requests | [RequestController.php](file:///d:/FNS/FNS_END-2026/app/Http/Controllers/RequestController.php), [web.php](file:///d:/FNS/FNS_END-2026/routes/web.php), [edit.blade.php](file:///d:/FNS/FNS_END-2026/resources/views/requests/edit.blade.php), [show.blade.php](file:///d:/FNS/FNS_END-2026/resources/views/requests/show.blade.php) |
+| 6 | ✅ | Comment ซ้ำใน User.php | [User.php](file:///d:/FNS/FNS_END-2026/app/Models/User.php) |
+| 7 | ✅ | ReportController มี query ซ้ำกัน (DRY) | [ReportController.php](file:///d:/FNS/FNS_END-2026/app/Http/Controllers/ReportController.php) |
+| 8 | ✅ | AdvanceClearingItem ไม่มี chartOfAccount relationship | [AdvanceClearingItem.php](file:///d:/FNS/FNS_END-2026/app/Models/AdvanceClearingItem.php) |
+| 9 | ✅ | TreasuryController โหลด transaction ทั้งหมด (ที่ reconcile แล้วด้วย) | [TreasuryController.php](file:///d:/FNS/FNS_END-2026/app/Http/Controllers/TreasuryController.php) |
+| 10 | ✅ | สามารถ Reconcile ซ้ำได้ | [TreasuryController.php](file:///d:/FNS/FNS_END-2026/app/Http/Controllers/TreasuryController.php) |
+
+---
+
+## 🔴 รอบ 2 — Critical (2/2 ✅)
+
+| # | สถานะ | ปัญหา | ไฟล์ที่แก้ |
+|---|--------|--------|---------|
+| 11 | ✅ | DatabaseSeeder ใช้ field `name`/`email` ที่ไม่มีใน schema | [DatabaseSeeder.php](file:///d:/FNS/FNS_END-2026/database/seeders/DatabaseSeeder.php) |
+| 12 | ✅ | Registration hardcode `role_id=6`, `department_id=1` | [RegisteredUserController.php](file:///d:/FNS/FNS_END-2026/app/Http/Controllers/Auth/RegisteredUserController.php) |
+
+## 🟡 รอบ 2 — Medium (5/5 ✅)
+
+| # | สถานะ | ปัญหา | ไฟล์ที่แก้ |
+|---|--------|--------|---------|
+| 13 | ✅ | Middleware ไม่ตรวจ `is_active` → disabled user ยังใช้งานได้ | [CheckRole.php](file:///d:/FNS/FNS_END-2026/app/Http/Middleware/CheckRole.php) |
+| 14 | ✅ | Admin เปลี่ยน role ตัวเองได้ → ล็อกตัวเองออก | [AdminController.php](file:///d:/FNS/FNS_END-2026/app/Http/Controllers/AdminController.php) |
+| 15 | ✅ | Navigation ใช้ `->name` ทั้งที่ User ไม่มี field นี้ | [navigation.blade.php](file:///d:/FNS/FNS_END-2026/resources/views/layouts/navigation.blade.php) |
+| 16 | ✅ | ReportController ไม่ validate date/month parameter | [ReportController.php](file:///d:/FNS/FNS_END-2026/app/Http/Controllers/ReportController.php) |
+| 17 | ✅ | deputy/head_of_faculty ไม่มีเมนูรายงานใน nav | [navigation.blade.php](file:///d:/FNS/FNS_END-2026/resources/views/layouts/navigation.blade.php) |
+
+---
+
+## 🔵 รอบ 3 — เพิ่มเติม (1/1 ✅)
+
+| # | สถานะ | ปัญหา | ไฟล์ที่แก้ |
+|---|--------|--------|---------|
+| 18 | ✅ | Login ไม่ตรวจ `is_active` → disabled user login ได้ | [AuthenticatedSessionController.php](file:///d:/FNS/FNS_END-2026/app/Http/Controllers/Auth/AuthenticatedSessionController.php) |
+
+---
+
+## 📋 ตรวจสอบแล้ว — ไม่มีปัญหา
+
+| หัวข้อ | สถานะ |
+|--------|--------|
+| PHP Syntax — ทุกไฟล์ | ✅ 0 errors |
+| XSS — ไม่มี `{!! !!}` ที่อันตราย | ✅ ปลอดภัย |
+| SQL Injection — ไม่มี `DB::raw` | ✅ ปลอดภัย |
+| CSRF — form ทุกตัวมี `@csrf` | ✅ ครบถ้วน |
+| Routes — middleware ตรง role ทุกกลุ่ม | ✅ ถูกต้อง |
+| Models — relationship & fillable | ✅ ครบถ้วน |
+| Config — timezone Asia/Vientiane | ✅ ถูกต้อง |
+
+---
+
+## 📂 ไฟล์ทั้งหมดที่แก้ไข (14 ไฟล์)
+
+### Controllers (8)
+- [ApprovalController.php](file:///d:/FNS/FNS_END-2026/app/Http/Controllers/ApprovalController.php) — #4
+- [ClearingController.php](file:///d:/FNS/FNS_END-2026/app/Http/Controllers/ClearingController.php) — #3
+- [ReportController.php](file:///d:/FNS/FNS_END-2026/app/Http/Controllers/ReportController.php) — #7, #16
+- [RequestController.php](file:///d:/FNS/FNS_END-2026/app/Http/Controllers/RequestController.php) — #5
+- [TreasurerController.php](file:///d:/FNS/FNS_END-2026/app/Http/Controllers/TreasurerController.php) — #2
+- [TreasuryController.php](file:///d:/FNS/FNS_END-2026/app/Http/Controllers/TreasuryController.php) — #9, #10
+- [AdminController.php](file:///d:/FNS/FNS_END-2026/app/Http/Controllers/AdminController.php) — #14
+- [AuthenticatedSessionController.php](file:///d:/FNS/FNS_END-2026/app/Http/Controllers/Auth/AuthenticatedSessionController.php) — #18
+- [RegisteredUserController.php](file:///d:/FNS/FNS_END-2026/app/Http/Controllers/Auth/RegisteredUserController.php) — #12
+
+### Models (3)
+- [Transaction.php](file:///d:/FNS/FNS_END-2026/app/Models/Transaction.php) — #1
+- [User.php](file:///d:/FNS/FNS_END-2026/app/Models/User.php) — #6
+- [AdvanceClearingItem.php](file:///d:/FNS/FNS_END-2026/app/Models/AdvanceClearingItem.php) — #8
+
+### Middleware (1)
+- [CheckRole.php](file:///d:/FNS/FNS_END-2026/app/Http/Middleware/CheckRole.php) — #13
+
+### Views (3)
+- [edit.blade.php](file:///d:/FNS/FNS_END-2026/resources/views/requests/edit.blade.php) — #5 (NEW)
+- [show.blade.php](file:///d:/FNS/FNS_END-2026/resources/views/requests/show.blade.php) — #5
+- [navigation.blade.php](file:///d:/FNS/FNS_END-2026/resources/views/layouts/navigation.blade.php) — #15, #17
+
+### Routes & Config (2)
+- [web.php](file:///d:/FNS/FNS_END-2026/routes/web.php) — #5
+- [DatabaseSeeder.php](file:///d:/FNS/FNS_END-2026/database/seeders/DatabaseSeeder.php) — #11
+
+---
+
+## 💡 สิ่งที่ยังสามารถปรับปรุงได้ในอนาคต (Low Priority)
+
+- [ ] เพิ่ม `$timestamps` ใน Models ที่ยังไม่มี
+- [ ] แยก Form Request classes ออกจาก Controller
+- [ ] เพิ่ม Soft Deletes สำหรับ AdvanceRequest
+- [ ] เพิ่ม Rate Limiting สำหรับ Login
+- [ ] เพิ่ม Admin toggle `is_active` ในหน้า User Management UI

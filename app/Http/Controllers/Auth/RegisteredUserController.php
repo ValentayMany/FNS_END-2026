@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Department;
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -23,12 +25,15 @@ class RegisteredUserController extends Controller
             'password'  => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
+        $defaultRole = Role::where('role_name', 'requester')->first();
+        $defaultDept = Department::first();
+
         User::create([
             'full_name'     => $request->full_name,
             'username'      => $request->username,
             'password'      => Hash::make($request->password),
-            'role_id'       => 6,  // requester (default)
-            'department_id' => 1,  // default department
+            'role_id'       => $defaultRole?->id,
+            'department_id' => $defaultDept?->id,
             'is_active'     => 1,
         ]);
 

@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CheckRole
 {
@@ -13,6 +14,16 @@ class CheckRole
 
         if (!$user) {
             return redirect()->route('login');
+        }
+
+        // ตรวจสอบว่า user ถูก disable หรือไม่
+        if (!$user->is_active) {
+            Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            return redirect()->route('login')
+                ->with('error', 'ບັນຊີຂອງທ່ານຖືກລະງັບການໃຊ້ງານ');
         }
 
         $userRole = $user->role?->role_name;

@@ -40,6 +40,10 @@ class ApprovalController extends Controller
     /** อนุมัติ */
     public function approve(Request $request, AdvanceRequest $advanceRequest)
     {
+        if (! $advanceRequest->canBeActedBy(Auth::user())) {
+            abort(403, 'ທ່ານບໍ່ມີສິດດຳເນີນການໃນຂັ້ນຕອນນີ້');
+        }
+
         try {
             $this->workflow->approve($advanceRequest, Auth::user(), $request->comment);
             return back()->with('success', 'ອະນຸມັດສຳເລັດ');
@@ -51,6 +55,10 @@ class ApprovalController extends Controller
     /** ปฏิเสธ */
     public function reject(Request $request, AdvanceRequest $advanceRequest)
     {
+        if (! $advanceRequest->canBeActedBy(Auth::user())) {
+            abort(403, 'ທ່ານບໍ່ມີສິດດຳເນີນການໃນຂັ້ນຕອນນີ້');
+        }
+
         $request->validate(['comment' => 'required|string|max:500']);
 
         try {

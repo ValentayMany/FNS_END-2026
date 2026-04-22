@@ -42,7 +42,7 @@ class ClearingController extends Controller
             // อัปโหลดไฟล์ก่อน submit
             if ($request->hasFile('attachments')) {
                 foreach ($request->file('attachments') as $file) {
-                    $stored = $file->store('clearing-attachments', 'public');
+                    $stored = $file->store('clearing-attachments', 'local');
                     AdvanceClearingAttachment::create([
                         'advance_request_id' => $advanceRequest->id,
                         'original_name'      => $file->getClientOriginalName(),
@@ -93,11 +93,11 @@ class ClearingController extends Controller
             abort(403);
         }
 
-        if (!Storage::disk('public')->exists($attachment->stored_name)) {
+        if (!Storage::disk('local')->exists($attachment->stored_name)) {
             abort(404, 'ໄຟລ໌ບໍ່ພົບ');
         }
 
-        return Storage::disk('public')->download(
+        return Storage::disk('local')->download(
             $attachment->stored_name,
             $attachment->original_name
         );

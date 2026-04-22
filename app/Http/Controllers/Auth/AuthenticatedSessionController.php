@@ -29,6 +29,17 @@ class AuthenticatedSessionController extends Controller
             ])->onlyInput('username');
         }
 
+        // ตรวจสอบว่า account ถูก disable หรือไม่
+        if (!Auth::user()->is_active) {
+            Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            return back()->withErrors([
+                'username' => 'ບັນຊີຂອງທ່ານຖືກລະງັບການໃຊ້ງານ ກະລຸນາຕິດຕໍ່ผູ້ดູแລລະບົບ',
+            ])->onlyInput('username');
+        }
+
         $request->session()->regenerate();
 
         return redirect($this->redirectByRole(Auth::user()->role?->role_name));
@@ -38,10 +49,10 @@ class AuthenticatedSessionController extends Controller
 {
     return match ($role) {
         'requester'                       => route('requests.index'),
-        'accountant'                      => route('approval.index'),
-        'head_of_finance'                 => route('approval.index'),
-        'deputy_head_of_faculty'          => route('approval.index'),
-        'head_of_faculty'                 => route('approval.index'),
+        'accountant'                      => route('approvals.index'),
+        'head_of_finance'                 => route('approvals.index'),
+        'deputy_head_of_faculty'          => route('approvals.index'),
+        'head_of_faculty'                 => route('approvals.index'),
         'cashier'                         => route('cashier.index'),
         'revenue_officer'                 => route('revenue.index'),
         'treasurer'                       => route('treasurer.index'),  // ← เอาแค่อันนี้

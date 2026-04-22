@@ -42,11 +42,6 @@ class Transaction extends Model
         return $this->belongsTo(Department::class);
     }
 
-    public function attachments()
-    {
-        return $this->hasMany(TransactionAttachment::class);
-    }
-
     public function advanceRequest()
     {
         return $this->hasOne(AdvanceRequest::class, 'payment_transaction_id');

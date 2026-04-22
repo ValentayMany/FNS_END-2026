@@ -46,7 +46,6 @@ class User extends Authenticatable
     }
 
     // ---- Role Helpers ----
-    // ---- Role Helpers ----
     public function hasRole(string $roleName): bool
     {
         return $this->role?->role_name === $roleName;
@@ -111,5 +110,38 @@ class User extends Authenticatable
             'deputy_head_of_faculty',
             'head_of_faculty',
         ]);
+    }
+
+    // ---- Aliases for Views ----
+    public function canApprove(): bool
+    {
+        return $this->isApprover();
+    }
+
+    public function isFinanceHead(): bool
+    {
+        return $this->isHeadOfFinance();
+    }
+
+    public function isDeanOrDeputy(): bool
+    {
+        return $this->isDeputyHead() || $this->isFacultyHead();
+    }
+
+    public function roleDisplay(): string
+    {
+        $names = [
+            'admin' => 'Admin (ຜູ້ดูแลລະບົບ)',
+            'requester' => 'Requester (ผู้ขออนุมัติ)',
+            'accountant' => 'Accountant (นักบัญชี)',
+            'head_of_finance' => 'Finance Head (หัวหน้าการเงิน)',
+            'deputy_head_of_faculty' => 'Deputy Dean (รองคณบดี)',
+            'head_of_faculty' => 'Dean (คณบดี)',
+            'cashier' => 'Cashier (จ่ายเงิน)',
+            'revenue_officer' => 'Revenue Officer (รับเงิน)',
+            'treasurer' => 'Treasurer (คลังเงิน)',
+            'treasury_reconciliation_officer' => 'Treasury Recon (สะสางคลัง)',
+        ];
+        return $names[$this->role?->role_name] ?? ($this->role?->role_name ?? 'Unknown');
     }
 }

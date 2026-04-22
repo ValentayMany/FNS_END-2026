@@ -1,305 +1,104 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex flex-col gap-0.5">
-            <p class="text-xs font-semibold text-[#1e3a5f] uppercase tracking-widest">ການຈ່າຍເງິນ</p>
-            <h2 class="text-xl font-bold text-gray-800">ລາຍການທີ່ຕ້ອງຈ່າຍເງິນ</h2>
+        <div class="flex flex-col gap-1.5 min-w-0">
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-lg bg-teal-100 text-teal-600 flex items-center justify-center shrink-0">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z" /></svg>
+                </div>
+                <h2 class="text-xl sm:text-2xl font-extrabold text-gray-900 tracking-tight leading-none">
+                    ລາຍການຈ່າຍເງິນ (Cashier)
+                </h2>
+            </div>
+            <p class="text-sm font-semibold text-gray-500 pl-10">ໜ້າທີ່ຂອງຜູ້ເບີກຈ່າຍເງິນ - ອະນຸມັດແລ້ວລໍຖ້າຈ່າຍເງິນ</p>
         </div>
     </x-slot>
 
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Lao:wght@300;400;500;600;700&display=swap');
-
-        .cashier-page {
-            font-family: 'Noto Sans Lao', sans-serif;
-        }
-
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(8px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes fadeRow {
-            from {
-                opacity: 0;
-            }
-
-            to {
-                opacity: 1;
-            }
-        }
-
-        .table-card {
-            background: #fff;
-            border-radius: 20px;
-            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06), 0 8px 32px rgba(0, 0, 0, 0.06);
-            border: 1px solid rgba(0, 0, 0, 0.05);
-            overflow: hidden;
-            animation: slideUp 0.5s 0.1s ease both;
-        }
-
-        .cashier-page .table-header {
-            background: linear-gradient(135deg, #1e3a5f 0%, #0f2744 100%);
-            padding: 20px 28px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 12px;
-        }
-
-        @media (max-width: 640px) {
-            .cashier-page .table-header {
-                padding: 16px 18px;
-            }
-        }
-
-        .table-head-icon {
-            width: 38px;
-            height: 38px;
-            border-radius: 10px;
-            background: rgba(240, 180, 41, 0.18);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #f0b429;
-            border: 1px solid rgba(240, 180, 41, 0.28);
-        }
-
-        .table-head-icon svg {
-            width: 18px;
-            height: 18px;
-            stroke-width: 2.2;
-        }
-
-        .cashier-page table {
-            border-collapse: collapse;
-        }
-
-        .cashier-page thead th {
-            background: #f8fafc;
-            color: #64748b;
-            font-size: 11px;
-            font-weight: 600;
-            letter-spacing: 0.06em;
-            text-transform: uppercase;
-            padding: 14px 20px;
-            border-bottom: 1px solid #e2e8f0;
-        }
-
-        .cashier-page tbody tr {
-            border-bottom: 1px solid #f1f5f9;
-            transition: all 0.2s ease;
-            animation: fadeRow 0.4s ease both;
-        }
-
-        .cashier-page tbody tr:last-child {
-            border-bottom: none;
-        }
-
-        .cashier-page tbody tr:hover {
-            background: #f8faff;
-        }
-
-        .cashier-page tbody tr:hover .row-id {
-            color: #1e3a5f;
-        }
-
-        .cashier-page tbody td {
-            padding: 16px 20px;
-        }
-
-        .cashier-page .action-cell {
-            white-space: nowrap;
-            width: 1%;
-            vertical-align: middle;
-        }
-
-        .row-id {
-            font-size: 12px;
-            color: #94a3b8;
-            font-weight: 600;
-        }
-
-        .row-name {
-            font-size: 13px;
-            font-weight: 600;
-            color: #1f2937;
-        }
-
-        .row-dept {
-            font-size: 13px;
-            color: #374151;
-            font-weight: 500;
-        }
-
-        .row-desc {
-            font-size: 13px;
-            color: #6b7280;
-            max-width: 260px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .row-amount {
-            font-size: 14px;
-            font-weight: 700;
-            color: #1e3a5f;
-        }
-
-        .row-date {
-            font-size: 12px;
-            color: #94a3b8;
-        }
-
-        .pay-btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            padding: 8px 18px;
-            border-radius: 10px;
-            font-size: 12px;
-            font-weight: 700;
-            line-height: 1.2;
-            white-space: nowrap;
-            font-family: 'Noto Sans Lao', sans-serif;
-            background: linear-gradient(135deg, #f0d078 0%, #f0b429 45%, #d9a008 100%);
-            color: #0f2744;
-            border: 1px solid rgba(15, 39, 68, 0.12);
-            box-shadow: 0 2px 10px rgba(240, 180, 41, 0.35);
-            cursor: pointer;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        .pay-btn svg {
-            flex-shrink: 0;
-        }
-
-        .pay-btn:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 6px 18px rgba(240, 180, 41, 0.45);
-        }
-
-        .empty-state {
-            padding: 56px 24px;
-            text-align: center;
-            color: #94a3b8;
-        }
-
-        .empty-state svg {
-            width: 48px;
-            height: 48px;
-            margin: 0 auto 12px;
-            opacity: 0.5;
-            color: #1e3a5f;
-        }
-    </style>
-
-    <div class="py-6 sm:py-8 cashier-page w-full min-w-0">
-        <div class="max-w-6xl mx-auto w-full min-w-0 px-3 sm:px-4 lg:px-6 space-y-5 sm:space-y-6">
+    <div class="py-6 sm:py-8 w-full min-w-0">
+        <div class="max-w-[1400px] mx-auto w-full min-w-0 px-3 sm:px-4 lg:px-6 space-y-6">
 
             @if (session('success'))
-                <div class="flex items-center gap-3 p-4 bg-green-50 border border-green-200 text-green-800 rounded-xl text-sm font-medium"
-                    style="animation: slideUp 0.4s ease both;">
-                    <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    {{ session('success') }}
+                <div class="fns-alert fns-alert-success fns-animate mb-2 shadow-sm border-l-4 border-l-emerald-500 bg-white">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" class="text-emerald-500 w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    <span class="font-bold">{{ session('success') }}</span>
                 </div>
             @endif
             @if (session('error'))
-                <div class="flex items-center gap-3 p-4 bg-red-50 border border-red-200 text-red-800 rounded-xl text-sm font-medium"
-                    style="animation: slideUp 0.4s ease both;">
-                    <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
-                    </svg>
-                    {{ session('error') }}
+                <div class="fns-alert fns-alert-error fns-animate mb-2 shadow-sm border-l-4 border-l-red-500 bg-white">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" class="text-red-500 w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" /></svg>
+                    <span class="font-bold">{{ session('error') }}</span>
                 </div>
             @endif
 
-            <div class="table-card">
-                <div class="table-header">
-                    <div class="flex items-center gap-3">
-                        <div class="table-head-icon" aria-hidden="true">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
+            <div class="fns-card border-t-4 border-t-teal-500 shadow-md fns-animate overflow-hidden bg-white">
+                
+                {{-- Premium Header --}}
+                <div class="px-6 py-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-100 bg-gradient-to-r from-gray-50/50 to-white relative">
+                    <div class="flex items-center gap-4 relative z-10">
+                        <div class="w-12 h-12 rounded-xl bg-teal-100 text-teal-600 flex items-center justify-center shadow-sm border border-teal-200/50">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                         </div>
                         <div>
-                            <p class="text-white font-semibold text-sm">ລາຍການລໍຖ້າຈ່າຍ</p>
-                            <p class="text-blue-200/90 text-xs mt-0.5">ບັນທຶກການຈ່າຍຄຳຂໍທີ່ອະນຸມັດແລ້ວ</p>
+                            <h3 class="text-lg font-bold text-gray-900">ລາຍການລໍຖ້າຈ່າຍເງິນ້ນ</h3>
+                            <p class="text-sm font-medium text-gray-500 mt-0.5">ບັນທຶກການຈ່າຍໃຫ້ກັບຄຳຂໍທີ່ອະນຸມັດແລ້ວ</p>
                         </div>
                     </div>
-                    <div class="rounded-full px-3 py-1 bg-white/10 ring-1 ring-white/15">
-                        <span class="text-white text-xs font-semibold">
-                            {{ $requests instanceof \Illuminate\Pagination\LengthAwarePaginator ? $requests->total() : count($requests) }}
-                            ລາຍການ
-                        </span>
-                    </div>
+                    <span class="inline-flex items-center px-4 py-1.5 rounded-full text-xs font-extrabold bg-teal-50 text-teal-700 border border-teal-200">
+                        ຕ້ອງຈ່າຍ {{ $requests instanceof \Illuminate\Pagination\LengthAwarePaginator ? $requests->total() : count($requests) }} ລາຍການ
+                    </span>
                 </div>
 
-                <div class="overflow-x-auto touch-pan-x">
-                    <table class="w-full text-sm min-w-[44rem]">
+                <div class="overflow-x-auto touch-pan-x bg-white">
+                    <table class="fns-table w-full text-left border-collapse" style="min-width: 50rem;">
                         <thead>
-                            <tr>
-                                <th class="text-left" style="width:64px;">#</th>
-                                <th class="text-left">ຜູ້ຂໍ</th>
-                                <th class="text-left">ພາກສ່ວນ</th>
-                                <th class="text-left">ລາຍລະອຽດ</th>
-                                <th class="text-right">ຈຳນວນ (ກີບ)</th>
-                                <th class="text-center">ວັນທີ</th>
-                                <th class="text-center action-cell">ດຳເນີນການ</th>
+                            <tr class="bg-gray-50/80 border-y border-gray-100">
+                                <th class="py-3.5 px-5 text-[0.7rem] font-bold text-gray-500 uppercase tracking-wider" style="width:70px;">ID</th>
+                                <th class="py-3.5 px-5 text-[0.7rem] font-bold text-gray-500 uppercase tracking-wider">ວັນທີ</th>
+                                <th class="py-3.5 px-5 text-[0.7rem] font-bold text-gray-500 uppercase tracking-wider">ຜູ້ຂໍ / ພາກສ່ວນ</th>
+                                <th class="py-3.5 px-5 text-[0.7rem] font-bold text-gray-500 uppercase tracking-wider max-w-[240px]">ລາຍລະອຽດ</th>
+                                <th class="py-3.5 px-5 text-[0.7rem] font-bold text-gray-500 uppercase tracking-wider text-right">ຈຳນວນ (ກີບ)</th>
+                                <th class="py-3.5 px-5 text-[0.7rem] font-bold text-gray-500 uppercase tracking-wider text-center" style="width:140px;">ການປະຕິບັດ</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody class="divide-y divide-gray-50">
                             @forelse ($requests as $req)
-                                <tr>
-                                    <td><span class="row-id">#{{ $req->id }}</span></td>
-                                    <td>
-                                        <span class="row-name">
-                                            {{ $req->requester?->full_name ?? $req->requester?->username }}
+                                <tr class="hover:bg-teal-50/30 transition-colors group">
+                                    <td class="py-4 px-5">
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[0.75rem] font-bold bg-gray-100 text-gray-600">#{{ $req->id }}</span>
+                                    </td>
+                                    <td class="py-4 px-5 whitespace-nowrap text-sm text-gray-500 font-medium group-hover:text-teal-700 transition-colors">
+                                        {{ $req->request_date?->format('d/m/Y') }}
+                                    </td>
+                                    <td class="py-4 px-5">
+                                        <p class="text-sm font-bold text-gray-800">{{ $req->requester?->full_name ?? $req->requester?->username }}</p>
+                                        <p class="text-xs font-semibold text-gray-400 mt-0.5">{{ $req->department?->displayName() }}</p>
+                                    </td>
+                                    <td class="py-4 px-5">
+                                        <p class="text-sm text-gray-600 truncate max-w-[240px]" title="{{ $req->description }}">{{ $req->description }}</p>
+                                    </td>
+                                    <td class="py-4 px-5 text-right whitespace-nowrap">
+                                        <span class="font-extrabold text-[#059669] text-base tracking-tight">
+                                            {{ number_format($req->requested_amount, 2) }}
                                         </span>
                                     </td>
-                                    <td><span class="row-dept">{{ $req->department?->displayName() }}</span></td>
-                                    <td>
-                                        <span class="row-desc" title="{{ $req->description }}">{{ $req->description }}</span>
-                                    </td>
-                                    <td class="text-right"><span class="row-amount">{{ number_format($req->requested_amount, 2) }}</span></td>
-                                    <td class="text-center"><span class="row-date">{{ $req->request_date?->format('d/m/Y') }}</span></td>
-                                    <td class="text-center action-cell">
-                                        <form method="POST" action="{{ route('cashier.pay', $req) }}" class="inline">
+                                    <td class="py-4 px-5 text-center">
+                                        <form method="POST" action="{{ route('cashier.pay', $req) }}" class="inline-block" onsubmit="return confirm('ຍືນຍັນການຈ່າຍເງິນແລ້ວແມ່ນບໍ່?');">
                                             @csrf
-                                            <button type="submit" class="pay-btn">
-                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                                    aria-hidden="true">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                        d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
-                                                </svg>
-                                                ຈ່າຍເງິນ
+                                            <button type="submit" class="ui-btn bg-teal-500 text-white hover:bg-teal-600 shadow-sm shadow-teal-500/30 py-1.5 px-4 rounded-lg text-xs font-bold outline-none focus:ring-2 focus:ring-teal-500 ring-offset-1">
+                                                <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" /></svg>
+                                                ໝາຍວ່າຈ່າຍແລ້ວ
                                             </button>
                                         </form>
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="7">
-                                        <div class="empty-state">
-                                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                                                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                            </svg>
-                                            <p class="text-sm font-medium text-gray-500">ບໍ່ມີລາຍການທີ່ຕ້ອງຈ່າຍເງິນ</p>
+                                    <td colspan="6" class="py-16">
+                                        <div class="flex flex-col items-center justify-center text-center">
+                                            <div class="w-20 h-20 rounded-3xl bg-gray-50 flex items-center justify-center text-gray-400 mb-5 border border-gray-100 rotate-6 shadow-sm">
+                                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" class="w-10 h-10"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                            </div>
+                                            <p class="text-lg text-gray-600 font-extrabold mb-1">ສຳເລັດພາລະກິດ! 🎉</p>
+                                            <p class="text-sm font-medium text-gray-500">ບໍ່ມີລາຍການຄຳຂໍທີ່ຕ້ອງຈ່າຍເງິນໃນຂະນະນີ້</p>
                                         </div>
                                     </td>
                                 </tr>
@@ -309,7 +108,9 @@
                 </div>
 
                 @if ($requests instanceof \Illuminate\Pagination\LengthAwarePaginator && $requests->hasPages())
-                    <div class="px-4 py-3 border-t border-gray-100 bg-gray-50/80">{{ $requests->links() }}</div>
+                    <div class="px-5 py-4 border-t border-gray-100 bg-gray-50/50">
+                        {{ $requests->links() }}
+                    </div>
                 @endif
             </div>
         </div>

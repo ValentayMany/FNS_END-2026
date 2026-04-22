@@ -37,7 +37,7 @@
 
 <body class="bg-blur font-sans text-gray-900 antialiased overflow-x-hidden min-h-dvh">
 
-    <div class="fixed inset-0" style="z-index: 1; background: rgba(15, 39, 68, 0.5);"></div>
+    <div class="fixed inset-0" style="z-index: 1; background: linear-gradient(135deg, rgba(15, 39, 68, 0.65), rgba(30, 58, 95, 0.35));"></div>
 
     <div
         class="relative min-h-dvh flex flex-col justify-center items-stretch sm:items-center px-3 sm:px-6 py-6 sm:py-10 pb-[max(1.5rem,env(safe-area-inset-bottom))] w-full max-w-full min-w-0"

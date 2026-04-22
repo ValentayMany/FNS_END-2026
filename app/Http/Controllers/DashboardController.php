@@ -16,7 +16,7 @@ class DashboardController extends Controller
             'accountant',
             'head_of_finance',
             'deputy_head_of_faculty',
-            'head_of_faculty'                 => redirect()->route('approval.index'),
+            'head_of_faculty'                 => redirect()->route('approvals.index'),
             'cashier'                         => redirect()->route('cashier.index'),
             'revenue_officer'                 => redirect()->route('revenue.index'),
             'treasurer'                       => redirect()->route('treasurer.index'),

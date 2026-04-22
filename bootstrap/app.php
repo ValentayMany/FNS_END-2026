@@ -14,6 +14,11 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'role' => \App\Http\Middleware\CheckRole::class,
         ]);
+
+        // ตัด DB connection หลังทุก request เพื่อป้องกัน max_user_connections
+        $middleware->appendToGroup('web', [
+            \App\Http\Middleware\DisconnectDatabase::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

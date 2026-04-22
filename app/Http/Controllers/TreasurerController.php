@@ -12,9 +12,8 @@ class TreasurerController extends Controller
             ->latest('transaction_date')
             ->paginate(20);
 
-        $totalIncome  = Transaction::sum('amount');
-        $totalExpense = \App\Models\AdvanceRequest::whereIn('status', ['paid', 'cleared'])
-            ->sum('requested_amount');
+        $totalIncome  = Transaction::where('type', 'income')->sum('amount');
+        $totalExpense = Transaction::where('type', 'expense')->sum('amount');
 
         return view('treasurer.treasurer', compact('transactions', 'totalIncome', 'totalExpense'));
     }

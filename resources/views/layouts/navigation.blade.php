@@ -1,554 +1,195 @@
-<nav
-    x-data="{ open: false }"
-    x-init="$watch('open', v => document.documentElement.classList.toggle('overflow-hidden', v))"
-    class="relative z-[70] bg-gradient-to-r from-[#1e3a5f] to-[#0f2744] border-b border-white/10">
-    <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 min-w-0">
-        <div class="flex justify-between items-center h-16 min-w-0 gap-2">
-            <div class="flex min-w-0 flex-1 sm:flex-initial sm:min-w-0">
-                <!-- Logo -->
-                <div class="shrink-0 flex items-center">
-                    <a href="{{ route('dashboard') }}">
-                        <img src="{{ asset('image/Logo.jpg') }}" alt="{{ config('app.name', 'FNS') }}"
-                            class="block h-10 md:h-14 md:w-auto w-10 bg-white rounded-lg p-1 shadow-sm ring-1 ring-white/25" />
-                    </a>
-                </div>
-
-                <!-- Navigation Links ตาม Role -->
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex items-center">
-
-                    @auth
-                    @php $role = Auth::user()->role?->role_name; @endphp
-
-                    {{-- Requester --}}
-                    @if($role === 'requester')
-                        <a href="{{ route('requests.index') }}"
-                           class="inline-flex items-center gap-2 text-sm font-medium {{ request()->routeIs(['requests.index', 'requests.show']) ? 'text-white border-b-2 border-[#f0b429]' : 'text-white/75 hover:text-white' }} pb-1">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5A3.375 3.375 0 0010.125 2.25H8.25A3.375 3.375 0 004.875 5.625v12.75A3.375 3.375 0 008.25 21.75h7.5A3.75 3.75 0 0019.5 18v-3.75z" />
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M13.5 2.25V6a2.25 2.25 0 002.25 2.25h3.75" />
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M8.25 11.25h7.5M8.25 14.25h6" />
-                            </svg>
-                            <span>ຄຳຂໍຂອງຂ້ອຍ</span>
-                        </a>
-                        <a href="{{ route('requests.create') }}"
-                           class="inline-flex items-center gap-2 text-sm font-medium {{ request()->routeIs('requests.create') ? 'text-white border-b-2 border-[#f0b429]' : 'text-white/75 hover:text-white' }} pb-1">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                                    d="M12 4v16m8-8H4" />
-                            </svg>
-                            <span>ສ້າງຄຳຂໍ</span>
-                        </a>
-                        <a href="{{ route('clearing.index') }}"
-                           class="inline-flex items-center gap-2 text-sm font-medium {{ request()->is('clearing*') ? 'text-white border-b-2 border-[#f0b429]' : 'text-white/75 hover:text-white' }} pb-1">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                            </svg>
-                            <span>ສະສາງ</span>
-                        </a>
-                    @endif
-
-                    {{-- Approvers --}}
-                    @if(in_array($role, ['accountant', 'head_of_finance', 'deputy_head_of_faculty', 'head_of_faculty']))
-                        <a href="{{ route('approval.index') }}"
-                           class="inline-flex items-center gap-2 text-sm font-medium {{ request()->is('approvals*') ? 'text-white border-b-2 border-[#f0b429]' : 'text-white/75 hover:text-white' }} pb-1">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M18 13.5l.5 1.75a2.25 2.25 0 001.5 1.5l1.75.5-1.75.5a2.25 2.25 0 00-1.5 1.5L18 21l-.5-1.75a2.25 2.25 0 00-1.5-1.5l-1.75-.5 1.75-.5a2.25 2.25 0 001.5-1.5L18 13.5z" />
-                            </svg>
-                            <span>ອະນຸມັດ</span>
-                        </a>
-                    @endif
-
-                    {{-- Accountant เพิ่มเติม --}}
-                    @if($role === 'accountant')
-                        <a href="{{ route('clearing.pending') }}"
-                           class="inline-flex items-center gap-2 text-sm font-medium {{ request()->is('clearing/pending') ? 'text-white border-b-2 border-[#f0b429]' : 'text-white/75 hover:text-white' }} pb-1">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                            </svg>
-                            <span>ຢືນຢັນ Clearing</span>
-                        </a>
-                        <a href="{{ route('expense.index') }}"
-                           class="inline-flex items-center gap-2 text-sm font-medium {{ request()->is('expense*') ? 'text-white border-b-2 border-[#f0b429]' : 'text-white/75 hover:text-white' }} pb-1">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M12 6v12m-3-9h6m-7.5 3.75h9m-10.5 3h12" />
-                            </svg>
-                            <span>ບັນທຶກລາຍຈ່າຍ</span>
-                        </a>
-                        <a href="{{ route('reports.index') }}"
-                           class="inline-flex items-center gap-2 text-sm font-medium {{ request()->is('reports*') ? 'text-white border-b-2 border-[#f0b429]' : 'text-white/75 hover:text-white' }} pb-1">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M3 3v18h18" />
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M7.5 14.25V18m4.5-9V18m4.5-6V18" />
-                            </svg>
-                            <span>ລາຍງານ</span>
-                        </a>
-                    @endif
-
-                    {{-- Cashier --}}
-                    @if($role === 'cashier')
-                        <a href="{{ route('cashier.index') }}"
-                           class="inline-flex items-center gap-2 text-sm font-medium {{ request()->is('cashier*') ? 'text-white border-b-2 border-[#f0b429]' : 'text-white/75 hover:text-white' }} pb-1">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M2.25 8.25h19.5m-19.5 7.5h19.5M3.75 6h16.5A1.5 1.5 0 0121.75 7.5v9A1.5 1.5 0 0120.25 18H3.75A1.5 1.5 0 012.25 16.5v-9A1.5 1.5 0 013.75 6z" />
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
-                            </svg>
-                            <span>ຈ່າຍເງິນ</span>
-                        </a>
-                    @endif
-
-                    {{-- Revenue Officer --}}
-                    @if($role === 'revenue_officer')
-                        <a href="{{ route('revenue.index') }}"
-                           class="inline-flex items-center gap-2 text-sm font-medium {{ request()->is('revenue*') ? 'text-white border-b-2 border-[#f0b429]' : 'text-white/75 hover:text-white' }} pb-1">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M3 3v18h18" />
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M7.5 16.5V18m4.5-6V18m4.5-9V18" />
-                            </svg>
-                            <span>ບັນທຶກລາຍຮັບ</span>
-                        </a>
-                        <a href="{{ route('reports.index') }}"
-                           class="inline-flex items-center gap-2 text-sm font-medium {{ request()->is('reports*') ? 'text-white border-b-2 border-[#f0b429]' : 'text-white/75 hover:text-white' }} pb-1">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5A3.375 3.375 0 0010.125 2.25H8.25A3.375 3.375 0 004.875 5.625v12.75A3.375 3.375 0 008.25 21.75h7.5A3.75 3.75 0 0019.5 18v-3.75z" />
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M13.5 2.25V6a2.25 2.25 0 002.25 2.25h3.75" />
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M8.25 11.25h7.5M8.25 14.25h4.5" />
-                            </svg>
-                            <span>ລາຍງານ</span>
-                        </a>
-                    @endif
-
-                    {{-- Treasurer --}}
-                    @if($role === 'treasurer')
-                        <a href="{{ route('treasurer.index') }}"
-                           class="inline-flex items-center gap-2 text-sm font-medium {{ request()->is('treasurer*') ? 'text-white border-b-2 border-[#f0b429]' : 'text-white/75 hover:text-white' }} pb-1">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M3 10.5h18M4.5 10.5V19.5A1.5 1.5 0 006 21h12a1.5 1.5 0 001.5-1.5v-9M6.75 7.5h10.5a1.5 1.5 0 011.5 1.5v1.5H5.25V9a1.5 1.5 0 011.5-1.5z" />
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M8.25 15h.75M8.25 17.25h.75M12 15h.75M12 17.25h.75M15.75 15h.75M15.75 17.25h.75" />
-                            </svg>
-                            <span>ສະຖານະເງິນ</span>
-                        </a>
-                        <a href="{{ route('reports.index') }}"
-                           class="inline-flex items-center gap-2 text-sm font-medium {{ request()->is('reports*') ? 'text-white border-b-2 border-[#f0b429]' : 'text-white/75 hover:text-white' }} pb-1">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5A3.375 3.375 0 0010.125 2.25H8.25A3.375 3.375 0 004.875 5.625v12.75A3.375 3.375 0 008.25 21.75h7.5A3.75 3.75 0 0019.5 18v-3.75z" />
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M13.5 2.25V6a2.25 2.25 0 002.25 2.25h3.75" />
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M8.25 11.25h7.5M8.25 14.25h4.5" />
-                            </svg>
-                            <span>ລາຍງານ</span>
-                        </a>
-                    @endif
-
-                    {{-- Treasury Reconciliation --}}
-                    @if($role === 'treasury_reconciliation_officer')
-                        <a href="{{ route('treasury.index') }}"
-                           class="inline-flex items-center gap-2 text-sm font-medium {{ request()->is('treasury*') ? 'text-white border-b-2 border-[#f0b429]' : 'text-white/75 hover:text-white' }} pb-1">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M3 10.5h18M4.5 10.5V19.5A1.5 1.5 0 006 21h12a1.5 1.5 0 001.5-1.5v-9" />
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M12 3l9 5.25-9 5.25-9-5.25L12 3z" />
-                            </svg>
-                            <span>ສະສາງຄັງເງິນ</span>
-                        </a>
-                    @endif
-
-                    {{-- Head of Finance --}}
-                    @if($role === 'head_of_finance')
-                        <a href="{{ route('reports.index') }}"
-                           class="inline-flex items-center gap-2 text-sm font-medium {{ request()->is('reports*') ? 'text-white border-b-2 border-[#f0b429]' : 'text-white/75 hover:text-white' }} pb-1">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M3 3v18h18" />
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M7.5 14.25V18m4.5-9V18m4.5-6V18" />
-                            </svg>
-                            <span>ລາຍງານ</span>
-                        </a>
-                    @endif
-
-                    {{-- Admin --}}
-                    @if($role === 'admin')
-                        <a href="{{ route('admin.users') }}"
-                           class="inline-flex items-center gap-2 text-sm font-medium {{ request()->is('admin*') ? 'text-white border-b-2 border-[#f0b429]' : 'text-white/75 hover:text-white' }} pb-1">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.956" />
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M4.875 6.75a3.375 3.375 0 116.75 0 3.375 3.375 0 01-6.75 0z" />
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M3 19.5a6 6 0 0112 0v.75H3v-.75z" />
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M16.5 6.75a3 3 0 113 3 3 3 0 01-3-3z" />
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M18 13.5c2.485 0 4.5 1.343 4.5 3v.75H16.5" />
-                            </svg>
-                            <span>ຈັດການຜູ້ໃຊ້</span>
-                        </a>
-                        <a href="{{ route('reports.index') }}"
-                           class="inline-flex items-center gap-2 text-sm font-medium {{ request()->is('reports*') ? 'text-white border-b-2 border-[#f0b429]' : 'text-white/75 hover:text-white' }} pb-1">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M3 3v18h18" />
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M7.5 14.25V18m4.5-9V18m4.5-6V18" />
-                            </svg>
-                            <span>ລາຍງານ</span>
-                        </a>
-                    @endif
-
-                    @endauth
-                </div>
+<!-- Desktop Sidebar & Mobile Offcanvas Menu -->
+<nav x-cloak 
+     :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'" 
+     class="fixed lg:static inset-y-0 left-0 z-50 w-72 bg-white lg:bg-white border-r border-gray-100 flex flex-col shrink-0 transition-transform duration-300 ease-in-out shadow-[4px_0_24px_rgba(0,0,0,0.02)] lg:shadow-none h-full">
+    
+    <!-- Sidebar Header (Brand & Logo) -->
+    <div class="h-16 lg:h-20 shrink-0 flex items-center justify-between px-6 border-b border-gray-50/80 bg-white/50 backdrop-blur-md">
+        <a href="{{ route('dashboard') }}" class="flex items-center gap-3 group outline-none rounded-xl focus:ring-2 focus:ring-indigo-500 ring-offset-2">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-sky-400 flex items-center justify-center text-white shadow-md shadow-indigo-200 group-hover:scale-105 group-hover:rotate-3 transition-transform duration-300">
+                <svg class="w-5 h-5 drop-shadow-sm" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
             </div>
-
-            <!-- User Menu (Desktop) -->
-            <div class="hidden sm:flex sm:items-center sm:ms-6">
-                @auth
-                <span class="text-xs text-white/80 mr-3">
-                    {{ Auth::user()->full_name }}
-                    <span
-                        class="bg-white/10 text-[#f0b429] px-2 py-0.5 rounded-full text-[11px] font-semibold ring-1 ring-white/15">
-                        {{ Auth::user()->role?->role_name }}
-                    </span>
-                </span>
-                @endauth
-
-                <x-dropdown align="right" width="48">
-                    <x-slot name="trigger">
-                        <button
-                            class="inline-flex items-center gap-2 px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-xl text-white bg-white/10 hover:bg-white/15 focus:outline-none transition ease-in-out duration-150 ring-1 ring-white/10">
-                            <div>{{ Auth::user()->name ?? Auth::user()->full_name }}</div>
-                            <div class="ms-1">
-                                <svg class="fill-current h-4 w-4 text-white/90" xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                                </svg>
-                            </div>
-                        </button>
-                    </x-slot>
-
-                    <x-slot name="content">
-                        <x-dropdown-link :href="route('profile.edit')">
-                            <span class="inline-flex items-center gap-2">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M4.5 20.25a7.5 7.5 0 0115 0v.75H4.5v-.75z" />
-                                </svg>
-                                <span>ໂປຣໄຟລ໌</span>
-                            </span>
-                        </x-dropdown-link>
-                        <form method="POST" action="{{ route('logout') }}">
-                            @csrf
-                            <x-dropdown-link :href="route('logout')"
-                                onclick="event.preventDefault(); this.closest('form').submit();">
-                                <span class="inline-flex items-center gap-2">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M15.75 9V5.25A2.25 2.25 0 0013.5 3H6.75A2.25 2.25 0 004.5 5.25v13.5A2.25 2.25 0 006.75 21h6.75a2.25 2.25 0 002.25-2.25V15" />
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M12 9l3 3-3 3m3-3H8.25" />
-                                    </svg>
-                                    <span>ອອກຈາກລະບົບ</span>
-                                </span>
-                            </x-dropdown-link>
-                        </form>
-                    </x-slot>
-                </x-dropdown>
+            <div class="flex flex-col">
+                <span class="text-xl font-extrabold text-gray-900 tracking-tight leading-none group-hover:text-indigo-600 transition-colors">FNS</span>
+                <span class="text-[0.65rem] font-bold text-gray-400 uppercase tracking-widest mt-0.5">Financial System</span>
             </div>
-
-            <!-- Hamburger (Mobile) -->
-            <div class="-me-2 flex items-center sm:hidden">
-                <button @click="open = !open"
-                    class="inline-flex items-center justify-center p-2 rounded-xl text-white/90 hover:text-white hover:bg-white/10 focus:outline-none focus:bg-white/10 transition ring-1 ring-white/10"
-                    aria-label="Toggle menu">
-                    <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
-                        <path :class="{ 'hidden': open, 'inline-flex': !open }" class="inline-flex"
-                            stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M4 6h16M4 12h16M4 18h16" />
-                        <path :class="{ 'hidden': !open, 'inline-flex': open }" class="hidden" stroke-linecap="round"
-                            stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
-            </div>
-        </div>
+        </a>
+        
+        <!-- Mobile Close Button -->
+        <button @click="sidebarOpen = false" class="lg:hidden p-2 -mr-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+        </button>
     </div>
 
-    <!-- Responsive Navigation Menu (Mobile): fixed overlay — ไม่ดันเนื้อหาหน้า (main อยู่ใต้ layer) -->
-    <div
-        x-show="open"
-        x-cloak
-        @keydown.escape.window="if (open) open = false"
-        class="fixed left-0 right-0 top-16 bottom-0 z-[60] sm:hidden"
-        style="display: none;"
-    >
-        <div
-            class="absolute inset-0 z-0 bg-slate-950/50 backdrop-blur-[1px]"
-            @click="open = false"
-            aria-hidden="true"
-        ></div>
-        <div
-            class="relative z-10 flex h-full min-h-0 flex-col overflow-y-auto overscroll-contain touch-pan-y border-t border-white/10 bg-gradient-to-b from-[#1e3a5f] to-[#0f2744] shadow-[0_-8px_32px_rgba(0,0,0,0.2)]"
-            @click="if ($event.target.closest('a[href]')) open = false"
-        >
-        <div class="pt-3 pb-3 space-y-1 px-3 sm:px-4">
-            @auth
-                @php $role = Auth::user()->role?->role_name; @endphp
+    <!-- Navigation Links -->
+    @php
+        $role = Auth::user()->role?->role_name;
+    @endphp
+    <div class="flex-1 px-4 py-6 overflow-y-auto overflow-x-hidden space-y-6 scrollbar-hide touch-pan-y text-gray-500">
+        
+
+
+        <div>
+            <p class="px-3 mb-3 text-[0.7rem] font-bold tracking-widest text-gray-400 uppercase">ເມນູຫຼັກ</p>
+            <div class="space-y-1.5">
 
                 @if($role === 'requester')
-                    <a href="{{ route('requests.index') }}"
-                        class="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-semibold {{ request()->routeIs(['requests.index', 'requests.show']) ? 'bg-white/10 text-white ring-1 ring-white/15' : 'text-white/80 hover:bg-white/10 hover:text-white' }}">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5A3.375 3.375 0 0010.125 2.25H8.25A3.375 3.375 0 004.875 5.625v12.75A3.375 3.375 0 008.25 21.75h7.5A3.75 3.75 0 0019.5 18v-3.75z" />
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M13.5 2.25V6a2.25 2.25 0 002.25 2.25h3.75" />
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M8.25 11.25h7.5M8.25 14.25h6" />
-                        </svg>
-                        <span>ຄຳຂໍຂອງຂ້ອຍ</span>
-                    </a>
-                    <a href="{{ route('requests.create') }}"
-                        class="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-semibold {{ request()->routeIs('requests.create') ? 'bg-white/10 text-white ring-1 ring-white/15' : 'text-white/80 hover:bg-white/10 hover:text-white' }}">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                                d="M12 4v16m8-8H4" />
-                        </svg>
-                        <span>ສ້າງຄຳຂໍ</span>
-                    </a>
-                    <a href="{{ route('clearing.index') }}"
-                        class="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-semibold {{ request()->is('clearing*') ? 'bg-white/10 text-white ring-1 ring-white/15' : 'text-white/80 hover:bg-white/10 hover:text-white' }}">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                        </svg>
-                        <span>ສະສາງ</span>
-                    </a>
-                @endif
-
-                @if(in_array($role, ['accountant', 'head_of_finance', 'deputy_head_of_faculty', 'head_of_faculty']))
-                    <a href="{{ route('approval.index') }}"
-                        class="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-semibold {{ request()->is('approvals*') ? 'bg-white/10 text-white ring-1 ring-white/15' : 'text-white/80 hover:bg-white/10 hover:text-white' }}">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M18 13.5l.5 1.75a2.25 2.25 0 001.5 1.5l1.75.5-1.75.5a2.25 2.25 0 00-1.5 1.5L18 21l-.5-1.75a2.25 2.25 0 00-1.5-1.5l-1.75-.5 1.75-.5a2.25 2.25 0 001.5-1.5L18 13.5z" />
-                        </svg>
-                        <span>ອະນຸມັດ</span>
-                    </a>
+                    <x-sidebar-link :href="route('requests.create')" :active="request()->routeIs('requests.create')">
+                        <x-slot name="icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+                        </x-slot>
+                        ສ້າງຄຳຂໍໃໝ່
+                    </x-sidebar-link>
+                    <x-sidebar-link :href="route('requests.index')" :active="request()->routeIs('requests.index') || request()->routeIs('requests.show') || request()->routeIs('requests.edit')">
+                        <x-slot name="icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                        </x-slot>
+                        ຕິດຕາມສະຖານะຄຳຂໍ
+                    </x-sidebar-link>
                 @endif
 
                 @if($role === 'accountant')
-                    <a href="{{ route('clearing.pending') }}"
-                        class="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-semibold {{ request()->is('clearing/pending') ? 'bg-white/10 text-white ring-1 ring-white/15' : 'text-white/80 hover:bg-white/10 hover:text-white' }}">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                        </svg>
-                        <span>ຢືນຢັນ Clearing</span>
-                    </a>
-                    <a href="{{ route('expense.index') }}"
-                        class="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-semibold {{ request()->is('expense*') ? 'bg-white/10 text-white ring-1 ring-white/15' : 'text-white/80 hover:bg-white/10 hover:text-white' }}">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M12 6v12m-3-9h6m-7.5 3.75h9m-10.5 3h12" />
-                        </svg>
-                        <span>ບັນທຶກລາຍຈ່າຍ</span>
-                    </a>
-                    <a href="{{ route('reports.index') }}"
-                        class="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-semibold {{ request()->is('reports*') ? 'bg-white/10 text-white ring-1 ring-white/15' : 'text-white/80 hover:bg-white/10 hover:text-white' }}">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3v18h18" />
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M7.5 14.25V18m4.5-9V18m4.5-6V18" />
-                        </svg>
-                        <span>ລາຍງານ</span>
-                    </a>
+                    <x-sidebar-link :href="route('approvals.index')" :active="request()->routeIs('approvals.*')">
+                        <x-slot name="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg></x-slot>
+                        ອະນຸມັດຄຳຂໍເບີກຈ່າຍ
+                    </x-sidebar-link>
+                    <x-sidebar-link :href="route('revenue.index')" :active="request()->routeIs('revenue.*')">
+                        <x-slot name="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v4.125c0 .621-.504 1.125-1.125 1.125h-2.25A1.125 1.125 0 013 17.25v-4.125zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v8.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125v-8.25zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v12.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" /></svg></x-slot>
+                        ບັນທຶກລາຍຮັບ
+                    </x-sidebar-link>
+                    <x-sidebar-link :href="route('expense.index')" :active="request()->routeIs('expense.*')">
+                        <x-slot name="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5A3.375 3.375 0 0010.125 2.25H8.25A3.375 3.375 0 004.875 5.625v12.75A3.375 3.375 0 008.25 21.75h7.5A3.75 3.75 0 0019.5 18v-3.75z" /></svg></x-slot>
+                        ບັນທຶກລາຍจ่ายທົ່ວໄປ
+                    </x-sidebar-link>
+                    <x-sidebar-link :href="route('clearing.pending')" :active="request()->routeIs('clearing.*')">
+                        <x-slot name="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 6.75h12M8.25 12h12M8.25 17.25h12M3.75 6.75h.007v.008H3.75V6.75zm0 5.25h.007v.008H3.75V12zm0 5.25h.007v.008H3.75v-.008z" /></svg></x-slot>
+                        ສະສາງເງິນ (Clearing)
+                    </x-sidebar-link>
+                    <x-sidebar-link :href="route('reports.index')" :active="request()->routeIs('reports.*') && !request()->routeIs('reports.budget_expense')">
+                        <x-slot name="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6a7.5 7.5 0 107.5 7.5h-7.5V6zM13.5 10.5H21A7.5 7.5 0 0013.5 3v7.5z" /></svg></x-slot>
+                        ລາຍງານ
+                    </x-sidebar-link>
                 @endif
 
                 @if($role === 'cashier')
-                    <a href="{{ route('cashier.index') }}"
-                        class="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-semibold {{ request()->is('cashier*') ? 'bg-white/10 text-white ring-1 ring-white/15' : 'text-white/80 hover:bg-white/10 hover:text-white' }}">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M2.25 8.25h19.5m-19.5 7.5h19.5M3.75 6h16.5A1.5 1.5 0 0121.75 7.5v9A1.5 1.5 0 0120.25 18H3.75A1.5 1.5 0 012.25 16.5v-9A1.5 1.5 0 013.75 6z" />
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
-                        </svg>
-                        <span>ຈ່າຍເງິນ</span>
-                    </a>
+                    <x-sidebar-link :href="route('cashier.index')" :active="request()->routeIs('cashier.*')">
+                        <x-slot name="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z" /></svg></x-slot>
+                        จ่ายเງິນ
+                    </x-sidebar-link>
+                    <x-sidebar-link :href="route('reports.index')" :active="request()->routeIs('reports.*') && !request()->routeIs('reports.budget_expense')">
+                        <x-slot name="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6a7.5 7.5 0 107.5 7.5h-7.5V6zM13.5 10.5H21A7.5 7.5 0 0013.5 3v7.5z" /></svg></x-slot>
+                        ລາຍງານ
+                    </x-sidebar-link>
                 @endif
 
                 @if($role === 'revenue_officer')
-                    <a href="{{ route('revenue.index') }}"
-                        class="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-semibold {{ request()->is('revenue*') ? 'bg-white/10 text-white ring-1 ring-white/15' : 'text-white/80 hover:bg-white/10 hover:text-white' }}">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3v18h18" />
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M7.5 16.5V18m4.5-6V18m4.5-9V18" />
-                        </svg>
-                        <span>ບັນທຶກລາຍຮັບ</span>
-                    </a>
-                    <a href="{{ route('reports.index') }}"
-                        class="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-semibold {{ request()->is('reports*') ? 'bg-white/10 text-white ring-1 ring-white/15' : 'text-white/80 hover:bg-white/10 hover:text-white' }}">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5A3.375 3.375 0 0010.125 2.25H8.25A3.375 3.375 0 004.875 5.625v12.75A3.375 3.375 0 008.25 21.75h7.5A3.75 3.75 0 0019.5 18v-3.75z" />
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M13.5 2.25V6a2.25 2.25 0 002.25 2.25h3.75" />
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M8.25 11.25h7.5M8.25 14.25h4.5" />
-                        </svg>
-                        <span>ລາຍງານ</span>
-                    </a>
+                    <x-sidebar-link :href="route('revenue.index')" :active="request()->routeIs('revenue.*')">
+                        <x-slot name="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v4.125c0 .621-.504 1.125-1.125 1.125h-2.25A1.125 1.125 0 013 17.25v-4.125zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v8.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125v-8.25zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v12.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" /></svg></x-slot>
+                        ບັນທຶກລາຍຮັບ
+                    </x-sidebar-link>
+                    <x-sidebar-link :href="route('reports.index')" :active="request()->routeIs('reports.*') && !request()->routeIs('reports.budget_expense')">
+                        <x-slot name="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6a7.5 7.5 0 107.5 7.5h-7.5V6zM13.5 10.5H21A7.5 7.5 0 0013.5 3v7.5z" /></svg></x-slot>
+                        ລາຍງານ
+                    </x-sidebar-link>
+                @endif
+
+                @if(in_array($role, ['head_of_faculty', 'deputy_head_of_faculty']))
+                    <x-sidebar-link :href="route('approvals.index')" :active="request()->routeIs('approvals.*')">
+                        <x-slot name="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg></x-slot>
+                        ອະນຸມັດຄຳຂໍເບີກຈ່າຍ
+                    </x-sidebar-link>
+                    <x-sidebar-link :href="route('reports.index')" :active="request()->routeIs('reports.*') && !request()->routeIs('reports.budget_expense')">
+                        <x-slot name="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6a7.5 7.5 0 107.5 7.5h-7.5V6zM13.5 10.5H21A7.5 7.5 0 0013.5 3v7.5z" /></svg></x-slot>
+                        ລາຍງານ
+                    </x-sidebar-link>
                 @endif
 
                 @if($role === 'treasurer')
-                    <a href="{{ route('treasurer.index') }}"
-                        class="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-semibold {{ request()->is('treasurer*') ? 'bg-white/10 text-white ring-1 ring-white/15' : 'text-white/80 hover:bg-white/10 hover:text-white' }}">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M3 10.5h18M4.5 10.5V19.5A1.5 1.5 0 006 21h12a1.5 1.5 0 001.5-1.5v-9M6.75 7.5h10.5a1.5 1.5 0 011.5 1.5v1.5H5.25V9a1.5 1.5 0 011.5-1.5z" />
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M8.25 15h.75M8.25 17.25h.75M12 15h.75M12 17.25h.75M15.75 15h.75M15.75 17.25h.75" />
-                        </svg>
-                        <span>ສະຖານະເງິນ</span>
-                    </a>
-                    <a href="{{ route('reports.index') }}"
-                        class="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-semibold {{ request()->is('reports*') ? 'bg-white/10 text-white ring-1 ring-white/15' : 'text-white/80 hover:bg-white/10 hover:text-white' }}">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5A3.375 3.375 0 0010.125 2.25H8.25A3.375 3.375 0 004.875 5.625v12.75A3.375 3.375 0 008.25 21.75h7.5A3.75 3.75 0 0019.5 18v-3.75z" />
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M13.5 2.25V6a2.25 2.25 0 002.25 2.25h3.75" />
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M8.25 11.25h7.5M8.25 14.25h4.5" />
-                        </svg>
-                        <span>ລາຍງານ</span>
-                    </a>
+                    <x-sidebar-link :href="route('treasurer.index')" :active="request()->routeIs('treasurer.*')">
+                        <x-slot name="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 0v3.75m-16.5-3.75v3.75m16.5 0v3.75C20.25 16.153 16.556 18 12 18s-8.25-1.847-8.25-4.125v-3.75m16.5 0c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125" /></svg></x-slot>
+                        ຄັງເງິນ (Treasurer)
+                    </x-sidebar-link>
+                    <x-sidebar-link :href="route('reports.index')" :active="request()->routeIs('reports.*') && !request()->routeIs('reports.budget_expense')">
+                        <x-slot name="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6a7.5 7.5 0 107.5 7.5h-7.5V6zM13.5 10.5H21A7.5 7.5 0 0013.5 3v7.5z" /></svg></x-slot>
+                        ລາຍງານ
+                    </x-sidebar-link>
                 @endif
 
                 @if($role === 'treasury_reconciliation_officer')
-                    <a href="{{ route('treasury.index') }}"
-                        class="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-semibold {{ request()->is('treasury*') ? 'bg-white/10 text-white ring-1 ring-white/15' : 'text-white/80 hover:bg-white/10 hover:text-white' }}">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M3 10.5h18M4.5 10.5V19.5A1.5 1.5 0 006 21h12a1.5 1.5 0 001.5-1.5v-9" />
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M12 3l9 5.25-9 5.25-9-5.25L12 3z" />
-                        </svg>
-                        <span>ສະສາງຄັງເງິນ</span>
-                    </a>
+                    <x-sidebar-link :href="route('treasury.index')" :active="request()->routeIs('treasury.*')">
+                        <x-slot name="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" /></svg></x-slot>
+                        ສະສາງຄັງເງິນ
+                    </x-sidebar-link>
                 @endif
 
                 @if($role === 'head_of_finance')
-                    <a href="{{ route('reports.index') }}"
-                        class="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-semibold {{ request()->is('reports*') ? 'bg-white/10 text-white ring-1 ring-white/15' : 'text-white/80 hover:bg-white/10 hover:text-white' }}">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3v18h18" />
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M7.5 14.25V18m4.5-9V18m4.5-6V18" />
-                        </svg>
-                        <span>ລາຍງານ</span>
-                    </a>
+                    <x-sidebar-link :href="route('reports.index')" :active="request()->routeIs('reports.*') && !request()->routeIs('reports.budget_expense')">
+                        <x-slot name="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6a7.5 7.5 0 107.5 7.5h-7.5V6zM13.5 10.5H21A7.5 7.5 0 0013.5 3v7.5z" /></svg></x-slot>
+                        ລາຍງານ
+                    </x-sidebar-link>
                 @endif
 
                 @if($role === 'admin')
-                    <a href="{{ route('admin.users') }}"
-                        class="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-semibold {{ request()->is('admin*') ? 'bg-white/10 text-white ring-1 ring-white/15' : 'text-white/80 hover:bg-white/10 hover:text-white' }}">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.956" />
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M4.875 6.75a3.375 3.375 0 116.75 0 3.375 3.375 0 01-6.75 0z" />
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M3 19.5a6 6 0 0112 0v.75H3v-.75z" />
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M16.5 6.75a3 3 0 113 3 3 3 0 01-3-3z" />
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M18 13.5c2.485 0 4.5 1.343 4.5 3v.75H16.5" />
-                        </svg>
-                        <span>ຈັດການຜູ້ໃຊ້</span>
-                    </a>
-                    <a href="{{ route('reports.index') }}"
-                        class="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-semibold {{ request()->is('reports*') ? 'bg-white/10 text-white ring-1 ring-white/15' : 'text-white/80 hover:bg-white/10 hover:text-white' }}">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3v18h18" />
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M7.5 14.25V18m4.5-9V18m4.5-6V18" />
-                        </svg>
-                        <span>ລາຍງານ</span>
-                    </a>
+                    <x-sidebar-link :href="route('admin.users')" :active="request()->routeIs('admin.users*')">
+                        <x-slot name="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.956m-7.128-1.533A15.362 15.362 0 0112 18.75c-4.04 0-7.616-1.52-10.231-3.99A15.38 15.38 0 0112 14.25c2.96 0 5.67.75 8.162 2.05m-15.69-7.143a15.38 15.38 0 0113.626-3.83m-13.626 3.83c1.785-1.895 4.316-3.08 7.126-3.08 3.542 0 6.64 1.83 8.36 4.6" /></svg></x-slot>
+                        ຈັດການຜູ້ໃຊ້
+                    </x-sidebar-link>
+                    <x-sidebar-link :href="route('reports.index')" :active="request()->routeIs('reports.*') && !request()->routeIs('reports.budget_expense')">
+                        <x-slot name="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6a7.5 7.5 0 107.5 7.5h-7.5V6zM13.5 10.5H21A7.5 7.5 0 0013.5 3v7.5z" /></svg></x-slot>
+                        ລາຍງານ
+                    </x-sidebar-link>
                 @endif
-            @endauth
+
+            </div>
         </div>
 
-        <div class="pt-2 pb-[max(1rem,env(safe-area-inset-bottom))] border-t border-white/10 px-3 sm:px-4">
-            @auth
-                <div class="flex items-center justify-between">
-                    <div>
-                        <div class="text-sm font-semibold text-white">{{ Auth::user()->name ?? Auth::user()->full_name }}</div>
-                        <div class="text-xs text-white/70">{{ Auth::user()->full_name }}</div>
+    </div>
+
+    <!-- User Profile Footer -->
+    <div class="p-4 shrink-0 border-t border-gray-100 bg-gray-50/50 mt-auto">
+        <div class="relative" x-data="{ openProfile: false }">
+            <button @click="openProfile = !openProfile" @click.away="openProfile = false" class="w-full flex items-center justify-between p-2 rounded-xl hover:bg-white hover:shadow-sm ring-1 ring-transparent hover:ring-gray-200 transition-all text-left focus:outline-none">
+                <div class="flex items-center gap-3 overflow-hidden">
+                    <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-indigo-500 to-sky-400 flex items-center justify-center text-white text-sm font-bold shadow-sm shrink-0">
+                        {{ mb_substr(Auth::user()->full_name ?? Auth::user()->username, 0, 1) }}
                     </div>
-                    <span
-                        class="bg-white/10 text-[#f0b429] px-2 py-0.5 rounded-full text-[11px] font-semibold ring-1 ring-white/15">
-                        {{ Auth::user()->role?->role_name }}
-                    </span>
+                    <div class="min-w-0">
+                        <p class="text-sm font-bold text-gray-800 truncate leading-none mb-1">{{ Auth::user()->full_name ?? Auth::user()->username }}</p>
+                        <p class="text-[0.65rem] font-bold text-indigo-500 uppercase tracking-wider truncate leading-none">{{ Auth::user()->roleDisplay() }}</p>
+                    </div>
                 </div>
-
-                <div class="mt-3 space-y-1">
-                    <a href="{{ route('profile.edit') }}"
-                        class="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-semibold text-white/80 hover:bg-white/10 hover:text-white">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M4.5 20.25a7.5 7.5 0 0115 0v.75H4.5v-.75z" />
-                        </svg>
-                        <span>ໂປຣໄຟລ໌</span>
-                    </a>
-
-                    <form method="POST" action="{{ route('logout') }}" @submit="open = false">
-                        @csrf
-                        <button type="submit"
-                            class="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-semibold text-white/80 hover:bg-white/10 hover:text-white">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                aria-hidden="true">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M15.75 9V5.25A2.25 2.25 0 0013.5 3H6.75A2.25 2.25 0 004.5 5.25v13.5A2.25 2.25 0 006.75 21h6.75a2.25 2.25 0 002.25-2.25V15" />
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M12 9l3 3-3 3m3-3H8.25" />
-                            </svg>
-                            <span>ອອກຈາກລະບົບ</span>
-                        </button>
-                    </form>
-                </div>
-            @endauth
-        </div>
+                <svg class="w-4 h-4 text-gray-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l4-4 4 4m0 6l-4 4-4-4" /></svg>
+            </button>
+            
+            <!-- Dropup Menu -->
+            <div x-show="openProfile" 
+                 x-transition:enter="transition ease-out duration-100" 
+                 x-transition:enter-start="transform opacity-0 scale-95" 
+                 x-transition:enter-end="transform opacity-100 scale-100" 
+                 x-transition:leave="transition ease-in duration-75" 
+                 x-transition:leave-start="transform opacity-100 scale-100" 
+                 x-transition:leave-end="transform opacity-0 scale-95" 
+                 class="absolute bottom-full left-0 w-full mb-2 bg-white rounded-xl shadow-lg border border-gray-100 py-1.5 z-50 overflow-hidden transform origin-bottom">
+                
+                <a href="{{ route('profile.edit') }}" class="flex items-center gap-2 px-4 py-2.5 text-sm font-semibold text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors cursor-pointer">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+                    ຈັດການໂປຣໄຟລ໌
+                </a>
+                
+                <div class="h-px bg-gray-100 my-1"></div>
+                
+                <form method="POST" action="{{ route('logout') }}" class="block">
+                    @csrf
+                    <button type="submit" class="w-full flex items-center gap-2 px-4 py-2.5 text-sm font-semibold text-red-600 hover:bg-red-50 transition-colors text-left cursor-pointer">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
+                        ອອກຈາກລະບົບ
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
 </nav>
+
+<!-- Desktop Sidebar Spacer (Prevents content hiding under absolute sidebar if it was absolute, but we used flex) -->

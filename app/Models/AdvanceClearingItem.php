@@ -23,4 +23,9 @@ class AdvanceClearingItem extends Model
     {
         return $this->belongsTo(AdvanceRequest::class);
     }
+
+    public function chartOfAccount()
+    {
+        return $this->belongsTo(ChartOfAccount::class, 'account_id');
+    }
 }
