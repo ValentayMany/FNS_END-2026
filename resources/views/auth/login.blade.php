@@ -119,13 +119,14 @@
                 {{-- Divider --}}
                 <div class="h-px bg-gray-100 my-5"></div>
 
-                {{-- Register --}}
-                <p class="text-center text-sm text-gray-400 mt-2">
-                    ຍັງບໍ່ມີບັນຊີ?
-                    <a href="{{ route('register') }}" class="font-semibold hover:underline" style="color: #1e3a5f;">
-                        ສະໝັກໃຊ້ງານ
-                    </a>
-                </p>
+                @if (config('fns.allow_registration'))
+                    <p class="text-center text-sm text-gray-400 mt-2">
+                        ຍັງບໍ່ມີບັນຊີ?
+                        <a href="{{ route('register') }}" class="font-semibold hover:underline" style="color: #1e3a5f;">
+                            ສະໝັກໃຊ້ງານ
+                        </a>
+                    </p>
+                @endif
 
             </form>
         </div>

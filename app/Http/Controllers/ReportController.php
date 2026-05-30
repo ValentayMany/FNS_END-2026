@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\AdvanceRequest;
+use App\Models\ChartOfAccount;
 use App\Models\Transaction;
+use App\Services\BudgetExpenseReportBuilder;
 use App\Services\ReportExcelExportService;
 use Illuminate\Http\Request;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -13,10 +15,8 @@ class ReportController extends Controller
 {
     public function index(Request $request)
     {
-        $type     = $request->get('type', 'daily');
-        $date     = $request->get('date', today()->toDateString());
-        $month    = $request->get('month', today()->format('Y-m'));
-        $txnType  = $request->get('txn_type', 'all'); // all | income | expense
+        [$type, $date, $month, $year] = $this->validatedReportFilters($request);
+        $txnType = $request->get('txn_type', 'all'); // all | income | expense
 
         if ($type === 'daily') {
             $incomeTransactions = Transaction::with('department', 'chartOfAccount')
@@ -30,7 +30,6 @@ class ReportController extends Controller
             $year = \Carbon\Carbon::parse($date)->format('Y');
 
         } elseif ($type === 'yearly') {
-            $year = $request->get('year', today()->format('Y'));
             $incomeTransactions = Transaction::with('department', 'chartOfAccount')
                 ->where('type', 'income')->whereYear('transaction_date', $year)->get();
             $expenseTransactions = Transaction::with('department', 'chartOfAccount')
@@ -139,9 +138,29 @@ class ReportController extends Controller
         }
         $ledger = $ledger->sortBy('date')->values();
 
+        $selectedAccountId = $accountId ? (int) $accountId : null;
+        $budgetReport = null;
+        if ($txnType === 'expense' || $userRole === 'accountant') {
+            $budgetReport = app(BudgetExpenseReportBuilder::class)->build(
+                $type,
+                $date,
+                $month,
+                $year,
+                $selectedAccountId,
+                $deptId ? (int) $deptId : null,
+                $expenseTransactions,
+            );
+        }
+
+        $expenseAccounts = ChartOfAccount::query()
+            ->whereHas('transactions', fn ($q) => $q->where('type', 'expense'))
+            ->orderBy('account_code')
+            ->get();
+
         return view('reports.report', compact(
             'incomeTransactions', 'expenseTransactions', 'requests', 'ledger',
-            'totalIncome', 'totalExpense', 'type', 'date', 'month', 'year', 'txnType'
+            'totalIncome', 'totalExpense', 'type', 'date', 'month', 'year', 'txnType',
+            'budgetReport', 'selectedAccountId', 'expenseAccounts',
         ));
     }
 
@@ -150,10 +169,7 @@ class ReportController extends Controller
      */
     public function export(Request $request, ReportExcelExportService $excel): StreamedResponse
     {
-        $type  = $request->get('type', 'daily');
-        $date  = $request->get('date', today()->toDateString());
-        $month = $request->get('month', today()->format('Y-m'));
-        $year  = $request->get('year', today()->format('Y'));
+        [$type, $date, $month, $year] = $this->validatedReportFilters($request);
 
         if ($type === 'daily') {
             $incomeTransactions  = Transaction::with('department')->where('type', 'income')->whereDate('transaction_date', $date)->get();
@@ -246,5 +262,25 @@ class ReportController extends Controller
         }, $filename, [
             'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         ]);
+    }
+
+    /**
+     * @return array{0: string, 1: string, 2: string, 3: string}
+     */
+    private function validatedReportFilters(Request $request): array
+    {
+        $validated = $request->validate([
+            'type'  => 'nullable|in:daily,monthly,yearly',
+            'date'  => 'nullable|date_format:Y-m-d',
+            'month' => ['nullable', 'regex:/^\d{4}-\d{2}$/'],
+            'year'  => ['nullable', 'regex:/^\d{4}$/'],
+        ]);
+
+        $type  = $validated['type'] ?? 'daily';
+        $date  = $validated['date'] ?? today()->toDateString();
+        $month = $validated['month'] ?? today()->format('Y-m');
+        $year  = $validated['year'] ?? today()->format('Y');
+
+        return [$type, $date, $month, $year];
     }
 }

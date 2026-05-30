@@ -76,74 +76,88 @@
                                     <label for="item_name" class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">ຊື່ລາຍການຈ່າຍ <span class="text-red-500">*</span></label>
                                     <input id="item_name" name="item_name" type="text"
                                         class="ui-input bg-white focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition-all text-sm w-full"
-                                        value="{{ old('item_name') }}" placeholder="ເຊັ່ນ: ຄ່າອຸປະກອນ, ຄ່າບໍລິການ..." required />
+                                        value="{{ old('item_name') }}" placeholder="ຊື່ລາຍການຈ່າຍ" required />
                                 </div>
 
                                 {{-- ຈໍານວນເງິນ --}}
                                 <div>
-                                    <label for="amount" class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">ຈໍານວນເງິນ (ກີບ) <span class="text-red-500">*</span></label>
+                                    <label for="amount" class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">ຈຳນວນເງິນຈ່າຍ <span class="text-red-500">*</span></label>
                                     <div class="relative">
                                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                             <span class="text-gray-400 font-bold sm:text-sm">₭</span>
                                         </div>
                                         <input id="amount" name="amount" type="number" min="1" step="0.01"
                                             class="ui-input bg-white pl-8 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition-all font-bold text-rose-700 w-full"
-                                            value="{{ old('amount') }}" placeholder="0.00" required />
+                                            value="{{ old('amount') }}" placeholder="ຈຳນວນເງິນຈ່າຍ" required />
                                     </div>
                                 </div>
+
+                                @php
+                                    $defaultDepartmentId = old('department_id', auth()->user()?->department_id ?? $departments->first()?->id);
+                                @endphp
 
                                 {{-- ເລກບັນຊີ --}}
                                 <div class="sm:col-span-2 lg:col-span-3">
                                     <label for="account_id" class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">ເລກບັນຊີ <span class="text-red-500">*</span></label>
-                                    <select id="account_id" name="account_id" required class="ui-input bg-white focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition-all text-sm w-full cursor-pointer">
-                                        <option value="">-- ເລືອກເລກບັນຊີ --</option>
-                                        @foreach ($accounts as $acc)
-                                            <option value="{{ $acc->id }}" {{ old('account_id') == $acc->id ? 'selected' : '' }}>
-                                                {{ $acc->account_code }} - {{ $acc->account_name }}
-                                            </option>
-                                        @endforeach
-                                    </select>
+                                    <x-fns.select-wrap>
+                                        <select id="account_id" name="account_id" required class="fns-select ui-input bg-white focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition-all text-sm w-full cursor-pointer pr-10">
+                                            <option value="">ເລກບັນຊີ</option>
+                                            @foreach ($accounts as $acc)
+                                                <option value="{{ $acc->id }}" {{ old('account_id') == $acc->id ? 'selected' : '' }}>
+                                                    {{ $acc->account_code }} - {{ $acc->account_name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </x-fns.select-wrap>
                                 </div>
 
                                 {{-- ພາກສ່ວນຈ່າຍ --}}
                                 <div>
                                     <label for="department_id" class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">ພາກສ່ວນຈ່າຍ <span class="text-red-500">*</span></label>
-                                    <select id="department_id" name="department_id" required class="ui-input bg-white focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition-all text-sm w-full cursor-pointer">
-                                        <option value="">-- ເລືອກພາກສ່ວນຈ່າຍ --</option>
-                                        @foreach ($departments as $dept)
-                                            <option value="{{ $dept->id }}" {{ old('department_id') == $dept->id ? 'selected' : '' }}>
-                                                {{ $dept->displayName() }}
-                                            </option>
-                                        @endforeach
-                                    </select>
+                                    <x-fns.select-wrap>
+                                        <select id="department_id" name="department_id" required class="fns-select ui-input bg-white focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition-all text-sm w-full cursor-pointer pr-10">
+                                            @foreach ($departments as $dept)
+                                                <option value="{{ $dept->id }}" {{ (string) $defaultDepartmentId === (string) $dept->id ? 'selected' : '' }}>
+                                                    {{ $dept->expenseSectionLabel() }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </x-fns.select-wrap>
                                 </div>
 
                                 {{-- ຊ່ອງລາຍຈ່າຍ --}}
                                 <div>
                                     <label for="category" class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">ຊ່ອງລາຍຈ່າຍ <span class="text-red-500">*</span></label>
-                                    <select id="category" name="category" required class="ui-input bg-white focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition-all text-sm w-full cursor-pointer">
-                                        <option value="ງົບປະມານສົ່ງເສີມວິຊາການ" {{ old('category') == 'ງົບປະມານສົ່ງເສີມວິຊາການ' ? 'selected' : '' }}>ງົບປະມານສົ່ງເສີມວິຊາການ</option>
+                                    <x-fns.select-wrap>
+                                    <select id="category" name="category" required class="fns-select ui-input bg-white focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition-all text-sm w-full cursor-pointer pr-10">
+                                        <option value="ງົບປະມານສົ່ງເສີມວິຊາການ" {{ old('category', 'ງົບປະມານສົ່ງເສີມວິຊາການ') == 'ງົບປະມານສົ່ງເສີມວິຊາການ' ? 'selected' : '' }}>ງົບປະມານສົ່ງເສີມວິຊາການ</option>
+                                        <option value="ສົ່ງເສີມຊີວາການ" {{ old('category') == 'ສົ່ງເສີມຊີວາການ' ? 'selected' : '' }}>ສົ່ງເສີມຊີວາການ</option>
                                         <option value="ຮັບໃຊ້ການທົດລອງ" {{ old('category') == 'ຮັບໃຊ້ການທົດລອງ' ? 'selected' : '' }}>ຮັບໃຊ້ການທົດລອງ</option>
                                         <option value="ການເຄື່ອນໄຫວນອກຫຼັກສູດ" {{ old('category') == 'ການເຄື່ອນໄຫວນອກຫຼັກສູດ' ? 'selected' : '' }}>ການເຄື່ອນໄຫວນອກຫຼັກສູດ</option>
                                     </select>
+                                    </x-fns.select-wrap>
                                 </div>
 
                                 {{-- ປະເພດລາຍຈ່າຍ --}}
                                 <div>
                                     <label for="expense_type" class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">ປະເພດລາຍຈ່າຍ</label>
-                                    <select id="expense_type" name="expense_type" class="ui-input bg-white focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition-all text-sm w-full cursor-pointer">
-                                        <option value="ງົບປະມານວິຊາການ" {{ old('expense_type') == 'ງົບປະມານວິຊາການ' ? 'selected' : '' }}>ງົບປະມານວິຊາການ</option>
+                                    <x-fns.select-wrap>
+                                    <select id="expense_type" name="expense_type" class="fns-select ui-input bg-white focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition-all text-sm w-full cursor-pointer pr-10">
+                                        <option value="ງົບປະມານວິຊາການ" {{ old('expense_type', 'ງົບປະມານວິຊາການ') == 'ງົບປະມານວິຊາການ' ? 'selected' : '' }}>ງົບປະມານວິຊາການ</option>
                                         <option value="ງົບປະມານບໍລິຫານ" {{ old('expense_type') == 'ງົບປະມານບໍລິຫານ' ? 'selected' : '' }}>ງົບປະມານບໍລິຫານ</option>
                                     </select>
+                                    </x-fns.select-wrap>
                                 </div>
 
                                 {{-- ຊ່ອງ ປຕ/ປທ --}}
                                 <div>
-                                    <label for="channel_type" class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">ຊ່ອງ ປຕ/ປທ</label>
-                                    <select id="channel_type" name="channel_type" class="ui-input bg-white focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition-all text-sm w-full cursor-pointer">
-                                        <option value="ເງິນບໍລິຫານທົ່ວໄປ" {{ old('channel_type') == 'ເງິນບໍລິຫານທົ່ວໄປ' ? 'selected' : '' }}>ເງິນບໍລິຫານທົ່ວໄປ</option>
+                                    <label for="channel_type" class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">ຊ່ວງ ປຕ/ປທ</label>
+                                    <x-fns.select-wrap>
+                                    <select id="channel_type" name="channel_type" class="fns-select ui-input bg-white focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition-all text-sm w-full cursor-pointer pr-10">
+                                        <option value="ເງິນບໍລິຫານທົ່ວໄປ" {{ old('channel_type', 'ເງິນບໍລິຫານທົ່ວໄປ') == 'ເງິນບໍລິຫານທົ່ວໄປ' ? 'selected' : '' }}>ເງິນບໍລິຫານທົ່ວໄປ</option>
                                         <option value="ເງິນຕ່າງປະເທດ" {{ old('channel_type') == 'ເງິນຕ່າງປະເທດ' ? 'selected' : '' }}>ເງິນຕ່າງປະເທດ</option>
                                     </select>
+                                    </x-fns.select-wrap>
                                 </div>
 
                                 {{-- ລາຍລະອຽດ --}}
@@ -158,10 +172,10 @@
                             <div class="flex items-center justify-between pt-2 gap-3">
                                 <button type="submit" class="ui-btn bg-indigo-500 text-white hover:bg-indigo-600 shadow-lg shadow-indigo-500/30 text-sm py-2.5 px-6 outline-none focus:ring-2 focus:ring-indigo-500 ring-offset-1 flex items-center gap-2">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>
-                                    ✓ ບັນທຶກ (Save)
+                                    Save
                                 </button>
                                 <a href="{{ url()->previous() }}" class="ui-btn bg-gray-100 text-gray-600 hover:bg-gray-200 text-sm py-2.5 px-6 flex items-center gap-2">
-                                    ← ຍົກເລີກ (Cancel)
+                                    Cancel
                                 </a>
                             </div>
                         </form>
@@ -220,7 +234,7 @@
                                             @endif
                                         </td>
                                         <td class="py-3 px-4 text-sm text-gray-500 truncate max-w-[120px]" title="{{ $txn->department?->displayName() }}">
-                                            {{ $txn->department?->displayName() }}
+                                            {{ $txn->department?->expenseSectionLabel() }}
                                         </td>
                                         <td class="py-3 px-4 text-right whitespace-nowrap">
                                             <span class="font-extrabold text-[#e11d48] text-[0.95rem] tracking-tight">

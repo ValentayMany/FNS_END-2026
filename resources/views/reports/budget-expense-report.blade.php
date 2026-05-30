@@ -35,6 +35,8 @@
     </x-slot>
 
     <style>
+        .print-only { display: none; }
+
         @media print {
             @page { size: A4 portrait; margin: 15mm 20mm; }
             * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
@@ -211,7 +213,7 @@
                                 @forelse($report['transactions'] as $idx => $txn)
                                     <tr class="hover:bg-indigo-50/30 transition-colors duration-150 group">
                                         <td class="py-3.5 px-4 text-center text-sm font-semibold text-gray-400">{{ $idx + 1 }}</td>
-                                        <td class="py-3.5 px-4 text-sm font-bold text-gray-800 group-hover:text-indigo-700 transition-colors">{{ $txn->description }}</td>
+                                        <td class="py-3.5 px-4 text-sm font-bold text-gray-800 group-hover:text-indigo-700 transition-colors">{{ $txn->item_name ?: $txn->description }}</td>
                                         <td class="py-3.5 px-4 text-center whitespace-nowrap text-sm font-medium text-gray-500">
                                             {{ $txn->transaction_date?->format('d-m-Y') }}
                                         </td>
@@ -254,136 +256,31 @@
             @else
                 <div class="fns-card bg-white shadow-md rounded-2xl border border-gray-100 p-12 text-center fns-animate">
                     <div class="flex flex-col items-center justify-center">
-                        <div class="w-16 h-16 rounded-2xl bg-indigo-50 text-indigo-500 flex items-center justify-center mb-4 border border-indigo-100 shrin    <div class="print-only" style="font-family:'Noto Sans Lao','Phetsarath OT',sans-serif; color:#1e293b;">
-        @php
-            $userRole = auth()->user()->role?->role_name;
-            $slipTitle = ($userRole === 'revenue_officer') ? 'ໃບບິນຮັບເງິນ' : 'ໃບບິນຈ່າຍເງິນ';
-        @endphp
-        
-        {{-- Centered Slip type header --}}
-        <div style="text-align: center; font-size: 10px; font-weight: bold; margin-bottom: 15px; text-decoration: underline; text-underline-offset: 2px;">
-            {{ $slipTitle }}
-        </div>
-
-        {{-- Center Title --}}
-        <div style="text-align: center; margin-bottom: 25px;">
-            @if($report)
-                <h1 style="font-size: 15px; font-weight: 800; color: #1e293b; margin: 0 0 4px; line-height: 1.4;">
-                    ຕິດຕາມລາຍຈ່າຍງົບປະມານ {{ $report['account']?->account_name ?? '' }}
-                </h1>
-                @php
-                    $budgetPlan = \App\Models\BudgetPlan::where('fiscal_year', $selectedYear)->first();
-                    $budgetTypeLabel = '';
-                    if ($budgetPlan && $selectedAccountId) {
-                        $lineItem = \App\Models\BudgetLineItem::where('budget_plan_id', $budgetPlan->id)
-                            ->where('account_id', $selectedAccountId)
-                            ->first();
-                        if ($lineItem) {
-                            if ($lineItem->amount_academic > 0 && $lineItem->amount_regular == 0) {
-                                $budgetTypeLabel = '(ງົບປະມານວິຊາການ)';
-                            } elseif ($lineItem->amount_regular > 0 && $lineItem->amount_academic == 0) {
-                                $budgetTypeLabel = '(ງົບປະມານປົກກະຕິ)';
-                            }
-                        }
-                    }
-                @endphp
-                @if($budgetTypeLabel)
-                    <p style="font-size: 11px; font-weight: bold; color: #1e293b; margin: 0;">{{ $budgetTypeLabel }}</p>
-                @endif
-            @else
-                <h1 style="font-size: 15px; font-weight: 800; color: #1e293b; margin: 0;">ຕິດຕາມລາຍຈ່າຍງົບປະມານ</h1>
+                        <div class="w-16 h-16 rounded-2xl bg-indigo-50 text-indigo-500 flex items-center justify-center mb-4 border border-indigo-100 shrink-0">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                            </svg>
+                        </div>
+                        <p class="text-gray-600 font-bold">ເລືອກໝວດບັນຊີງົບປະມານ ແລະ ກົດ «ສະແດງລາຍງານ»</p>
+                        <p class="text-xs text-gray-400 mt-1">ລາຍງານຈະສະແດງໃນຮູปແບບ ໃບບິນຈ່າຍເງິນ</p>
+                    </div>
+                </div>
             @endif
+
         </div>
-
-        @if($report)
-            @php
-                $rawCode = $report['account']?->account_code ?? '';
-                $formattedCode = strlen($rawCode) === 8 
-                    ? substr($rawCode, 0, 2) . '.' . substr($rawCode, 2, 2) . '.' . substr($rawCode, 4, 2) . '.' . substr($rawCode, 6, 2) 
-                    : $rawCode;
-                
-                $deptId = request('department_id');
-                $deptObj = $deptId ? \App\Models\Department::find($deptId) : null;
-                $deptName = $deptObj ? $deptObj->displayName() : 'ພາກວິຊາວິທະຍາສາດຄອມພິວເຕີ';
-                if ($deptName === 'Computer') {
-                    $deptName = 'ພາກວິຊາວິທະຍາສາດຄອມພິວເຕີ';
-                }
-            @endphp
-            
-            {{-- Print Meta Summary Box (3 Columns) --}}
-            <div style="display: flex; justify-content: space-between; align-items: flex-start; font-size: 11px; color: #1e293b; margin-bottom: 15px; line-height: 1.6;">
-                {{-- Left column --}}
-                <div style="width: 35%;">
-                    <p style="margin: 0;">ລະຫັດລາຍຈ່າຍ: <b style="font-weight: 700;">{{ $report['transactions']->count() }}</b></p>
-                    <p style="margin: 4px 0 0;">
-                        @if($userRole === 'revenue_officer')
-                            ເລກບັນຊີຈ່າຍ: <b style="font-weight: 700;">{{ $rawCode }}</b>
-                        @else
-                            ຊ່ອງງົບປະມານ: <b style="font-weight: 700;">{{ $formattedCode }}</b>
-                        @endif
-                    </p>
-                </div>
-                
-                {{-- Center column --}}
-                <div style="width: 30%; text-align: center; font-weight: bold; padding-top: 15px;">
-                    {{ $deptName }}
-                </div>
-                
-                {{-- Right column --}}
-                <div style="width: 35%; text-align: right;">
-                    <p style="margin: 0;">ຕົວເລກອະນຸມັດ: <b style="font-weight: 700;">{{ number_format($report['budget'], 0, ',', '.') }}</b></p>
-                    <p style="margin: 4px 0 0;">ຈ່າຍແລ້ວ: <b style="font-weight: 700;">{{ number_format($report['totalSpent'], 0, ',', '.') }}</b></p>
-                    <p style="margin: 4px 0 0;">ຍັງເຫຼືອ: <b style="font-weight: 700;">{{ number_format($report['remaining'], 0, ',', '.') }}</b></p>
-                </div>
-            </div>
-
-            {{-- Main Grid Table --}}
-            <table class="p-tbl">
-                <thead>
-                    <tr style="font-weight: bold; background: #fff;">
-                        <th style="width: 45px; text-align: center; font-weight: bold; border: 1px solid #000 !important;">ລຳດັບ</th>
-                        <th style="text-align: left; font-weight: bold; border: 1px solid #000 !important;">ເນື້ອໃນລາຍຈ່າຍ</th>
-                        <th style="width: 110px; text-align: center; font-weight: bold; border: 1px solid #000 !important;">ວັນທີ-ເດືອນ-ປີ</th>
-                        <th style="width: 110px; text-align: right; font-weight: bold; border: 1px solid #000 !important;">ລາຍຈ່າຍ</th>
-                        <th style="width: 120px; text-align: right; font-weight: bold; border: 1px solid #000 !important;">ດຸ່ນດ່ຽງ</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @php $pb = $report['budget']; @endphp
-                    @foreach($report['transactions'] as $idx => $txn)
-                        @php $pb -= $txn->amount; @endphp
-                        <tr>
-                            <td style="text-align: center; border: 1px solid #000 !important;">{{ $idx + 1 }}</td>
-                            <td style="text-align: left; border: 1px solid #000 !important;">{{ $txn->description }}</td>
-                            <td style="text-align: center; border: 1px solid #000 !important;">{{ $txn->transaction_date?->format('d-m-Y') }}</td>
-                            <td style="text-align: right; border: 1px solid #000 !important;">{{ number_format($txn->amount, 0, ',', '.') }}</td>
-                            <td style="text-align: right; border: 1px solid #000 !important;">{{ number_format($pb, 0, ',', '.') }}</td>
-                        </tr>
-                    @endforeach
-                </tbody>
-                <tfoot>
-                    <tr style="font-weight: bold; background: #fff;">
-                        <td colspan="3" style="text-align: center; font-weight: bold; border: 1px solid #000 !important;">ລວມທັງໝົດ</td>
-                        <td style="text-align: right; font-weight: bold; border: 1px solid #000 !important;">{{ number_format($report['periodSpent'], 0, ',', '.') }}</td>
-                        <td style="text-align: right; font-weight: bold; border: 1px solid #000 !important;">{{ number_format($pb, 0, ',', '.') }}</td>
-                    </tr>
-                </tfoot>
-            </table>
-
-            {{-- Signature blocks --}}
-            @php
-                $sigDate = $type === 'daily' ? \Carbon\Carbon::parse($date)->format('d-m-Y') : now()->format('d-m-Y');
-            @endphp
-            
-            <div style="display: flex; justify-content: space-between; margin-top: 50px; font-size: 11px; line-height: 1.6; page-break-inside: avoid;">
-                <div style="width: 45%; text-align: left; font-weight: bold; padding-left: 10px;">
-                    ຫົວໜ້າພະແນກການເງິນ-ຊັບສິນ
-                </div>
-                <div style="width: 45%; text-align: right; font-weight: bold; padding-right: 10px; display: flex; flex-direction: column; align-items: flex-end;">
-                    <p style="margin: 0; padding-right: 15px;">ວັນທີ: {{ $sigDate }}</p>
-                    <p style="margin: 6px 0 0; padding-right: 25px;">ນາຍບັນຊີ</p>
-                </div>
-            </div>
-        @endif
     </div>
+
+    @if($report)
+        <div class="print-only" style="font-family:'Noto Sans Lao','Phetsarath OT',sans-serif; color:#000;">
+            @include('reports.partials.budget-expense-print', [
+                'report' => $report,
+                'type' => $type,
+                'date' => $date,
+                'month' => $month,
+                'year' => $year,
+                'selectedYear' => $selectedYear,
+                'selectedAccountId' => $selectedAccountId,
+            ])
+        </div>
+    @endif
 </x-app-layout>

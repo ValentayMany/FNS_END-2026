@@ -8,6 +8,7 @@ use App\Services\WorkflowService;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class ClearingController extends Controller
@@ -20,7 +21,7 @@ class ClearingController extends Controller
     public function index()
     {
         $requests = AdvanceRequest::where('requester_id', Auth::id())
-            ->where('status', 'paid')
+            ->whereIn('status', ['paid', 'pending_clearing'])
             ->with('department', 'clearingAttachments')
             ->latest('request_date')
             ->paginate(15);
@@ -40,26 +41,38 @@ class ClearingController extends Controller
             'attachments.*' => 'file|max:5120|mimes:pdf,jpg,jpeg,png,webp,doc,docx,xls,xlsx',
         ]);
 
-        try {
-            // ตรวจสอบ status ก่อน upload ไฟล์ (ป้องกัน orphaned files)
-            $this->workflow->submitClearing($advanceRequest, Auth::user());
+        $storedPaths = [];
 
-            // อัปโหลดไฟล์หลังจาก status เปลี่ยนสำเร็จแล้ว
-            if ($request->hasFile('attachments')) {
-                foreach ($request->file('attachments') as $file) {
-                    $stored = $file->store('clearing-attachments', 'local');
-                    AdvanceClearingAttachment::create([
-                        'advance_request_id' => $advanceRequest->id,
-                        'original_name' => $file->getClientOriginalName(),
-                        'stored_name' => $stored,
-                        'mime_type' => $file->getMimeType(),
-                        'file_size' => $file->getSize(),
-                    ]);
+        try {
+            DB::transaction(function () use ($request, $advanceRequest, &$storedPaths) {
+                $advanceRequest->refresh();
+                if ($advanceRequest->status !== 'paid') {
+                    throw new Exception('ສາມາດສະສາງໄດ້ສະເພາະສະຖານະ paid ເທົ່ານັ້ນ');
                 }
-            }
+
+                if ($request->hasFile('attachments')) {
+                    foreach ($request->file('attachments') as $file) {
+                        $stored = $file->store('clearing-attachments', 'local');
+                        $storedPaths[] = $stored;
+                        AdvanceClearingAttachment::create([
+                            'advance_request_id' => $advanceRequest->id,
+                            'original_name' => $file->getClientOriginalName(),
+                            'stored_name' => $stored,
+                            'mime_type' => $file->getMimeType(),
+                            'file_size' => $file->getSize(),
+                        ]);
+                    }
+                }
+
+                $this->workflow->submitClearing($advanceRequest, Auth::user());
+            });
 
             return back()->with('success', 'ສົ່ງໃບສະສາງສຳເລັດ');
         } catch (Exception $e) {
+            foreach ($storedPaths as $path) {
+                Storage::disk('local')->delete($path);
+            }
+
             return back()->with('error', $e->getMessage());
         }
     }

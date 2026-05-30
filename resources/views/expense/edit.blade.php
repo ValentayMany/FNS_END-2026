@@ -43,7 +43,7 @@
                 </div>
 
                                         <div class="fns-card-body bg-gray-50/30 relative z-10 p-5 sm:p-6">
-                            <form method="POST" action="{{ route('expense.update', $expense->id) }}" class="space-y-4">
+                            <form method="POST" action="{{ route('expense.update', $transaction) }}" class="space-y-4">
                                 @csrf
                                 @method('PUT')
 
@@ -53,13 +53,13 @@
                                         <label for="payment_code" class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">ລະຫັດລາຍຈ່າຍ <span class="text-red-500">*</span></label>
                                         <input id="payment_code" name="payment_code" type="text"
                                             class="ui-input bg-white focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition-all text-sm w-full"
-                                            value="{{ old('payment_code', $expense->payment_code) }}" required readonly />
+                                            value="{{ old('payment_code', $transaction->payment_code) }}" required readonly />
                                     </div>
                                     <div>
                                         <label for="transaction_date" class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">ວັນທີຈ່າຍ <span class="text-red-500">*</span></label>
                                         <input id="transaction_date" name="transaction_date" type="date"
                                             class="ui-input bg-white focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition-all text-sm w-full"
-                                            value="{{ old('transaction_date', $expense->transaction_date ? \Carbon\Carbon::parse($expense->transaction_date)->format('Y-m-d') : '') }}" required />
+                                            value="{{ old('transaction_date', $transaction->transaction_date ? \Carbon\Carbon::parse($transaction->transaction_date)->format('Y-m-d') : '') }}" required />
                                     </div>
 
                                     <!-- Row 2 -->
@@ -67,7 +67,7 @@
                                         <label for="item_name" class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">ຊື່ລາຍການຈ່າຍ <span class="text-red-500">*</span></label>
                                         <input id="item_name" name="item_name" type="text"
                                             class="ui-input bg-white focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition-all text-sm w-full"
-                                            value="{{ old('item_name', $expense->item_name) }}" placeholder="ເຊັ່ນ: ຄ່າອຸປະກອນ, ຄ່າບໍລິການ..." required />
+                                            value="{{ old('item_name', $transaction->item_name) }}" placeholder="ຊື່ລາຍການຈ່າຍ" required />
                                     </div>
 
                                     <!-- Row 3 -->
@@ -75,74 +75,84 @@
                                         <label for="budget_year" class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">ປີງົບປະມານ</label>
                                         <input id="budget_year" name="budget_year" type="text"
                                             class="ui-input bg-white focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition-all text-sm w-full"
-                                            value="{{ old('budget_year', $expense->budget_year) }}" />
+                                            value="{{ old('budget_year', $transaction->transaction_date?->format('Y')) }}" />
                                     </div>
                                     <div>
-                                        <label for="amount" class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">ຈໍານວນເງິນຈ່າຍ (ກີບ) <span class="text-red-500">*</span></label>
+                                        <label for="amount" class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">ຈຳນວນເງິນຈ່າຍ <span class="text-red-500">*</span></label>
                                         <div class="relative">
                                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                                 <span class="text-gray-400 font-bold sm:text-sm">₭</span>
                                             </div>
                                             <input id="amount" name="amount" type="number" min="1" step="0.01"
                                                 class="ui-input bg-white pl-8 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition-all font-bold text-rose-700 w-full"
-                                                value="{{ old('amount', $expense->amount) }}" placeholder="0.00" required />
+                                                value="{{ old('amount', $transaction->amount) }}" placeholder="ຈຳນວນເງິນຈ່າຍ" required />
                                         </div>
                                     </div>
 
                                     <!-- Row 4 -->
                                     <div class="sm:col-span-2">
                                         <label for="account_id" class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">ເລກບັນຊີ <span class="text-red-500">*</span></label>
-                                        <select id="account_id" name="account_id" required class="ui-input bg-white focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition-all text-sm w-full cursor-pointer">
-                                            <option value="">-- ເລືອກເລກບັນຊີ --</option>
-                                            @foreach ($accounts as $acc)
-                                                <option value="{{ $acc->id }}" {{ old('account_id', $expense->account_id) == $acc->id ? 'selected' : '' }}>
-                                                    {{ $acc->account_code }} - {{ $acc->account_name }}
-                                                </option>
-                                            @endforeach
-                                        </select>
+                                        <x-fns.select-wrap>
+                                            <select id="account_id" name="account_id" required class="fns-select ui-input bg-white focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition-all text-sm w-full cursor-pointer pr-10">
+                                                <option value="">ເລກບັນຊີ</option>
+                                                @foreach ($accounts as $acc)
+                                                    <option value="{{ $acc->id }}" {{ old('account_id', $transaction->account_id) == $acc->id ? 'selected' : '' }}>
+                                                        {{ $acc->account_code }} - {{ $acc->account_name }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        </x-fns.select-wrap>
                                     </div>
 
                                     <!-- Row 5 -->
                                     <div>
                                         <label for="department_id" class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">ພາກສ່ວນຈ່າຍ <span class="text-red-500">*</span></label>
-                                        <select id="department_id" name="department_id" required class="ui-input bg-white focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition-all text-sm w-full cursor-pointer">
-                                            <option value="">-- ເລືອກພາກສ່ວນຈ່າຍ --</option>
-                                            @foreach ($departments as $dept)
-                                                <option value="{{ $dept->id }}" {{ old('department_id', $expense->department_id) == $dept->id ? 'selected' : '' }}>
-                                                    {{ $dept->displayName() }}
-                                                </option>
-                                            @endforeach
-                                        </select>
+                                        <x-fns.select-wrap>
+                                            <select id="department_id" name="department_id" required class="fns-select ui-input bg-white focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition-all text-sm w-full cursor-pointer pr-10">
+                                                @foreach ($departments as $dept)
+                                                    <option value="{{ $dept->id }}" {{ old('department_id', $transaction->department_id) == $dept->id ? 'selected' : '' }}>
+                                                        {{ $dept->expenseSectionLabel() }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        </x-fns.select-wrap>
                                     </div>
                                     <div>
                                         <label for="category" class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">ຊ່ອງລາຍຈ່າຍ <span class="text-red-500">*</span></label>
-                                        <select id="category" name="category" required class="ui-input bg-white focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition-all text-sm w-full cursor-pointer">
-                                            <option value="ງົບປະມານສົ່ງເສີມວິຊາການ" {{ old('category', $expense->category) == 'ງົບປະມານສົ່ງເສີມວິຊາການ' ? 'selected' : '' }}>ງົບປະມານສົ່ງເສີມວິຊາການ</option>
-                                            <option value="ຮັບໃຊ້ການທົດລອງ" {{ old('category', $expense->category) == 'ຮັບໃຊ້ການທົດລອງ' ? 'selected' : '' }}>ຮັບໃຊ້ການທົດລອງ</option>
-                                            <option value="ການເຄື່ອນໄຫວນອກຫຼັກສູດ" {{ old('category', $expense->category) == 'ການເຄື່ອນໄຫວນອກຫຼັກສູດ' ? 'selected' : '' }}>ການເຄື່ອນໄຫວນອກຫຼັກສູດ</option>
+                                        <x-fns.select-wrap>
+                                        <select id="category" name="category" required class="fns-select ui-input bg-white focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition-all text-sm w-full cursor-pointer pr-10">
+                                            <option value="ງົບປະມານສົ່ງເສີມວິຊາການ" {{ old('category', $transaction->category) == 'ງົບປະມານສົ່ງເສີມວິຊາການ' ? 'selected' : '' }}>ງົບປະມານສົ່ງເສີມວິຊາການ</option>
+                                            <option value="ສົ່ງເສີມຊີວາການ" {{ old('category', $transaction->category) == 'ສົ່ງເສີມຊີວາການ' ? 'selected' : '' }}>ສົ່ງເສີມຊີວາການ</option>
+                                            <option value="ຮັບໃຊ້ການທົດລອງ" {{ old('category', $transaction->category) == 'ຮັບໃຊ້ການທົດລອງ' ? 'selected' : '' }}>ຮັບໃຊ້ການທົດລອງ</option>
+                                            <option value="ການເຄື່ອນໄຫວນອກຫຼັກສູດ" {{ old('category', $transaction->category) == 'ການເຄື່ອນໄຫວນອກຫຼັກສູດ' ? 'selected' : '' }}>ການເຄື່ອນໄຫວນອກຫຼັກສູດ</option>
                                         </select>
+                                        </x-fns.select-wrap>
                                     </div>
 
                                     <!-- Row 6 -->
                                     <div>
                                         <label for="expense_type" class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">ປະເພດລາຍຈ່າຍ</label>
-                                        <select id="expense_type" name="expense_type" class="ui-input bg-white focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition-all text-sm w-full cursor-pointer">
-                                            <option value="ງົບປະມານວິຊາການ" {{ old('expense_type', $expense->expense_type) == 'ງົບປະມານວິຊາການ' ? 'selected' : '' }}>ງົບປະມານວິຊາການ</option>
-                                            <option value="ງົບປະມານບໍລິຫານ" {{ old('expense_type', $expense->expense_type) == 'ງົບປະມານບໍລິຫານ' ? 'selected' : '' }}>ງົບປະມານບໍລິຫານ</option>
+                                        <x-fns.select-wrap>
+                                        <select id="expense_type" name="expense_type" class="fns-select ui-input bg-white focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition-all text-sm w-full cursor-pointer pr-10">
+                                            <option value="ງົບປະມານວິຊາການ" {{ old('expense_type', $expenseType) == 'ງົບປະມານວິຊາການ' ? 'selected' : '' }}>ງົບປະມານວິຊາການ</option>
+                                            <option value="ງົບປະມານບໍລິຫານ" {{ old('expense_type', $expenseType) == 'ງົບປະມານບໍລິຫານ' ? 'selected' : '' }}>ງົບປະມານບໍລິຫານ</option>
                                         </select>
+                                        </x-fns.select-wrap>
                                     </div>
                                     <div>
-                                        <label for="channel_type" class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">ຊ່ອງ ປຕ/ປທ</label>
-                                        <select id="channel_type" name="channel_type" class="ui-input bg-white focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition-all text-sm w-full cursor-pointer">
-                                            <option value="ເງິນບໍລິຫານທົ່ວໄປ" {{ old('channel_type', $expense->channel_type) == 'ເງິນບໍລິຫານທົ່ວໄປ' ? 'selected' : '' }}>ເງິນບໍລິຫານທົ່ວໄປ</option>
-                                            <option value="ເງິນຕ່າງປະເທດ" {{ old('channel_type', $expense->channel_type) == 'ເງິນຕ່າງປະເທດ' ? 'selected' : '' }}>ເງິນຕ່າງປະເທດ</option>
+                                        <label for="channel_type" class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">ຊ່ວງ ປຕ/ປທ</label>
+                                        <x-fns.select-wrap>
+                                        <select id="channel_type" name="channel_type" class="fns-select ui-input bg-white focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition-all text-sm w-full cursor-pointer pr-10">
+                                            <option value="ເງິນບໍລິຫານທົ່ວໄປ" {{ old('channel_type', $channelType) == 'ເງິນບໍລິຫານທົ່ວໄປ' ? 'selected' : '' }}>ເງິນບໍລິຫານທົ່ວໄປ</option>
+                                            <option value="ເງິນຕ່າງປະເທດ" {{ old('channel_type', $channelType) == 'ເງິນຕ່າງປະເທດ' ? 'selected' : '' }}>ເງິນຕ່າງປະເທດ</option>
                                         </select>
+                                        </x-fns.select-wrap>
                                     </div>
 
                                     <!-- Row 7 -->
                                     <div class="sm:col-span-2">
                                         <label for="description" class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">ລາຍລະອຽດ <span class="text-gray-400 font-normal lowercase">(ບໍ່ຈຳເປັນ)</span></label>
-                                        <textarea id="description" name="description" rows="2" class="ui-input bg-white focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition-all text-sm w-full resize-none placeholder-gray-300" placeholder="ອະທິບາຍເພິ່ມເຕີມ...">{{ old('description', $expense->description) }}</textarea>
+                                        <textarea id="description" name="description" rows="2" class="ui-input bg-white focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition-all text-sm w-full resize-none placeholder-gray-300" placeholder="ອະທິບາຍເພິ່ມເຕີມ...">{{ old('description', $userDesc) }}</textarea>
                                     </div>
                                 </div>
 

@@ -10,6 +10,8 @@ use Illuminate\Validation\Rule;
 
 class ExpenseController extends Controller
 {
+    private const ADVANCE_PAYMENT_MSG = 'ບໍ່ສາມາດແກ້ໄຂລາຍຈ່າຍເບີກລ່ວງໜ້າໄດ້';
+
     private array $expenseCategories = [
         'ສົ່ງເສີມຊີວາການ',
         'ງົບປະມານສົ່ງເສີມວິຊາການ',
@@ -21,10 +23,11 @@ class ExpenseController extends Controller
     {
         $transactions = Transaction::with(['department', 'chartOfAccount'])
             ->where('type', 'expense')
+            ->whereDoesntHave('advanceRequest')
             ->latest('transaction_date')
             ->paginate(15);
 
-        $departments = Department::all();
+        $departments = Department::orderedForSelect();
         $accounts = ChartOfAccount::orderBy('account_code')->get();
 
         $defaultYear = (int) date('Y');
@@ -94,9 +97,9 @@ class ExpenseController extends Controller
 
     public function edit(Transaction $transaction)
     {
-        abort_if($transaction->type !== 'expense', 403);
+        $this->ensureEditableExpense($transaction);
 
-        $departments = Department::all();
+        $departments = Department::orderedForSelect();
         $accounts = ChartOfAccount::orderBy('account_code')->get();
 
         // Parse metadata from description
@@ -119,7 +122,7 @@ class ExpenseController extends Controller
 
     public function update(Request $request, Transaction $transaction)
     {
-        abort_if($transaction->type !== 'expense', 403);
+        $this->ensureEditableExpense($transaction);
 
         $request->validate([
             'transaction_date' => 'required|date',
@@ -151,10 +154,16 @@ class ExpenseController extends Controller
 
     public function destroy(Transaction $transaction)
     {
-        abort_if($transaction->type !== 'expense', 403);
+        $this->ensureEditableExpense($transaction);
 
         $transaction->delete();
 
         return back()->with('success', 'ລຶບລາຍຈ່າຍສຳເລັດ');
+    }
+
+    private function ensureEditableExpense(Transaction $transaction): void
+    {
+        abort_if($transaction->type !== 'expense', 403);
+        abort_if($transaction->advanceRequest()->exists(), 403, self::ADVANCE_PAYMENT_MSG);
     }
 }

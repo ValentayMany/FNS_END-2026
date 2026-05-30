@@ -23,6 +23,12 @@
             </div>
 
             <div class="flex items-center gap-2 shrink-0 no-print">
+                @if(!$isRevenueOnly)
+                <a href="{{ route('reports.budget-expense', request()->only(['type', 'date', 'month', 'year'])) }}"
+                    class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white hover:bg-gray-50 text-gray-700 text-xs font-bold border border-gray-200 shadow-sm transition-all duration-200">
+                    ຕິດຕາມງົບປະມານ
+                </a>
+                @endif
                 <a href="{{ route('reports.export', request()->all()) }}"
                     class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold shadow-lg shadow-emerald-500/30 transition-all duration-200 hover:-translate-y-0.5">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -63,8 +69,8 @@
             body { background: white !important; margin: 0 !important; }
             .p-tbl { width: 100%; border-collapse: collapse; font-size: 10px; margin-top: 12px; }
             .p-tbl th, .p-tbl td { border: 1px solid #000 !important; padding: 6px 8px !important; text-align: left; }
-            .p-tbl thead th { background: #f8f8f8 !important; font-weight: bold !important; font-size: 9.5px; }
-            .p-tbl tfoot td { background: #f0f0f0 !important; font-weight: bold !important; }
+            .p-tbl thead th { background: #fff !important; font-weight: bold !important; font-size: 9.5px; }
+            .p-tbl tfoot td { background: #fff !important; font-weight: bold !important; }
         }
 
         /* ── SCREEN ANIMATIONS ── */
@@ -161,6 +167,21 @@
                         @endforeach
                     </select>
                 </div>
+
+                @if(!$isRevenueOnly && $txnType !== 'income')
+                <div class="flex flex-col gap-1.5 min-w-[220px] flex-1">
+                    <label for="account_filter" class="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest">ໝວດບັນຊີ (ພິມ)</label>
+                    <select id="account_filter" name="account_id"
+                        class="h-10 px-3 rounded-xl border border-gray-200 text-sm bg-white focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 outline-none transition-all shadow-sm cursor-pointer">
+                        <option value="">ອັດຕະໂນມັດ (ຈາກລາຍການ)</option>
+                        @foreach($expenseAccounts as $acc)
+                            <option value="{{ $acc->id }}" {{ (string) request('account_id') === (string) $acc->id ? 'selected' : '' }}>
+                                {{ $acc->account_code }} — {{ $acc->account_name }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+                @endif
 
                 {{-- Submit --}}
                 <button type="submit"
@@ -406,129 +427,38 @@
 
     {{-- ═══════════════════ PRINT VIEW ═══════════════════ --}}
     <div class="print-only" style="font-family:'Noto Sans Lao','Phetsarath OT',sans-serif; color:#000;">
-        @php
-            $userRole = auth()->user()->role?->role_name;
-            if ($txnType === 'income') {
-                $slipTitle = 'ໃບບິນຮັບເງິນ';
-            } elseif ($txnType === 'expense') {
-                $slipTitle = 'ໃບບິນຈ່າຍເງິນ';
-            } else {
-                $slipTitle = ($userRole === 'revenue_officer') ? 'ໃບບິນຮັບເງິນ' : (($userRole === 'accountant') ? 'ໃບບິນຈ່າຍເງິນ' : 'ລາຍງານລາຍຮັບ-ລາຍຈ່າຍ');
-            }
-        @endphp
-
-        <div style="text-align: center; font-size: 10px; font-weight: bold; margin-bottom: 12px; text-decoration: underline; text-underline-offset: 2px;">
-            {{ $slipTitle }}
-        </div>
-        <div style="text-align: center; margin-bottom: 20px;">
-            <h1 style="font-size: 14px; font-weight: 800; color: #000; margin: 0 0 4px; line-height: 1.4;">
-                {{ $txnType === 'income' ? 'ລາຍງານສະຫຼຸບລາຍຮັບ' : ($txnType === 'expense' ? 'ລາຍງານສະຫຼຸບລາຍຈ່າຍ' : 'ລາຍງານລາຍຮັບ-ລາຍຈ່າຍ') }}
-            </h1>
-            <p style="font-size: 10px; color: #000; margin: 0; font-weight: 600;">
-                ປະເພດລາຍງານ: {{ $type === 'daily' ? 'ປະຈຳວັນ' : ($type === 'monthly' ? 'ປະຈຳເດືອນ' : 'ປະຈຳປີ') }}
-                &nbsp;•&nbsp;
-                ຊ່ວງເວລາ:
-                @if($type === 'daily') {{ \Carbon\Carbon::parse($date)->format('d-m-Y') }}
-                @elseif($type === 'monthly') {{ \Carbon\Carbon::parse($month . '-01')->format('m-Y') }}
-                @else {{ $year }}
-                @endif
-            </p>
-        </div>
-
-        @php
-            $deptId  = request('department_id');
-            $deptObj = $deptId ? \App\Models\Department::find($deptId) : null;
-            $deptName = $deptObj ? $deptObj->displayName() : 'ພາກວິຊາວິທະຍາສາດຄອມພິວເຕີ';
-            if ($deptName === 'Computer') { $deptName = 'ພາກວິຊາວິທະຍາສາດຄອມພິວເຕີ'; }
-        @endphp
-
-        <div style="display:flex; justify-content:space-between; align-items:flex-start; font-size:11px; color:#000; margin-bottom:14px; line-height:1.6;">
-            <div style="width:35%;">
-                <p style="margin:0;">ຈຳນວນລາຍການ: <b>{{ $ledger->count() }}</b></p>
-                <p style="margin:4px 0 0;">ປະເພດ: <b>{{ $txnType === 'income' ? 'ລາຍຮັບ' : ($txnType === 'expense' ? 'ລາຍຈ່າຍ' : 'ທັງໝົດ') }}</b></p>
+        @if($budgetReport && ($txnType === 'expense' || $isAccountant))
+            @include('reports.partials.budget-expense-print', [
+                'report' => $budgetReport,
+                'type' => $type,
+                'date' => $date,
+                'month' => $month,
+                'year' => $year,
+                'selectedYear' => $budgetReport['selectedYear'],
+                'selectedAccountId' => $selectedAccountId ?? $budgetReport['account']?->id,
+            ])
+        @else
+            @php
+                $userRole = auth()->user()->role?->role_name;
+                $slipTitle = $txnType === 'income' ? 'ໃບບິນຮັບເງິນ' : 'ລາຍງານລາຍຮັບ-ລາຍຈ່າຍ';
+            @endphp
+            <div style="text-align: center; font-size: 10px; font-weight: bold; margin-bottom: 12px; text-decoration: underline;">
+                {{ $slipTitle }}
             </div>
-            <div style="width:30%; text-align:center; font-weight:bold; padding-top:6px;">{{ $deptName }}</div>
-            <div style="width:35%; text-align:right;">
-                @if($txnType === 'expense')
-                    <p style="margin:0;">ລາຍຈ່າຍລວມ: <b>{{ number_format($totalExpense, 0, ',', '.') }} ₭</b></p>
-                @elseif($txnType === 'income')
-                    <p style="margin:0;">ລາຍຮັບລວມ: <b>{{ number_format($totalIncome, 0, ',', '.') }} ₭</b></p>
-                @else
-                    <p style="margin:0;">ລາຍຮັບລວມ: <b>{{ number_format($totalIncome, 0, ',', '.') }} ₭</b></p>
-                    <p style="margin:4px 0 0;">ລາຍຈ່າຍລວມ: <b>{{ number_format($totalExpense, 0, ',', '.') }} ₭</b></p>
-                    <p style="margin:4px 0 0;">ຍອດຄົງເຫຼືອ: <b>{{ number_format($totalIncome - $totalExpense, 0, ',', '.') }} ₭</b></p>
-                @endif
+            <div style="text-align: center; margin-bottom: 20px;">
+                <h1 style="font-size: 14px; font-weight: 800; margin: 0;">
+                    {{ $txnType === 'income' ? 'ລາຍງານສະຫຼຸບລາຍຮັບ' : 'ລາຍງານລາຍຮັບ-ລາຍຈ່າຍ' }}
+                </h1>
             </div>
-        </div>
-
-        <table class="p-tbl">
-            <thead>
-                <tr style="font-weight:bold; background:#f8f8f8;">
-                    <th style="width:40px; text-align:center; border:1px solid #000;">ລຳດັບ</th>
-                    <th style="text-align:left; border:1px solid #000;">ຊື່ລາຍການ</th>
-                    <th style="text-align:left; border:1px solid #000;">ລາຍລະອຽດ</th>
-                    <th style="width:95px; text-align:left; border:1px solid #000;">ໝວດ</th>
-                    <th style="width:85px; text-align:center; border:1px solid #000;">ວັນທີ</th>
-                    @if($txnType !== 'expense')
-                        <th style="width:100px; text-align:right; border:1px solid #000;">ລາຍຮັບ</th>
-                    @endif
-                    @if($txnType !== 'income')
-                        <th style="width:100px; text-align:right; border:1px solid #000;">ລາຍຈ່າຍ</th>
-                    @endif
-                    <th style="width:105px; text-align:right; border:1px solid #000;">ດຸ່ນດ່ຽງ</th>
-                </tr>
-            </thead>
-            <tbody>
-                @php $pb = 0; @endphp
-                @foreach($ledger as $i => $item)
-                    @php $pb += ($item->amount_in - $item->amount_out); @endphp
-                    <tr>
-                        <td style="text-align:center; border:1px solid #000;">{{ $i + 1 }}</td>
-                        <td style="text-align:left; font-weight:bold; border:1px solid #000;">
-                            {{ $item->item_name ?? $item->desc ?? '—' }}
-                            @if($item->department)
-                                <span style="font-size:8px; font-weight:bold;">({{ $item->department }})</span>
-                            @endif
-                        </td>
-                        <td style="text-align:left; border:1px solid #000;">{{ $item->desc ?? '—' }}</td>
-                        <td style="text-align:left; border:1px solid #000;">{{ $item->category ?? '—' }}</td>
-                        <td style="text-align:center; border:1px solid #000;">{{ \Carbon\Carbon::parse($item->date)->format('d-m-Y') }}</td>
-                        @if($txnType !== 'expense')
-                            <td style="text-align:right; font-weight:bold; border:1px solid #000;">{{ $item->amount_in > 0 ? number_format($item->amount_in, 0, ',', '.') : '' }}</td>
-                        @endif
-                        @if($txnType !== 'income')
-                            <td style="text-align:right; font-weight:bold; border:1px solid #000;">{{ $item->amount_out > 0 ? number_format($item->amount_out, 0, ',', '.') : '' }}</td>
-                        @endif
-                        <td style="text-align:right; font-weight:bold; border:1px solid #000;">{{ number_format($pb, 0, ',', '.') }}</td>
-                    </tr>
-                @endforeach
-            </tbody>
-            <tfoot>
-                <tr style="font-weight:bold; background:#f0f0f0;">
-                    <td colspan="5" style="text-align:center; font-weight:bold; border:1px solid #000;">ລວມທັງໝົດ</td>
-                    @if($txnType !== 'expense')
-                        <td style="text-align:right; font-weight:bold; border:1px solid #000;">{{ number_format($totalIncome, 0, ',', '.') }}</td>
-                    @endif
-                    @if($txnType !== 'income')
-                        <td style="text-align:right; font-weight:bold; border:1px solid #000;">{{ number_format($totalExpense, 0, ',', '.') }}</td>
-                    @endif
-                    <td style="text-align:right; font-weight:bold; border:1px solid #000;">{{ number_format($totalIncome - $totalExpense, 0, ',', '.') }}</td>
-                </tr>
-            </tfoot>
-        </table>
-
-        {{-- Signature --}}
-        @php
-            $sigDate = $type === 'daily' ? \Carbon\Carbon::parse($date)->format('d-m-Y') : now()->format('d-m-Y');
-        @endphp
-        <div style="display:flex; justify-content:space-between; margin-top:45px; font-size:11px; line-height:1.6; page-break-inside:avoid;">
-            <div style="width:45%; text-align:left; font-weight:bold; padding-left:10px;">
-                ຫົວໜ້າພະແນກການເງິນ-ຊັບສິນ
-            </div>
-            <div style="width:45%; text-align:right; font-weight:bold; padding-right:10px; display:flex; flex-direction:column; align-items:flex-end;">
-                <p style="margin:0; padding-right:15px;">ວັນທີ: {{ $sigDate }}</p>
-                <p style="margin:6px 0 0; padding-right:25px;">ນາຍບັນຊີ</p>
-            </div>
-        </div>
+            {{-- fallback ledger print for income / combined --}}
+            @include('reports.partials.ledger-print', [
+                'ledger' => $ledger,
+                'txnType' => $txnType,
+                'totalIncome' => $totalIncome,
+                'totalExpense' => $totalExpense,
+                'type' => $type,
+                'date' => $date,
+            ])
+        @endif
     </div>
 </x-app-layout>

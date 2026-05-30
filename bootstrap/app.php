@@ -17,6 +17,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         // ตัด DB connection หลังทุก request เพื่อป้องกัน max_user_connections
         $middleware->appendToGroup('web', [
+            \App\Http\Middleware\EnsureUserIsActive::class,
             \App\Http\Middleware\DisconnectDatabase::class,
         ]);
     })

@@ -72,8 +72,26 @@ class ApprovalController extends Controller
     /** รายละเอียดคำขอ */
     public function show(AdvanceRequest $advanceRequest)
     {
+        if (! $this->canViewApproval($advanceRequest, Auth::user())) {
+            abort(403, 'ທ່ານບໍ່ມີສິດເບິ່ງຄຳຂໍນີ້');
+        }
+
         $advanceRequest->load('requester.role', 'department', 'workflowLogs.actor.role');
+
         return view('approvals.show', compact('advanceRequest'));
+    }
+
+    private function canViewApproval(AdvanceRequest $advanceRequest, $user): bool
+    {
+        if ($advanceRequest->canBeActedBy($user)) {
+            return true;
+        }
+
+        if (! $user->isApprover()) {
+            return false;
+        }
+
+        return $advanceRequest->status !== 'draft';
     }
 
 }

@@ -41,6 +41,7 @@ html {
         --fns-shadow-lg: 0 4px 24px rgba(0,0,0,0.08);
         --fns-radius: 14px;
         --fns-radius-sm: 10px;
+        --fns-select-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none'%3E%3Cpath d='M6 9l6 6 6-6' stroke='%23111827' stroke-width='2.75' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
 
         /* legacy compat aliases */
         --ui-bg: var(--fns-bg);
@@ -433,8 +434,6 @@ html {
         border-color: var(--fns-primary);
         box-shadow: 0 0 0 3px var(--fns-ring);
     }
-    .fns-select { appearance: auto; }
-
     .fns-label {
         display: block;
         font-size: 0.72rem;
@@ -566,8 +565,32 @@ html {
 
     /* legacy compat */
     .ui-card { background: var(--fns-surface); border: 1px solid var(--fns-border); border-radius: var(--fns-radius); box-shadow: var(--fns-shadow); }
-    .ui-input { width: 100%; border-radius: var(--fns-radius-sm); border: 1px solid var(--fns-border); background: #fff; color: var(--fns-text); font-size: 0.875rem; padding: 10px 14px; transition: border-color 0.2s, box-shadow 0.2s; }
+    .ui-input { width: 100%; border-radius: var(--fns-radius-sm); border: 1px solid var(--fns-border); background-color: #fff; color: var(--fns-text); font-size: 0.875rem; padding: 10px 14px; transition: border-color 0.2s, box-shadow 0.2s; }
+    input.ui-input:not([type="checkbox"]):not([type="radio"]),
+    textarea.ui-input { background-color: #fff; }
     .ui-input:focus { outline: none; border-color: var(--fns-primary); box-shadow: 0 0 0 3px var(--fns-ring); }
+
+    /* Dropdown chevron (ທຸກ select) */
+    select.fns-select,
+    select.ui-input,
+    body select:not([multiple]):not([size]) {
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        padding-right: 2.5rem;
+        background-color: #fff;
+        background-image: var(--fns-select-chevron);
+        background-repeat: no-repeat;
+        background-position: right 0.75rem center;
+        background-size: 14px 14px;
+        cursor: pointer;
+    }
+
+    select.fns-select:focus,
+    select.ui-input:focus,
+    body select:not([multiple]):not([size]):focus {
+        background-image: var(--fns-select-chevron);
+    }
     .ui-btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; border-radius: var(--fns-radius-sm); border: 1px solid transparent; padding: 9px 16px; font-weight: 600; font-size: 0.8rem; transition: all 0.15s ease; }
     .ui-btn:hover { transform: translateY(-1px); }
     .ui-btn-primary { background: var(--fns-primary); color: #fff; box-shadow: 0 2px 8px rgba(99,102,241,0.25); }
