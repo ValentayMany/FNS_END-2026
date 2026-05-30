@@ -1,0 +1,159 @@
+# 📊 สรุประบบ FNS Financial Management System
+
+## 🏗️ Technology Stack
+
+| Component | Technology |
+|-----------|-----------|
+| **Framework** | Laravel (PHP) |
+| **Frontend** | Blade Templates + Tailwind CSS |
+| **Database** | MySQL (Remote: `filess.io`, port 3307) |
+| **Build Tool** | Vite |
+| **Theme** | Indigo-based Premium UI |
+
+---
+
+## 👥 บทบาทผู้ใช้ (10 Roles)
+
+| Role | ชื่อภาษาลาว | หน้าที่หลัก |
+|------|-------------|------------|
+| `admin` | ຜູ້ດູແລລະບົບ | จัดการผู้ใช้, เปลี่ยน role, เปิด/ปิดสถานะ |
+| `requester` | ຜູ້ຂໍອະນຸມັດ | สร้างคำขอเบิกเงินทดรอง, ส่ง clearing |
+| `accountant` | ນາຍບັນຊີ | อนุมัติคำขอ (ขั้นที่ 1), ยืนยัน clearing, บันทึกค่าใช้จ่าย |
+| `head_of_finance` | ຫົວໜ້າການເງິນ | อนุมัติคำขอ (ขั้นที่ 2) |
+| `deputy_head_of_faculty` | ຮອງຫົວໜ້າຄະນະ | อนุมัติคำขอ (ขั้นที่ 3) |
+| `head_of_faculty` | ຫົວໜ້າຄະນະ | อนุมัติคำขอ (ขั้นที่ 4 - สุดท้าย) |
+| `cashier` | ຈ່າຍເງິນ | จ่ายเงินตามคำขอที่อนุมัติแล้ว |
+| `revenue_officer` | ຮັບເງິນ | บันทึกรายรับ |
+| `treasurer` | ຄັງເງິນ | ดูภาพรวมคลังเงิน |
+| `treasury_reconciliation_officer` | ສະສາງຄັງ | กระทบยอดคลังเงิน |
+
+---
+
+## 🔄 Workflow หลัก: คำขอเบิกเงินทดรอง (Advance Request)
+
+```mermaid
+graph TD
+    A["📝 Requester สร้างคำขอ (Draft)"] --> B["📤 Submit คำขอ"]
+    B --> C["🔍 นายบัญชี ตรวจสอบ"]
+    C -->|อนุมัติ| D["📋 หัวหน้าการเงิน ตรวจสอบ"]
+    C -->|ปฏิเสธ| X["❌ Rejected"]
+    D -->|อนุมัติ| E["📋 รองหัวหน้าคณะ ตรวจสอบ"]
+    D -->|ปฏิเสธ| X
+    E -->|อนุมัติ| F["📋 หัวหน้าคณะ ตรวจสอบ"]
+    E -->|ปฏิเสธ| X
+    F -->|อนุมัติ| G["✅ Approved"]
+    F -->|ปฏิเสธ| X
+    G --> H["💰 Cashier จ่ายเงิน (Paid)"]
+    H --> I["📑 Requester ส่ง Clearing"]
+    I --> J["✔️ นายบัญชี ยืนยัน Clearing"]
+    J --> K["🏁 Cleared (เสร็จสมบูรณ์)"]
+```
+
+**สถานะ (Status Flow):**
+`draft` → `pending_accountant_review` → `pending_finance_head_review` → `pending_deputy_head_approval` → `pending_faculty_head_approval` → `approved` → `paid` → `pending_clearing` → `cleared`
+
+---
+
+## 📦 โมดูลหลัก (Modules)
+
+### 1. 📋 คำขอเบิกเงินทดรอง (Advance Request)
+- CRUD สำหรับคำขอ
+- Multi-step approval workflow (4 ขั้นตอน)
+- Workflow log บันทึกประวัติทุกขั้นตอน
+
+### 2. ✅ อนุมัติ (Approvals)
+- รายการรอดำเนินการตาม role
+- อนุมัติ / ปฏิเสธ พร้อมเหตุผล
+
+### 3. 💰 จ่ายเงิน (Cashier)
+- จ่ายเงินตามคำขอที่ approved แล้ว
+- สร้าง Transaction อัตโนมัติ
+
+### 4. 📑 การสะสาง (Clearing)
+- ผู้ขอส่งรายการสะสาง + แนบไฟล์
+- นายบัญชียืนยัน clearing
+- รองรับ clearing items + attachments
+
+### 5. 💵 บันทึกรายรับ (Revenue)
+- Revenue Officer บันทึกรายรับทั่วไป
+- เชื่อมกับ Chart of Accounts
+
+### 6. 📊 บันทึกค่าใช้จ่าย (Expense)
+- นายบัญชีบันทึกค่าใช้จ่ายทั่วไป
+- แยกประเภทรายจ่าย (category)
+
+### 7. 🏦 คลังเงิน (Treasurer)
+- ดูภาพรวมคลังเงิน
+
+### 8. 🔄 กระทบยอด (Treasury Reconciliation)
+- กระทบยอดคลังเงิน
+
+### 9. 📈 รายงาน (Reports)
+- รายงานรายรับ-รายจ่าย (รายวัน/เดือน/ปี)
+- รายงานงบประมาณ-ค่าใช้จ่าย
+- Export Excel/CSV
+- Print Layout รองรับ A4
+
+### 10. 👤 จัดการผู้ใช้ (Admin)
+- จัดการ role
+- เปิด/ปิดสถานะ user
+
+---
+
+## 🗄️ Database Models (12 Models)
+
+| Model | หน้าที่ |
+|-------|--------|
+| `User` | ผู้ใช้งาน (username, full_name, role, department) |
+| `Role` | บทบาท |
+| `Department` | ภาควิชา/หน่วยงาน |
+| `AdvanceRequest` | คำขอเบิกเงินทดรอง |
+| `Transaction` | รายการทางการเงิน (รายรับ/รายจ่าย) |
+| `ChartOfAccount` | ผังบัญชี |
+| `RequestWorkflowLog` | ประวัติ workflow ของคำขอ |
+| `AdvanceClearingItem` | รายการสะสาง |
+| `AdvanceClearingAttachment` | ไฟล์แนบการสะสาง |
+| `BudgetPlan` | แผนงบประมาณ |
+| `BudgetLineItem` | รายการงบประมาณ |
+| `TreasuryReconciliationItem` | รายการกระทบยอด |
+
+---
+
+## 🛡️ ความปลอดภัย (Security)
+
+- **Role-based Access Control (RBAC)** — Middleware `CheckRole` ตรวจสอบ role ก่อนเข้าถึงทุก route
+- **Account Lock** — User ที่ถูก disable จะถูก logout อัตโนมัติ
+- **Password Hashing** — Bcrypt 12 rounds
+- **Session-based Auth** — Laravel Breeze/Fortify
+- **DisconnectDatabase Middleware** — ป้องกัน connection limit จาก remote DB
+
+---
+
+## 🎨 UI/UX
+
+- **Design Theme:** Indigo-based Premium UI
+- **Responsive:** รองรับ Mobile & Desktop
+- **Components:** ใช้ Laravel Blade Components (`<x-app-layout>`)
+- **Dashboard:** Bento Grid Layout พร้อม Action List สำหรับ Approver
+- **Print:** A4-compliant layout สำหรับรายงาน
+- **ภาษา:** ภาษาลาว (ພາສາລາວ) เป็นหลัก
+
+---
+
+## 📌 สถานะปัจจุบัน
+
+> [!TIP]
+> ระบบอยู่ในสถานะ **พร้อมใช้งาน (Production-ready)** — ฟีเจอร์หลักครบถ้วน
+
+| สิ่งที่เสร็จแล้ว | ✅ |
+|-------------------|---|
+| Multi-step approval workflow | ✅ |
+| Revenue & Expense recording | ✅ |
+| Clearing with attachments | ✅ |
+| Financial reports (daily/monthly/yearly) | ✅ |
+| Excel/CSV export | ✅ |
+| A4 print layout | ✅ |
+| Role-based access control (10 roles) | ✅ |
+| Premium Indigo UI theme | ✅ |
+| Database connection management | ✅ |
+| Lao text normalization (LaoText::normalize) | ✅ |

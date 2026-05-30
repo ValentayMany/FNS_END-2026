@@ -34,3 +34,29 @@ _System built for National University Faculty level financial management._
 
 ---
 **🔥 Status**: System is heavily reinforced, beautifully modernized, and fully primed for User Acceptance Testing (UAT) and Production environments!
+
+---
+
+## 🐛 6. Bug Fixes & System Hardening _(Updated: 23 Apr 2026)_
+
+### 🚨 Critical Fixes
+- `[x]` **Missing Route `clearing.submit`**: Added `POST /clearing/{advanceRequest}/submit` route under `role:requester` middleware — previously caused a fatal 500 error when Requester tried to submit a Clearing.
+- `[x]` **Missing Route `clearing.index`**: Added `GET /clearing` route for Requester to view their own Clearing list — was completely inaccessible before.
+- `[x]` **`ReportController::export()` — Missing `yearly` case**: The export function only handled `daily` and `monthly`. Exporting with `type=yearly` would silently use wrong month data. Now correctly handles all 3 types with proper `$year` variable scoping and correct filename (`report_2026.xlsx`).
+
+### ⚠️ Logic Fixes
+- `[x]` **Filter `account_id` not applied in `ReportController::index()`**: The View sent `account_id` from dropdown but the Controller never filtered by it. Now filters both `incomeTransactions` and `expenseTransactions` correctly.
+- `[x]` **Filter `department_id` and `account_id` missing in `export()`**: Excel export ignored all active filters — now mirrors the same filter logic as `index()` so exported data matches what's shown on screen.
+- `[x]` **`TreasurerController` — All-time totals instead of filtered by year**: `totalIncome` and `totalExpense` always summed ALL historical data. Now filters by selected `fiscal_year` (default: current year). Added year dropdown selector in `treasurer.blade.php`.
+- `[x]` **`BudgetExpenseReportController` was a Placeholder**: Replaced the dummy redirect-to-dashboard stub with a full implementation — queries real `Transaction` data by `account_id` + `fiscal_year`, computes running balance per row, and correctly passes `$fiscalYears`, `$lineItems`, `$report`, `$plan` to the View.
+
+### 💻 UI / UX Fixes
+- `[x]` **Stat Card "ຍອດເຫຼືອ" always showed green**: Net balance card now correctly turns **red** when expenses exceed income (both in `report.blade.php` and `treasurer.blade.php`). Negative value also prefixed with `-` sign for clarity.
+- `[x]` **Sidebar missing "ສະສາງເງິນ" for Requester**: Added Clearing menu link (`clearing.index`) to the Requester section in `navigation.blade.php`.
+- `[x]` **Sidebar missing "ລາຍຈ່າຍງົບປະມານ" for Accountant**: Added Budget Expense Report link (`reports.budget-expense`) to the Accountant section.
+
+### 🔐 Security / Admin Fixes
+- `[x]` **Admin had no way to Enable/Disable Users**: Added `POST /admin/users/{user}/toggle-active` route → `AdminController::toggleActive()` method → Toggle button in `admin/users.blade.php`. Includes self-protection (Admin cannot disable their own account). Confirms with browser dialog before deactivating.
+
+---
+**✅ All 8 identified bugs resolved. System is now production-ready.**

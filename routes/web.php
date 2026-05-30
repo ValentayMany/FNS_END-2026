@@ -48,7 +48,14 @@ Route::middleware(['auth', 'role:cashier'])
         Route::post('/cashier/{advanceRequest}/pay', [CashierController::class, 'pay'])->name('cashier.pay');
     });
 
-// ---- Clearing ----
+// ---- Clearing (Requester) ----
+Route::middleware(['auth', 'role:requester'])
+    ->group(function () {
+        Route::get('/clearing', [ClearingController::class, 'index'])->name('clearing.index');
+        Route::post('/clearing/{advanceRequest}/submit', [ClearingController::class, 'submit'])->name('clearing.submit');
+    });
+
+// ---- Clearing (Accountant) ----
 Route::middleware(['auth', 'role:accountant'])
     ->group(function () {
         Route::get('/clearing/pending', [ClearingController::class, 'pendingIndex'])->name('clearing.pending');
@@ -58,13 +65,25 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/clearing-attachment/{attachment}/download', [ClearingController::class, 'downloadAttachment'])->name('clearing.download');
 });
 
-// ---- Revenue / Expense (Accountant + Revenue Officer) ----
-Route::middleware(['auth', 'role:accountant,revenue_officer'])
+// ---- Revenue (Revenue Officer only) ----
+Route::middleware(['auth', 'role:revenue_officer'])
     ->group(function () {
         Route::get('/revenue', [RevenueController::class, 'index'])->name('revenue.index');
         Route::post('/revenue', [RevenueController::class, 'store'])->name('revenue.store');
+        Route::get('/revenue/{transaction}/edit', [RevenueController::class, 'edit'])->name('revenue.edit');
+        Route::put('/revenue/{transaction}', [RevenueController::class, 'update'])->name('revenue.update');
+        Route::delete('/revenue/{transaction}', [RevenueController::class, 'destroy'])->name('revenue.destroy');
+    });
+
+// ---- Expense (Accountant only) ----
+Route::middleware(['auth', 'role:accountant'])
+    ->group(function () {
         Route::get('/expense', [ExpenseController::class, 'index'])->name('expense.index');
+        Route::get('/expense/next-code', [ExpenseController::class, 'getNextCode'])->name('expense.next-code');
         Route::post('/expense', [ExpenseController::class, 'store'])->name('expense.store');
+        Route::get('/expense/{transaction}/edit', [ExpenseController::class, 'edit'])->name('expense.edit');
+        Route::put('/expense/{transaction}', [ExpenseController::class, 'update'])->name('expense.update');
+        Route::delete('/expense/{transaction}', [ExpenseController::class, 'destroy'])->name('expense.destroy');
     });
 
 // ---- Treasurer ----
@@ -85,6 +104,7 @@ Route::middleware(['auth', 'role:admin'])
     ->group(function () {
         Route::get('/admin/users', [AdminController::class, 'index'])->name('admin.users');
         Route::post('/admin/users/{user}/update-role', [AdminController::class, 'updateRole'])->name('admin.updateRole');
+        Route::post('/admin/users/{user}/toggle-active', [AdminController::class, 'toggleActive'])->name('admin.toggleActive');
     });
 
 // ---- Reports ----

@@ -1,0 +1,80 @@
+﻿                        </div>
+                        
+                        <div class="fns-card-body bg-gray-50/30 relative z-10 p-5 sm:p-6">
+                            <form method="POST" action="{{ route('expense.store') }}" class="space-y-4">
+                                @csrf
+
+                                <div class="grid grid-cols-1 gap-4">
+                                    <div>
+                                        <label for="transaction_date" class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">เบงเบฑเบเบ—เบต <span class="text-red-500">*</span></label>
+                                        <input id="transaction_date" name="transaction_date" type="date"
+                                            class="ui-input bg-white focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition-all" value="{{ old('transaction_date', today()->toDateString()) }}" required />
+                                        <x-input-error :messages="$errors->get('transaction_date')" class="mt-1" />
+                                    </div>
+
+                                    <div>
+                                        <label for="category" class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">เบเบฐเป€เบเบ”เบฅเบฒเบเบเปเบฒเบ <span class="text-red-500">*</span></label>
+                                        <select id="category" name="category" required class="ui-input bg-white focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition-all appearance-none cursor-pointer text-sm">
+                                            <option value="">-- เป€เบฅเบทเบญเบเบเบฐเป€เบเบ”เบฅเบฒเบเบเปเบฒเบ --</option>
+                                            <option value="เป€เบเบดเบเบญเบธเบ”เปเบนเบ เปเบฅเบฐ เบเบฐเปเบเบเบฒเบ" {{ old('category') == 'เป€เบเบดเบเบญเบธเบ”เปเบนเบ เปเบฅเบฐ เบเบฐเปเบเบเบฒเบ' ? 'selected' : '' }}>เป€เบเบดเบเบญเบธเบ”เปเบนเบ เปเบฅเบฐ เบเบฐเปเบเบเบฒเบ</option>
+                                            <option value="เบเบฒเบเบเบทเป เปเบฅเบฐ เบเบฒเบเบเบปเบกเปเบเป" {{ old('category') == 'เบเบฒเบเบเบทเป เปเบฅเบฐ เบเบฒเบเบเบปเบกเปเบเป' ? 'selected' : '' }}>เบเบฒเบเบเบทเป เปเบฅเบฐ เบเบฒเบเบเบปเบกเปเบเป</option>
+                                            <option value="เบเบฒเบเบเปเบฅเบดเบเบฒเบเบเบฒเบเบ—เบฒเบเบเบญเบ" {{ old('category') == 'เบเบฒเบเบเปเบฅเบดเบเบฒเบเบเบฒเบเบ—เบฒเบเบเบญเบ' ? 'selected' : '' }}>เบเบฒเบเบเปเบฅเบดเบเบฒเบเบเบฒเบเบ—เบฒเบเบเบญเบ</option>
+                                            <option value="เบฅเบฒเบเบเปเบฒเบเบเบญเบเบเบฐเบเบธเบก เบชเบณเบกเบฐเบเบฒ เปเบฅเบฐ เบเบถเบเบญเบปเบเบฎเบปเบก" {{ old('category') == 'เบฅเบฒเบเบเปเบฒเบเบเบญเบเบเบฐเบเบธเบก เบชเบณเบกเบฐเบเบฒ เปเบฅเบฐ เบเบถเบเบญเบปเบเบฎเบปเบก' ? 'selected' : '' }}>เบฅเบฒเบเบเปเบฒเบเบเบญเบเบเบฐเบเบธเบก เบชเบณเบกเบฐเบเบฒ เปเบฅเบฐ เบเบถเบเบญเบปเบเบฎเบปเบก</option>
+                                            <option value="เบ”เบฑเบ”เบชเบปเบก เปเบฅเบฐ เบชเบปเปเบเป€เบชเบตเบกเบงเบฑเบ”เบ—เบฐเบเบฐเบ—เบณ - เบชเบฑเบเบเบปเบก" {{ old('category') == 'เบ”เบฑเบ”เบชเบปเบก เปเบฅเบฐ เบชเบปเปเบเป€เบชเบตเบกเบงเบฑเบ”เบ—เบฐเบเบฐเบ—เบณ - เบชเบฑเบเบเบปเบก' ? 'selected' : '' }}>เบ”เบฑเบ”เบชเบปเบก เปเบฅเบฐ เบชเบปเปเบเป€เบชเบตเบกเบงเบฑเบ”เบ—เบฐเบเบฐเบ—เบณ - เบชเบฑเบเบเบปเบก</option>
+                                            <option value="เบฅเบฒเบเบเปเบฒเบเบเปเบฅเบดเบซเบฒเบเบเบปเบเบเบฐเบ•เบดเบญเบทเปเบเป" {{ old('category') == 'เบฅเบฒเบเบเปเบฒเบเบเปเบฅเบดเบซเบฒเบเบเบปเบเบเบฐเบ•เบดเบญเบทเปเบเป' ? 'selected' : '' }}>เบฅเบฒเบเบเปเบฒเบเบเปเบฅเบดเบซเบฒเบเบเบปเบเบเบฐเบ•เบดเบญเบทเปเบเป</option>
+                                            <option value="เบเบทเปเบเบฑเบเบชเบปเบกเบเบฑเบ”เบเบปเบเบ—เบตเป" {{ old('category') == 'เบเบทเปเบเบฑเบเบชเบปเบกเบเบฑเบ”เบเบปเบเบ—เบตเป' ? 'selected' : '' }}>เบเบทเปเบเบฑเบเบชเบปเบกเบเบฑเบ”เบเบปเบเบ—เบตเป</option>
+                                        </select>
+                                        <x-input-error :messages="$errors->get('category')" class="mt-1" />
+                                    </div>
+
+                                    <div>
+                                        <label for="amount" class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">เบเบณเบเบงเบเป€เบเบดเบ (เบเบตเบ) <span class="text-red-500">*</span></label>
+                                        <div class="relative">
+                                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                <span class="text-gray-400 font-bold sm:text-sm">โญ</span>
+                                            </div>
+                                            <input id="amount" name="amount" type="number" class="ui-input bg-white pl-8 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition-all font-bold text-rose-700" min="1" step="0.01" value="{{ old('amount') }}" placeholder="0.00" required />
+                                        </div>
+                                        <x-input-error :messages="$errors->get('amount')" class="mt-1" />
+                                    </div>
+
+                                    <div>
+                                        <label for="account_id" class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">เปเบงเบ”เบเบฑเบเบเบต <span class="text-red-500">*</span></label>
+                                        <select id="account_id" name="account_id" required class="ui-input bg-white focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition-all text-sm">
+                                            <option value="">-- เป€เบฅเบทเบญเบเปเบงเบ”เบเบฑเบเบเบต --</option>
+                                            @foreach ($accounts as $acc)
+                                                <option value="{{ $acc->id }}" {{ old('account_id') == $acc->id ? 'selected' : '' }}>
+                                                    {{ $acc->account_code }} - {{ $acc->account_name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        <x-input-error :messages="$errors->get('account_id')" class="mt-1" />
+                                    </div>
+
+                                    <div>
+                                        <label for="department_id" class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">เบเบฒเบเบชเปเบงเบ <span class="text-red-500">*</span></label>
+                                        <select id="department_id" name="department_id" required class="ui-input bg-white focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition-all text-sm">
+                                            <option value="">-- เป€เบฅเบทเบญเบเบเบฒเบเบชเปเบงเบ --</option>
+                                            @foreach ($departments as $dept)
+                                                <option value="{{ $dept->id }}" {{ old('department_id') == $dept->id ? 'selected' : '' }}>
+                                                    {{ $dept->displayName() }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        <x-input-error :messages="$errors->get('department_id')" class="mt-1" />
+                                    </div>
+
+                                    <div>
+                                        <label for="description" class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">เบฅเบฒเบเบฅเบฐเบญเบฝเบ” <span class="text-red-500">*</span></label>
+                                        <textarea id="description" name="description" rows="3" required class="ui-input bg-white focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition-all text-sm resize-none placeholder-gray-300" placeholder="เบญเบฐเบ—เบดเบเบฒเบเบฅเบฒเบเบฅเบฐเบญเบฝเบ”เปเบซเบผเปเบเบ—เบตเปเบกเบฒเบเบญเบเบฅเบฒเบเบเปเบฒเบเปเบเบตเปเบกเป€เบ•เบตเบก">{{ old('description') }}</textarea>
+                                        <x-input-error :messages="$errors->get('description')" class="mt-1" />
+                                    </div>
+
+                                </div>
+
+                                <div class="pt-2">
+                                    <button type="submit" class="w-full ui-btn bg-indigo-500 text-white hover:bg-indigo-600 shadow-lg shadow-indigo-500/30 hover:shadow-indigo-500/40 text-sm py-2.5 outline-none focus:ring-2 focus:ring-indigo-500 ring-offset-1">
+                                        <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>
+                                        เบเบฑเบเบ—เบถเบเบฅเบฒเบเบเปเบฒเบเป€เบเบปเปเบฒเบฅเบฐเบเบปเบ
+                                    </button>
+                                </div>

@@ -35,7 +35,7 @@
                         </div>
                         <div class="text-left sm:text-right shrink-0 flex flex-col sm:items-end">
                             <p class="font-extrabold text-gray-900 text-lg">{{ number_format($req->requested_amount, 2) }} <span class="text-sm text-gray-400">ກີບ</span></p>
-                            <a href="{{ route('approval.show', $req) }}" class="inline-flex items-center gap-1 text-sm font-bold text-indigo-600 hover:text-indigo-800 transition-colors mt-1 bg-indigo-50 px-3 py-1 rounded-lg hover:bg-indigo-100">
+                            <a href="{{ route('approvals.show', $req) }}" class="inline-flex items-center gap-1 text-sm font-bold text-indigo-600 hover:text-indigo-800 transition-colors mt-1 bg-indigo-50 px-3 py-1 rounded-lg hover:bg-indigo-100">
                                 ດຳເນີນການ 
                                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /></svg>
                             </a>

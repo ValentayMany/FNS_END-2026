@@ -1,40 +1,45 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 min-w-0">
-            <div class="flex flex-col gap-0.5 min-w-0">
-                <p class="text-xs font-medium text-indigo-400 uppercase tracking-widest">ລາຍງານ</p>
-                <h2 class="text-lg sm:text-xl font-bold text-gray-800 truncate">ລົງຕາມລາຍຈ່າຍງົບປະມານ</h2>
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 w-full min-w-0">
+            <div class="flex flex-col gap-1.5 min-w-0">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-lg bg-indigo-100 text-indigo-600 flex items-center justify-center shrink-0">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                        </svg>
+                    </div>
+                    <h2 class="text-xl sm:text-2xl font-extrabold text-gray-900 tracking-tight leading-none">
+                        ຕິດຕາມລາຍຈ່າຍງົບປະມານ
+                    </h2>
+                </div>
+                <p class="text-sm font-semibold text-gray-500 pl-10">ຕິດຕາມການນຳໃຊ້ງົບປະມານແຍກຕາມໝວດບັນຊີ</p>
             </div>
-            <div class="flex flex-wrap items-center gap-2 shrink-0 no-print">
-                <button type="button" onclick="window.print()" class="fns-btn fns-btn-secondary">
+            
+            <div class="flex items-center gap-2 shrink-0 no-print">
+                <button onclick="window.print()" 
+                    class="ui-btn bg-indigo-600 text-white hover:bg-indigo-700 shadow-md shadow-indigo-600/20 text-xs py-2.5 px-4 flex items-center gap-1.5 font-bold transition-all duration-150">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
                     </svg>
-                    ພິມລາຍງານ
+                    ພິມລາຍງານ (Print)
                 </button>
-                <a href="{{ route('reports.index') }}" class="fns-btn fns-btn-primary">
+                <a href="{{ route('reports.index') }}" 
+                    class="ui-btn bg-white hover:bg-gray-50 text-gray-700 font-bold py-2.5 px-4 rounded-xl border border-gray-200 hover:border-gray-300 transition-all duration-150 flex items-center gap-1.5 text-xs">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                     </svg>
-                    ລາຍງານຫຼັກ
+                    ລາຍງານຫຼັກ (Main Report)
                 </a>
             </div>
         </div>
     </x-slot>
 
     <style>
-        /* ── Print-only blocks ── */
-        .print-header, .print-sign { display: none; }
-
-        /* ══════════════════════════════
-           PRINT — แบบระบบເກົ່າ
-           ══════════════════════════════ */
         @media print {
-            @page { size: A4 portrait; margin: 10mm 12mm; }
+            @page { size: A4 portrait; margin: 15mm 20mm; }
             * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
             nav, header, .no-print { display: none !important; }
-            html, body { background: #fff !important; color: #000 !important; font-size: 12px !important; margin: 0 !important; padding: 0 !important; width: 100% !important; }
+            html, body { background: #fff !important; color: #1e293b !important; font-size: 11px !important; margin: 0 !important; padding: 0 !important; width: 100% !important; font-family: 'Noto Sans Lao', 'Phetsarath OT', sans-serif !important; }
             body > div.min-h-screen { display: block !important; width: 100% !important; margin: 0 !important; padding: 0 !important; background: #fff !important; }
             main { width: 100% !important; margin: 0 !important; padding: 0 !important; }
 
@@ -47,177 +52,192 @@
             .budget-kpi-grid { display: none !important; }
             .fns-meta { display: none !important; }
 
-            .print-header { display: block !important; margin-bottom: 10px; }
-            .print-sign { display: block !important; margin-top: 24px; }
+            .print-only { display: block !important; visibility: visible !important; }
 
-            .print-header .ph-top {
-                display: flex; justify-content: space-between; align-items: flex-start;
-                font-size: 10px; color: #000; margin-bottom: 4px;
+            .p-tbl {
+                width: 100%;
+                border-collapse: collapse;
+                font-size: 10.5px;
+                margin-top: 15px;
             }
-            .print-header .ph-title { text-align: center; margin: 6px 0 4px; }
-            .print-header .ph-title h1 { font-size: 14px; font-weight: 800; color: #000; margin: 0; }
-            .print-header .ph-title .ph-sub { font-size: 12px; color: #000; margin: 2px 0 0; }
-            .print-header .ph-info {
-                display: flex !important; justify-content: space-between; align-items: flex-start;
-                margin-top: 12px; font-size: 12px; color: #000;
+            .p-tbl th,
+            .p-tbl td {
+                border: 1px solid #000 !important;
+                padding: 8px 10px !important;
+                text-align: left;
             }
-            .print-header .ph-info p { margin: 2px 0; }
-            .print-header .ph-info-right { text-align: right; }
-
-            .budget-table { font-size: 11px !important; border: 2px solid #000 !important; border-collapse: collapse !important; width: 100% !important; }
-            .budget-table thead th { background: #f5f5f5 !important; color: #000 !important; font-size: 10px !important; padding: 6px 8px !important; border: 1px solid #000 !important; }
-            .budget-table tbody td { padding: 7px 8px !important; border: 1px solid #000 !important; color: #000 !important; }
-            .budget-table .amt, .budget-table .bal, .budget-table .bal.ok, .budget-table .bal.warn, .budget-table .bal.danger { color: #000 !important; }
-            .budget-table tfoot td { background: #f5f5f5 !important; color: #000 !important; border: 1px solid #000 !important; border-top: 2px solid #000 !important; }
-
-            .print-sign .ps-date { text-align: right; font-size: 12px; color: #000; margin-bottom: 8px; }
-            .print-sign .row { display: flex; justify-content: space-between; gap: 20px; font-size: 11px; color: #000; }
-            .print-sign .sig { text-align: center; flex: 1; }
-            .print-sign .line { margin-top: 30px; border-top: 1px solid #000; padding-top: 4px; font-weight: 600; }
+            .p-tbl thead th {
+                background: #fff !important;
+                font-weight: bold !important;
+                color: #000 !important;
+                font-size: 10px;
+                border: 1px solid #000 !important;
+            }
         }
     </style>
 
-    <div class="budget-outer py-6 sm:py-8 w-full min-w-0">
-        <div class="budget-inner max-w-[900px] mx-auto w-full px-3 sm:px-4 space-y-5">
+    <div class="budget-outer py-6 sm:py-8 w-full min-w-0 no-print">
+        <div class="budget-inner max-w-[1400px] mx-auto w-full px-3 sm:px-4 lg:px-6 space-y-6">
 
-            {{-- ══ Print-only header ══ --}}
-            <div class="print-header">
-                <div class="ph-top">
-                    <span>{{ now()->format('n/d/Y, g:i A') }}</span>
-                    <span>ໃບບັນຈາຍເງິນ</span>
-                </div>
-                <div class="ph-title">
-                    @if($report)
-                        <h1>ຕິດຕາມລາຍຈ່າຍງົບປະມານ {{ $report['account']?->account_name ?? '' }}</h1>
-                        @if($report['account']?->account_code)
-                            <p class="ph-sub">(ງົບປະມານ{{ $report['account']->account_name }})</p>
-                        @endif
-                    @else
-                        <h1>ຕິດຕາມລາຍຈ່າຍງົບປະມານ</h1>
-                    @endif
-                </div>
-                @if($report)
-                    <div class="ph-info">
-                        <div class="ph-info-left">
-                            <p>ຈຳນວນລາຍການລາຍຈ່າຍ: {{ $report['transactions']->count() }}</p>
-                            <p>ຊ້ວງງົບປະມານ:</p>
-                            <p>{{ $report['account']?->account_code ?? '-' }}</p>
-                        </div>
-                        <div class="ph-info-right">
-                            <p>ຕົວເລກອະນຸມັດ: {{ number_format($report['budget'], 0) }}</p>
-                            <p>ຈ່າຍແລ້ວ: {{ number_format($report['totalSpent'], 0) }}</p>
-                            <p>ຍົດເຫຼືອ: {{ number_format($report['remaining'], 0) }}</p>
-                        </div>
+            {{-- Filter Card --}}
+            <div class="fns-card bg-white shadow-md rounded-2xl border border-gray-100 overflow-hidden fns-animate">
+                <div class="border-b border-gray-100 bg-gray-50/50 p-2 sm:px-5 sm:py-3 flex overflow-x-auto">
+                    <div class="flex gap-1.5 p-1 bg-gray-200/60 rounded-lg inline-flex">
+                        <a href="{{ route('reports.budget-expense', array_merge(request()->except('type'), ['type' => 'daily'])) }}" 
+                           class="px-5 py-1.5 text-xs font-bold rounded-md transition-all whitespace-nowrap {{ $type === 'daily' ? 'bg-white text-indigo-600 shadow-sm ring-1 ring-black/5' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-200/50' }}">
+                           ປະຈຳວັນ
+                        </a>
+                        <a href="{{ route('reports.budget-expense', array_merge(request()->except('type'), ['type' => 'monthly'])) }}" 
+                           class="px-5 py-1.5 text-xs font-bold rounded-md transition-all whitespace-nowrap {{ $type === 'monthly' ? 'bg-white text-indigo-600 shadow-sm ring-1 ring-black/5' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-200/50' }}">
+                           ປະຈຳເດືອນ
+                        </a>
+                        <a href="{{ route('reports.budget-expense', array_merge(request()->except('type'), ['type' => 'yearly'])) }}" 
+                           class="px-5 py-1.5 text-xs font-bold rounded-md transition-all whitespace-nowrap {{ $type === 'yearly' ? 'bg-white text-indigo-600 shadow-sm ring-1 ring-black/5' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-200/50' }}">
+                           ປະຈຳປີ
+                        </a>
                     </div>
-                @endif
+                </div>
+                <div class="p-5 bg-gray-50/30">
+                    <form method="GET" action="{{ route('reports.budget-expense') }}" class="flex flex-wrap gap-4 items-end">
+                        <input type="hidden" name="type" value="{{ $type }}">
+                        
+                        <div class="flex flex-col gap-1.5">
+                            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider">
+                                {{ $type === 'daily' ? 'ວັນທີ' : ($type === 'monthly' ? 'ເດືອນ' : 'ປີງົບປະມານ') }}
+                            </label>
+                            @if($type === 'daily')
+                                <input type="date" name="date" value="{{ $date }}" class="ui-input bg-white focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition-all text-sm h-10 min-w-[160px]">
+                            @elseif($type === 'monthly')
+                                <input type="month" name="month" value="{{ $month }}" class="ui-input bg-white focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition-all text-sm h-10 min-w-[160px]">
+                            @else
+                                <select name="year" class="ui-input bg-white focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition-all text-sm h-10 min-w-[120px] cursor-pointer">
+                                    @for($y = date('Y')-5; $y <= date('Y')+2; $y++)
+                                        <option value="{{ $y }}" {{ $year == $y ? 'selected' : '' }}>{{ $y }}</option>
+                                    @endfor
+                                </select>
+                            @endif
+                        </div>
+                        
+                        <div class="flex flex-col gap-1.5 min-w-[240px] flex-1">
+                            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider">ໝວດບັນຊີງົບປະມານ</label>
+                            <select name="account_id" class="ui-input bg-white focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition-all text-sm h-10 cursor-pointer">
+                                <option value="">-- ເລືອກໝວດບັນຊີ --</option>
+                                @foreach($lineItems as $li)
+                                    <option value="{{ $li->account_id }}" {{ $selectedAccountId == $li->account_id ? 'selected' : '' }}>
+                                        {{ $li->chartOfAccount?->account_code }} — {{ $li->chartOfAccount?->account_name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        
+                        <button type="submit" class="ui-btn bg-indigo-500 hover:bg-indigo-600 text-white font-bold h-10 px-5 flex items-center justify-center gap-2 text-sm shadow-lg shadow-indigo-500/25 transition-all duration-150 shrink-0">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                            ສະແດງລາຍງານ
+                        </button>
+                    </form>
+                </div>
             </div>
 
-            {{-- Filter --}}
-            <div class="fns-filter no-print fns-animate">
-                <form method="GET" action="{{ route('reports.budget-expense') }}"
-                      class="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-end sm:gap-5">
-                    <div class="sm:w-40">
-                        <label class="fns-label">ປີງົບປະມານ</label>
-                        <select name="fiscal_year" onchange="this.form.submit()" class="fns-select">
-                            <option value="">-- ເລືອກປີ --</option>
-                            @foreach($fiscalYears as $yr)
-                                <option value="{{ $yr }}" {{ $selectedYear == $yr ? 'selected' : '' }}>{{ $yr }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="flex-1">
-                        <label class="fns-label">ໝວດບັນຊີ</label>
-                        <select name="account_id" class="fns-select">
-                            <option value="">-- ເລືອກໝວດ --</option>
-                            @foreach($lineItems as $li)
-                                <option value="{{ $li->account_id }}" {{ $selectedAccountId == $li->account_id ? 'selected' : '' }}>
-                                    {{ $li->chartOfAccount?->account_code }} — {{ $li->chartOfAccount?->account_name }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <button type="submit" class="fns-btn fns-btn-primary">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                        </svg>
-                        ສະແດງ
-                    </button>
-                </form>
-            </div>
-
-            {{-- Report --}}
+            {{-- Report Table Card --}}
             @if($report)
-                <div class="fns-card fns-animate">
-                    <div class="fns-card-header">
+                <div class="fns-card bg-white shadow-md rounded-2xl border border-gray-100 overflow-hidden fns-animate">
+                    <div class="p-5 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                         <div>
-                            <h3 class="fns-card-title">{{ $report['account']?->account_name ?? 'ໝວດບັນຊີ' }}</h3>
-                            <p class="fns-card-subtitle">ເລກບັນຊີ: {{ $report['account']?->account_code ?? '-' }}</p>
+                            <h3 class="text-base font-extrabold text-gray-800 flex items-center gap-2">
+                                <span class="w-1.5 h-5 rounded-full bg-indigo-500 block"></span>
+                                {{ $report['account']?->account_name ?? 'ໝວດບັນຊີ' }}
+                            </h3>
+                            <p class="text-xs text-gray-400 mt-0.5">ເລກບັນຊີ: {{ $report['account']?->account_code ?? '-' }}</p>
                         </div>
                     </div>
 
-                    <div class="budget-kpi-grid grid grid-cols-3 border-b border-gray-200">
-                        <div class="fns-kpi border-r border-gray-200">
-                            <div class="fns-kpi-label">ງົບປະມານປີ</div>
-                            <div class="fns-kpi-value">{{ number_format($report['budget'], 0) }}</div>
+                    {{-- KPIs Widgets --}}
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 border-b border-gray-100 p-5 bg-gray-50/20">
+                        <div class="fns-card bg-white shadow-sm border border-gray-100 p-4 rounded-xl flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center border border-indigo-100 shrink-0">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <span class="block text-[10px] text-gray-400 font-bold uppercase tracking-wider">ງົບປະມານອະນຸມັດ</span>
+                                <span class="block text-lg font-extrabold text-indigo-600">{{ number_format($report['budget'], 0) }} ₭</span>
+                            </div>
                         </div>
-                        <div class="fns-kpi border-r border-gray-200">
-                            <div class="fns-kpi-label">ຈ່າຍແລ້ວ</div>
-                            <div class="fns-kpi-value negative">{{ number_format($report['totalSpent'], 0) }}</div>
+                        <div class="fns-card bg-white shadow-sm border border-gray-100 p-4 rounded-xl flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center border border-rose-100 shrink-0">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <span class="block text-[10px] text-gray-400 font-bold uppercase tracking-wider">ຈ່າຍແລ້ວທັງໝົດ</span>
+                                <span class="block text-lg font-extrabold text-rose-600">{{ number_format($report['totalSpent'], 0) }} ₭</span>
+                            </div>
                         </div>
-                        <div class="fns-kpi">
-                            <div class="fns-kpi-label">ຍົດເຫຼືອ</div>
-                            <div class="fns-kpi-value {{ $report['remaining'] >= 0 ? 'positive' : 'negative' }}">
-                                {{ number_format($report['remaining'], 0) }}
+                        <div class="fns-card bg-white shadow-sm border border-gray-100 p-4 rounded-xl flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-lg {{ $report['remaining'] >= 0 ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 'bg-rose-50 text-rose-600 border-rose-100' }} flex items-center justify-center border shrink-0">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <span class="block text-[10px] text-gray-400 font-bold uppercase tracking-wider">ງົບປະມານຄົງເຫຼືອ</span>
+                                <span class="block text-lg font-extrabold {{ $report['remaining'] >= 0 ? 'text-emerald-600' : 'text-rose-600' }}">{{ number_format($report['remaining'], 0) }} ₭</span>
                             </div>
                         </div>
                     </div>
 
-                    <div class="fns-meta">
-                        <span>ປີງົບປະມານ: <strong>{{ $selectedYear }}</strong></span>
-                        <span>ເລກບັນຊີ: <strong>{{ $report['account']?->account_code }}</strong></span>
-                        <span>ຈຳນວນລາຍການ: <strong>{{ $report['transactions']->count() }}</strong></span>
+                    <div class="p-5 border-b border-gray-100 flex flex-wrap gap-4 items-center justify-between text-xs text-gray-500 font-bold">
+                        <span>ຊ່ວງເວລາ: <strong class="text-gray-800">{{ $type === 'daily' ? \Carbon\Carbon::parse($date)->format('d-m-Y') : ($type === 'monthly' ? \Carbon\Carbon::parse($month.'-01')->format('m-Y') : $selectedYear) }}</strong></span>
+                        <span>ເລກບັນຊີ: <strong class="text-gray-800">{{ $report['account']?->account_code }}</strong></span>
+                        <span>ຈຳນວນລາຍການ: <strong class="text-gray-800">{{ $report['transactions']->count() }}</strong></span>
                     </div>
 
-                    <div style="overflow-x:auto;">
-                        <table class="budget-table fns-table">
+                    <div class="overflow-x-auto touch-pan-x">
+                        <table class="fns-table w-full text-left border-collapse" style="min-width: 50rem;">
                             <thead>
-                                <tr>
-                                    <th style="width:58px;">ລຳດັບ</th>
-                                    <th>ເນື້ອໃນລາຍຈ່າຍ</th>
-                                    <th style="width:120px;">ວັນທີ-ເດືອນ-ປີ</th>
-                                    <th class="th-right" style="width:130px;">ລາຍຈ່າຍ</th>
-                                    <th class="th-right" style="width:140px;">ຍົດຄົງເຫຼືອ</th>
+                                <tr class="bg-gray-50/80 border-y border-gray-100">
+                                    <th class="py-3 px-4 text-[0.7rem] font-bold text-gray-500 uppercase tracking-wider text-center whitespace-nowrap" style="width:58px;">ລຳດັບ</th>
+                                    <th class="py-3 px-4 text-[0.7rem] font-bold text-gray-500 uppercase tracking-wider whitespace-nowrap">ເນື້ອໃນລາຍຈ່າຍ</th>
+                                    <th class="py-3 px-4 text-[0.7rem] font-bold text-gray-500 uppercase tracking-wider text-center whitespace-nowrap" style="width:140px;">ວັນທີ</th>
+                                    <th class="py-3 px-4 text-[0.7rem] font-bold text-gray-500 uppercase tracking-wider text-right whitespace-nowrap" style="width:130px;">ລາຍຈ່າຍ (ກີບ)</th>
+                                    <th class="py-3 px-4 text-[0.7rem] font-bold text-gray-500 uppercase tracking-wider text-right whitespace-nowrap" style="width:140px;">ດຸ່ນດ່ຽງ (ກີບ)</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody class="divide-y divide-gray-100">
                                 @forelse($report['transactions'] as $idx => $txn)
-                                    <tr>
-                                        <td class="text-center text-gray-400 font-semibold text-sm">{{ $idx + 1 }}</td>
-                                        <td class="text-gray-700 text-sm">{{ $txn->description }}</td>
-                                        <td class="fns-cell-date whitespace-nowrap">
+                                    <tr class="hover:bg-indigo-50/30 transition-colors duration-150 group">
+                                        <td class="py-3.5 px-4 text-center text-sm font-semibold text-gray-400">{{ $idx + 1 }}</td>
+                                        <td class="py-3.5 px-4 text-sm font-bold text-gray-800 group-hover:text-indigo-700 transition-colors">{{ $txn->description }}</td>
+                                        <td class="py-3.5 px-4 text-center whitespace-nowrap text-sm font-medium text-gray-500">
                                             {{ $txn->transaction_date?->format('d-m-Y') }}
                                         </td>
-                                        <td class="amt text-right font-bold text-red-600 whitespace-nowrap">{{ number_format($txn->amount, 0) }}</td>
-                                        <td class="bal text-right font-bold whitespace-nowrap {{ $txn->running_balance >= 0 ? ($txn->running_balance < $report['budget'] * 0.1 ? 'text-amber-600' : 'text-emerald-600') : 'text-red-600' }}">
+                                        <td class="py-3.5 px-4 text-right whitespace-nowrap font-extrabold text-rose-600 text-sm">{{ number_format($txn->amount, 0) }}</td>
+                                        <td class="py-3.5 px-4 text-right whitespace-nowrap font-extrabold text-sm {{ $txn->running_balance >= 0 ? ($txn->running_balance < $report['budget'] * 0.1 ? 'text-amber-600' : 'text-emerald-600') : 'text-rose-600' }}">
                                             {{ number_format($txn->running_balance, 0) }}
                                         </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="5">
-                                            <div class="fns-empty"><p class="fns-empty-text">ບໍ່ມີລາຍຈ່າຍ</p></div>
+                                        <td colspan="5" class="py-12">
+                                            <div class="flex flex-col items-center justify-center text-center">
+                                                <p class="text-gray-500 font-bold">ບໍ່ມີຂໍ້ມູນທຸລະກຳ</p>
+                                                <p class="text-xs text-gray-400 mt-1">ບໍ່ພົບລາຍຈ່າຍໃນຊ່ວງເວລານີ້</p>
+                                            </div>
                                         </td>
                                     </tr>
                                 @endforelse
                             </tbody>
                             @if($report['transactions']->count() > 0)
-                                <tfoot>
-                                    <tr>
-                                        <td colspan="3" style="text-align:right;">ລວມທັງໝົດ</td>
-                                        <td class="amt text-right font-bold">{{ number_format($report['totalSpent'], 0) }}</td>
-                                        <td class="bal text-right font-bold {{ $report['remaining'] >= 0 ? 'text-emerald-600' : 'text-red-600' }}">
-                                            {{ number_format($report['remaining'], 0) }}
+                                <tfoot class="bg-gray-50/50">
+                                    <tr class="font-extrabold border-t border-gray-200">
+                                        <td colspan="3" class="py-4 px-4 text-center text-sm text-gray-600">ລວມທັງໝົດ (ໃນຊ່ວງນີ້)</td>
+                                        <td class="py-4 px-4 text-right whitespace-nowrap text-sm text-rose-600">{{ number_format($report['periodSpent'], 0) }} ₭</td>
+                                        <td class="py-4 px-4 text-right whitespace-nowrap text-sm {{ $report['remaining'] >= 0 ? 'text-emerald-600' : 'text-rose-600' }}">
+                                            {{ number_format($report['transactions']->last()->running_balance ?? $report['remaining'], 0) }} ₭
                                         </td>
                                     </tr>
                                 </tfoot>
@@ -226,34 +246,144 @@
                     </div>
                 </div>
 
-                {{-- ══ Print-only signature ══ --}}
-                <div class="print-sign">
-                    <div class="ps-date" style="text-align:right;">
-                        ວັນທີ: {{ now()->format('d-m-Y') }}
-                    </div>
-                    <div class="row">
-                        <div class="sig"><div class="line">ຫົວໜ້າພະແນກການເງິນ-ເງິນສົດ</div></div>
-                        <div class="sig"><div class="line">ນາຍບັນຊີ</div></div>
-                    </div>
-                </div>
-
             @elseif($selectedYear && !$plan)
-                <div class="fns-card fns-animate">
-                    <div class="fns-empty">
-                        <p class="fns-empty-text">ປີ {{ $selectedYear }} ຍັງບໍ່ມີແຜນງົບປະມານທີ່ Approved</p>
-                    </div>
+                <div class="fns-card bg-white shadow-md rounded-2xl border border-gray-100 p-8 text-center fns-animate">
+                    <p class="text-gray-500 font-bold">ບໍ່ມີຂໍ້ມູນງົບປະມານ</p>
+                    <p class="text-xs text-gray-400 mt-1">ປີ {{ $selectedYear }} ຍັງບໍ່ມີແຜນງົບປະມານທີ່ Approved</p>
                 </div>
             @else
-                <div class="fns-card fns-animate">
-                    <div class="fns-empty">
-                        <div class="fns-empty-icon">
-                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 3v18h18" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7.5 14.25V18m4.5-9V18m4.5-6V18" /></svg>
-                        </div>
-                        <p class="fns-empty-text">ກະລຸນາເລືອກປີງົບປະມານ ແລະ ໝວດບັນຊີ ເພື່ອສະແດງລາຍງານ</p>
-                    </div>
-                </div>
-            @endif
-
+                <div class="fns-card bg-white shadow-md rounded-2xl border border-gray-100 p-12 text-center fns-animate">
+                    <div class="flex flex-col items-center justify-center">
+                        <div class="w-16 h-16 rounded-2xl bg-indigo-50 text-indigo-500 flex items-center justify-center mb-4 border border-indigo-100 shrin    <div class="print-only" style="font-family:'Noto Sans Lao','Phetsarath OT',sans-serif; color:#1e293b;">
+        @php
+            $userRole = auth()->user()->role?->role_name;
+            $slipTitle = ($userRole === 'revenue_officer') ? 'ໃບບິນຮັບເງິນ' : 'ໃບບິນຈ່າຍເງິນ';
+        @endphp
+        
+        {{-- Centered Slip type header --}}
+        <div style="text-align: center; font-size: 10px; font-weight: bold; margin-bottom: 15px; text-decoration: underline; text-underline-offset: 2px;">
+            {{ $slipTitle }}
         </div>
+
+        {{-- Center Title --}}
+        <div style="text-align: center; margin-bottom: 25px;">
+            @if($report)
+                <h1 style="font-size: 15px; font-weight: 800; color: #1e293b; margin: 0 0 4px; line-height: 1.4;">
+                    ຕິດຕາມລາຍຈ່າຍງົບປະມານ {{ $report['account']?->account_name ?? '' }}
+                </h1>
+                @php
+                    $budgetPlan = \App\Models\BudgetPlan::where('fiscal_year', $selectedYear)->first();
+                    $budgetTypeLabel = '';
+                    if ($budgetPlan && $selectedAccountId) {
+                        $lineItem = \App\Models\BudgetLineItem::where('budget_plan_id', $budgetPlan->id)
+                            ->where('account_id', $selectedAccountId)
+                            ->first();
+                        if ($lineItem) {
+                            if ($lineItem->amount_academic > 0 && $lineItem->amount_regular == 0) {
+                                $budgetTypeLabel = '(ງົບປະມານວິຊາການ)';
+                            } elseif ($lineItem->amount_regular > 0 && $lineItem->amount_academic == 0) {
+                                $budgetTypeLabel = '(ງົບປະມານປົກກະຕິ)';
+                            }
+                        }
+                    }
+                @endphp
+                @if($budgetTypeLabel)
+                    <p style="font-size: 11px; font-weight: bold; color: #1e293b; margin: 0;">{{ $budgetTypeLabel }}</p>
+                @endif
+            @else
+                <h1 style="font-size: 15px; font-weight: 800; color: #1e293b; margin: 0;">ຕິດຕາມລາຍຈ່າຍງົບປະມານ</h1>
+            @endif
+        </div>
+
+        @if($report)
+            @php
+                $rawCode = $report['account']?->account_code ?? '';
+                $formattedCode = strlen($rawCode) === 8 
+                    ? substr($rawCode, 0, 2) . '.' . substr($rawCode, 2, 2) . '.' . substr($rawCode, 4, 2) . '.' . substr($rawCode, 6, 2) 
+                    : $rawCode;
+                
+                $deptId = request('department_id');
+                $deptObj = $deptId ? \App\Models\Department::find($deptId) : null;
+                $deptName = $deptObj ? $deptObj->displayName() : 'ພາກວິຊາວິທະຍາສາດຄອມພິວເຕີ';
+                if ($deptName === 'Computer') {
+                    $deptName = 'ພາກວິຊາວິທະຍາສາດຄອມພິວເຕີ';
+                }
+            @endphp
+            
+            {{-- Print Meta Summary Box (3 Columns) --}}
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; font-size: 11px; color: #1e293b; margin-bottom: 15px; line-height: 1.6;">
+                {{-- Left column --}}
+                <div style="width: 35%;">
+                    <p style="margin: 0;">ລະຫັດລາຍຈ່າຍ: <b style="font-weight: 700;">{{ $report['transactions']->count() }}</b></p>
+                    <p style="margin: 4px 0 0;">
+                        @if($userRole === 'revenue_officer')
+                            ເລກບັນຊີຈ່າຍ: <b style="font-weight: 700;">{{ $rawCode }}</b>
+                        @else
+                            ຊ່ອງງົບປະມານ: <b style="font-weight: 700;">{{ $formattedCode }}</b>
+                        @endif
+                    </p>
+                </div>
+                
+                {{-- Center column --}}
+                <div style="width: 30%; text-align: center; font-weight: bold; padding-top: 15px;">
+                    {{ $deptName }}
+                </div>
+                
+                {{-- Right column --}}
+                <div style="width: 35%; text-align: right;">
+                    <p style="margin: 0;">ຕົວເລກອະນຸມັດ: <b style="font-weight: 700;">{{ number_format($report['budget'], 0, ',', '.') }}</b></p>
+                    <p style="margin: 4px 0 0;">ຈ່າຍແລ້ວ: <b style="font-weight: 700;">{{ number_format($report['totalSpent'], 0, ',', '.') }}</b></p>
+                    <p style="margin: 4px 0 0;">ຍັງເຫຼືອ: <b style="font-weight: 700;">{{ number_format($report['remaining'], 0, ',', '.') }}</b></p>
+                </div>
+            </div>
+
+            {{-- Main Grid Table --}}
+            <table class="p-tbl">
+                <thead>
+                    <tr style="font-weight: bold; background: #fff;">
+                        <th style="width: 45px; text-align: center; font-weight: bold; border: 1px solid #000 !important;">ລຳດັບ</th>
+                        <th style="text-align: left; font-weight: bold; border: 1px solid #000 !important;">ເນື້ອໃນລາຍຈ່າຍ</th>
+                        <th style="width: 110px; text-align: center; font-weight: bold; border: 1px solid #000 !important;">ວັນທີ-ເດືອນ-ປີ</th>
+                        <th style="width: 110px; text-align: right; font-weight: bold; border: 1px solid #000 !important;">ລາຍຈ່າຍ</th>
+                        <th style="width: 120px; text-align: right; font-weight: bold; border: 1px solid #000 !important;">ດຸ່ນດ່ຽງ</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @php $pb = $report['budget']; @endphp
+                    @foreach($report['transactions'] as $idx => $txn)
+                        @php $pb -= $txn->amount; @endphp
+                        <tr>
+                            <td style="text-align: center; border: 1px solid #000 !important;">{{ $idx + 1 }}</td>
+                            <td style="text-align: left; border: 1px solid #000 !important;">{{ $txn->description }}</td>
+                            <td style="text-align: center; border: 1px solid #000 !important;">{{ $txn->transaction_date?->format('d-m-Y') }}</td>
+                            <td style="text-align: right; border: 1px solid #000 !important;">{{ number_format($txn->amount, 0, ',', '.') }}</td>
+                            <td style="text-align: right; border: 1px solid #000 !important;">{{ number_format($pb, 0, ',', '.') }}</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+                <tfoot>
+                    <tr style="font-weight: bold; background: #fff;">
+                        <td colspan="3" style="text-align: center; font-weight: bold; border: 1px solid #000 !important;">ລວມທັງໝົດ</td>
+                        <td style="text-align: right; font-weight: bold; border: 1px solid #000 !important;">{{ number_format($report['periodSpent'], 0, ',', '.') }}</td>
+                        <td style="text-align: right; font-weight: bold; border: 1px solid #000 !important;">{{ number_format($pb, 0, ',', '.') }}</td>
+                    </tr>
+                </tfoot>
+            </table>
+
+            {{-- Signature blocks --}}
+            @php
+                $sigDate = $type === 'daily' ? \Carbon\Carbon::parse($date)->format('d-m-Y') : now()->format('d-m-Y');
+            @endphp
+            
+            <div style="display: flex; justify-content: space-between; margin-top: 50px; font-size: 11px; line-height: 1.6; page-break-inside: avoid;">
+                <div style="width: 45%; text-align: left; font-weight: bold; padding-left: 10px;">
+                    ຫົວໜ້າພະແນກການເງິນ-ຊັບສິນ
+                </div>
+                <div style="width: 45%; text-align: right; font-weight: bold; padding-right: 10px; display: flex; flex-direction: column; align-items: flex-end;">
+                    <p style="margin: 0; padding-right: 15px;">ວັນທີ: {{ $sigDate }}</p>
+                    <p style="margin: 6px 0 0; padding-right: 25px;">ນາຍບັນຊີ</p>
+                </div>
+            </div>
+        @endif
     </div>
 </x-app-layout>

@@ -1,0 +1,230 @@
+﻿<x-app-layout>
+    <x-slot name="header">
+        <div class="flex flex-col gap-1.5 min-w-0">
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-lg bg-indigo-100 text-indigo-600 flex items-center justify-center shrink-0">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                </div>
+                <h2 class="text-xl sm:text-2xl font-extrabold text-gray-900 tracking-tight leading-none">
+                    เบเบญเบกเปเบเปเปเบเบฅเบฒเบเบเปเบฒเบเบงเบดเบเบฒเบเบฒเบเปเบฅเบฐเบเบปเบเบเบฐเบกเบฒเบ
+                </h2>
+            </div>
+            <p class="text-sm font-semibold text-gray-500 pl-10">เปเบเปเปเบเบเปเปเบกเบนเบเบฅเบฒเบเบเปเบฒเบ #{{ $transaction->id }}</p>
+        </div>
+    </x-slot>
+
+    <div class="py-6 sm:py-8 w-full min-w-0">
+        <div class="max-w-2xl mx-auto w-full px-3 sm:px-4 lg:px-6">
+
+            @if ($errors->any())
+                <div class="fns-alert fns-alert-error fns-animate mb-6 shadow-sm border-l-4 border-l-red-500 rounded-lg">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" class="text-red-500 w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" /></svg>
+                    <ul class="list-disc list-inside text-sm font-medium">
+                        @foreach ($errors->all() as $err)
+                            <li>{{ $err }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
+            <div class="fns-card border-t-4 border-t-indigo-500 shadow-lg hover:shadow-xl transition-shadow relative overflow-hidden bg-white rounded-2xl">
+                
+                <!-- Decorative gradient corner -->
+                <div class="absolute -top-16 -right-16 w-32 h-32 bg-indigo-100 rounded-full blur-2xl opacity-60 pointer-events-none"></div>
+
+                <div class="fns-card-header bg-transparent relative z-10 border-b border-gray-50 py-5 px-6">
+                    <h3 class="text-lg font-extrabold text-gray-800 flex items-center gap-2">
+                        <span class="w-1.5 h-6 rounded-full bg-indigo-500 block"></span>
+                        เบเบญเบกเปเบเปเปเบเบฅเบฒเบเบเปเบฒเบเบงเบดเบเบฒเบเบฒเบเปเบฅเบฐเ                                              <div class="space-y-6">
+
+                                    <!-- Group 1: General Info -->
+                                    <div class="bg-gray-50/40 rounded-3xl p-6 border border-gray-100 shadow-sm">
+                                        <h4 class="text-sm font-bold text-indigo-600 mb-5 flex items-center gap-2">
+                                            <div class="p-1.5 rounded-lg bg-indigo-100 text-indigo-600">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                            </div>
+                                            เบเปเปเบกเบนเบเบ—เบปเปเบงเปเบ (General Info)
+                                        </h4>
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                            <!-- Payment Code -->
+                                            <div>
+                                                <label for="payment_code" class="block text-sm font-semibold text-gray-700 mb-1.5">เบฅเบฐเบซเบฑเบ”เบฅเบฒเบเบเปเบฒเบ <span class="text-rose-500">*</span></label>
+                                                <input id="payment_code" name="payment_code" type="text"
+                                                    class="w-full bg-white border border-gray-200 hover:border-gray-300 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 rounded-xl px-4 py-2.5 transition-all duration-200 outline-none text-sm font-medium shadow-sm"
+                                                    value="{{ old('payment_code', $transaction->payment_code) }}" placeholder="เบฅเบฐเบซเบฑเบ”เบฅเบฒเบเบเปเบฒเบ" required />
+                                                <x-input-error :messages="$errors->get('payment_code')" class="mt-1" />
+                                            </div>
+                                            
+                                            <!-- Transaction Date -->
+                                            <div>
+                                                <label for="transaction_date" class="block text-sm font-semibold text-gray-700 mb-1.5">เบงเบฑเบเบ—เบตเบเปเบฒเบ <span class="text-rose-500">*</span></label>
+                                                <input id="transaction_date" name="transaction_date" type="date"
+                                                    class="w-full bg-white border border-gray-200 hover:border-gray-300 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 rounded-xl px-4 py-2.5 transition-all duration-200 outline-none text-sm font-medium shadow-sm text-gray-700"
+                                                    value="{{ old('transaction_date', $transaction->transaction_date->toDateString()) }}" required />
+                                                <x-input-error :messages="$errors->get('transaction_date')" class="mt-1" />
+                                            </div>
+
+                                            <!-- Budget Year -->
+                                            <div>
+                                                <label for="budget_year" class="block text-sm font-semibold text-gray-700 mb-1.5">เบเบตเบเบปเบเบเบฐเบกเบฒเบ</label>
+                                                <input id="budget_year" name="budget_year" type="text"
+                                                    class="w-full bg-white border border-gray-200 hover:border-gray-300 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 rounded-xl px-4 py-2.5 transition-all duration-200 outline-none text-sm font-medium shadow-sm"
+                                                    value="{{ old('budget_year', $transaction->transaction_date->format('Y')) }}" placeholder="2026" />
+                                            </div>
+
+                                            <!-- Item Name -->
+                                            <div>
+                                                <label for="item_name" class="block text-sm font-semibold text-gray-700 mb-1.5">เบเบทเปเบฅเบฒเบเบเบฒเบเบเปเบฒเบ <span class="text-rose-500">*</span></label>
+                                                <input id="item_name" name="item_name" type="text"
+                                                    class="w-full bg-white border border-gray-200 hover:border-gray-300 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 rounded-xl px-4 py-2.5 transition-all duration-200 outline-none text-sm font-medium shadow-sm"
+                                                    value="{{ old('item_name', $transaction->item_name) }}" placeholder="เป€เบเบฑเปเบ: เบเปเบฒเบญเบธเบเบฐเบเบญเบ, เบเปเบฒเบเปเบฅเบดเบเบฒเบ..." required />
+                                                <x-input-error :messages="$errors->get('item_name')" class="mt-1" />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Group 2: Financial Info -->
+                                    <div class="bg-gray-50/40 rounded-3xl p-6 border border-gray-100 shadow-sm">
+                                        <h4 class="text-sm font-bold text-emerald-600 mb-5 flex items-center gap-2">
+                                            <div class="p-1.5 rounded-lg bg-emerald-100 text-emerald-600">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                            </div>
+                                            เบเปเปเบกเบนเบเบเบฒเบเป€เบเบดเบ (Financial Details)
+                                        </h4>
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                            <!-- Account ID (Full Width) -->
+                                            <div class="md:col-span-2">
+                                                <label for="account_id" class="block text-sm font-semibold text-gray-700 mb-1.5">เป€เบฅเบเบเบฑเบเบเบต <span class="text-rose-500">*</span></label>
+                                                <select id="account_id" name="account_id" required class="w-full bg-white border border-gray-200 hover:border-gray-300 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 rounded-xl px-4 py-2.5 transition-all duration-200 outline-none text-sm font-medium shadow-sm cursor-pointer">
+                                                    <option value="">-- เป€เบฅเบทเบญเบเป€เบฅเบเบเบฑเบเบเบต --</option>
+                                                    @foreach ($accounts as $acc)
+                                                        <option value="{{ $acc->id }}" {{ old('account_id', $transaction->account_id) == $acc->id ? 'selected' : '' }}>
+                                                            {{ $acc->account_code }} - {{ $acc->account_name }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                                <x-input-error :messages="$errors->get('account_id')" class="mt-1" />
+                                            </div>
+
+                                            <!-- Amount -->
+                                            <div>
+                                                <label for="amount" class="block text-sm font-semibold text-gray-700 mb-1.5">เบเปเบฒเบเบงเบเป€เบเบดเบเบเปเบฒเบ (เบเบตเบ) <span class="text-rose-500">*</span></label>
+                                                <div class="relative">
+                                                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                                        <span class="text-gray-400 font-bold">โญ</span>
+                                                    </div>
+                                                    <input id="amount" name="amount" type="number" step="0.01" min="1"
+                                                        class="w-full bg-white border border-gray-200 hover:border-gray-300 focus:bg-white focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 rounded-xl pl-9 pr-4 py-2 transition-all duration-200 outline-none text-lg font-extrabold tracking-tight text-emerald-700 shadow-sm"
+                                                        value="{{ old('amount', $transaction->amount) }}" placeholder="0.00" required />
+                                                </div>
+                                                <x-input-error :messages="$errors->get('amount')" class="mt-1" />
+                                            </div>
+
+                                            <!-- Channel Type -->
+                                            <div>
+                                                <label for="channel_type" class="block text-sm font-semibold text-gray-700 mb-1.5">เบเปเบญเบ เบเบ•/เบเบ—</label>
+                                                <select id="channel_type" name="channel_type" class="w-full bg-white border border-gray-200 hover:border-gray-300 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 rounded-xl px-4 py-2.5 transition-all duration-200 outline-none text-sm font-medium shadow-sm cursor-pointer">
+                                                    <option value="เป€เบเบดเบเบเปเบฅเบดเบซเบฒเบเบ—เบปเปเบงเปเบ" {{ old('channel_type', $channelType) == 'เป€เบเบดเบเบเปเบฅเบดเบซเบฒเบเบ—เบปเปเบงเปเบ' ? 'selected' : '' }}>เป€เบเบดเบเบเปเบฅเบดเบซเบฒเบเบ—เบปเปเบงเปเบ</option>
+                                                    <option value="เป€เบเบดเบเบ•เปเบฒเบเบเบฐเป€เบ—เบ”" {{ old('channel_type', $channelType) == 'เป€เบเบดเบเบ•เปเบฒเบเบเบฐเป€เบ—เบ”' ? 'selected' : '' }}>เป€เบเบดเบเบ•เปเบฒเบเบเบฐเป€เบ—เบ”</option>
+                                                </select>
+                                            </div>
+                                            
+                                            <!-- Expense Type -->
+                                            <div>
+                                                <label for="expense_type" class="block text-sm font-semibold text-gray-700 mb-1.5">เบเบฐเป€เบเบ”เบฅเบฒเบเบเปเบฒเบ</label>
+                                                <select id="expense_type" name="expense_type" class="w-full bg-white border border-gray-200 hover:border-gray-300 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 rounded-xl px-4 py-2.5 transition-all duration-200 outline-none text-sm font-medium shadow-sm cursor-pointer">
+                                                    <option value="เบเบปเบเบเบฐเบกเบฒเบเบงเบดเบเบฒเบเบฒเบ" {{ old('expense_type', $expenseType) == 'เบเบปเบเบเบฐเบกเบฒเบเบงเบดเบเบฒเบเบฒเบ' ? 'selected' : '' }}>เบเบปเบเบเบฐเบกเบฒเบเบงเบดเบเบฒเบเบฒเบ</option>
+                                                    <option value="เบเบปเบเบเบฐเบกเบฒเบเบเปเบฅเบดเบซเบฒเบ" {{ old('expense_type', $expenseType) == 'เบเบปเบเบเบฐเบกเบฒเบเบเปเบฅเบดเบซเบฒเบ' ? 'selected' : '' }}>เบเบปเบเบเบฐเบกเบฒเบเบเปเบฅเบดเบซเบฒเบ</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Group 3: Department & Category -->
+                                    <div class="bg-gray-50/40 rounded-3xl p-6 border border-gray-100 shadow-sm">
+                                        <h4 class="text-sm font-bold text-amber-600 mb-5 flex items-center gap-2">
+                                            <div class="p-1.5 rounded-lg bg-amber-100 text-amber-600">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                                            </div>
+                                            เบเบฒเบเบชเปเบงเบ เปเบฅเบฐ เปเบงเบ”เปเบนเป (Department & Category)
+                                        </h4>
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                            <!-- Department -->
+                                            <div>
+                                                <label for="department_id" class="block text-sm font-semibold text-gray-700 mb-1.5">เบเบฒเบเบชเปเบงเบเบเปเบฒเบ <span class="text-rose-500">*</span></label>
+                                                <select id="department_id" name="department_id" required class="w-full bg-white border border-gray-200 hover:border-gray-300 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 rounded-xl px-4 py-2.5 transition-all duration-200 outline-none text-sm font-medium shadow-sm cursor-pointer">
+                                                    <option value="">-- เป€เบฅเบทเบญเบเบเบฒเบเบชเปเบงเบเบเปเบฒเบ --</option>
+                                                    @foreach ($departments as $dept)
+                                                        <option value="{{ $dept->id }}" {{ old('department_id', $transaction->department_id) == $dept->id ? 'selected' : '' }}>
+                                                            {{ $dept->displayName() }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                                <x-input-error :messages="$errors->get('department_id')" class="mt-1" />
+                                            </div>
+
+                                            <!-- Category -->
+                                            <div>
+                                                <label for="category" class="block text-sm font-semibold text-gray-700 mb-1.5">เบเปเบญเบเบฅเบฒเบเบเปเบฒเบ <span class="text-rose-500">*</span></label>
+                                                <select id="category" name="category" required class="w-full bg-white border border-gray-200 hover:border-gray-300 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 rounded-xl px-4 py-2.5 transition-all duration-200 outline-none text-sm font-medium shadow-sm cursor-pointer">
+                                                    <option value="เบเบปเบเบเบฐเบกเบฒเบเบชเบปเปเบเป€เบชเบตเบกเบงเบดเบเบฒเบเบฒเบ" {{ old('category', $transaction->category) == 'เบเบปเบเบเบฐเบกเบฒเบเบชเบปเปเบเป€เบชเบตเบกเบงเบดเบเบฒเบเบฒเบ' ? 'selected' : '' }}>เบเบปเบเบเบฐเบกเบฒเบเบชเบปเปเบเป€เบชเบตเบกเบงเบดเบเบฒเบเบฒเบ</option>
+                                                    <option value="เบฎเบฑเบเปเบเปเบเบฒเบเบ—เบปเบ”เบฅเบญเบ" {{ old('category', $transaction->category) == 'เบฎเบฑเบเปเบเปเบเบฒเบเบ—เบปเบ”เบฅเบญเบ' ? 'selected' : '' }}>เบฎเบฑเบเปเบเปเบเบฒเบเบ—เบปเบ”เบฅเบญเบ</option>
+                                                    <option value="เบเบฒเบเป€เบเบทเปเบญเบเปเบซเบงเบเบญเบเบซเบผเบฑเบเบชเบนเบ”" {{ old('category', $transaction->category) == 'เบเบฒเบเป€เบเบทเปเบญเบเปเบซเบงเบเบญเบเบซเบผเบฑเบเบชเบนเบ”' ? 'selected' : '' }}>เบเบฒเบเป€เบเบทเปเบญเบเปเบซเบงเบเบญเบเบซเบผเบฑเบเบชเบนเบ”</option>
+                                                </select>
+                                                <x-input-error :messages="$errors->get('category')" class="mt-1" />
+                                            </div>
+
+                                            <!-- Description -->
+                                            <div class="md:col-span-2">
+                                                <label for="description" class="block text-sm font-semibold text-gray-700 mb-1.5">เบฅเบฒเบเบฅเบฐเบญเบฝเบ” <span class="text-gray-400 font-normal text-xs">(เบเปเปเบเบณเป€เบเบฑเบ)</span></label>
+                                                <textarea id="description" name="description" rows="3" class="w-full bg-white border border-gray-200 hover:border-gray-300 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 rounded-xl px-4 py-3 transition-all duration-200 outline-none text-sm font-medium shadow-sm resize-none" placeholder="เบญเบฐเบ—เบดเบเบฒเบเป€เบเบดเปเบกเป€เบ•เบตเบก..." maxlength="500">{{ old('description', $userDesc) }}</textarea>
+                                                <x-input-error :messages="$errors->get('description')" class="mt-1" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>                               <x-input-error :messages="$errors->get('category')" class="mt-1" />
+                                        </div>
+                                    </div>
+
+                                    <!-- 11. เบฅเบฒเบเบฅเบฐเบญเบฝเบ” -->
+                                    <div class="group grid grid-cols-12 gap-2 sm:gap-4 items-start p-3 sm:px-4 sm:py-3 rounded-2xl hover:bg-gray-50/80 transition-all duration-300">
+                                        <label for="description" class="col-span-12 sm:col-span-4 text-sm font-medium text-gray-600 sm:text-right pt-2">เบฅเบฒเบเบฅเบฐเบญเบฝเบ” <span class="text-gray-400 font-normal text-xs block">(เบเปเปเบเบณเป€เบเบฑเบ)</span></label>
+                                        <div class="col-span-12 sm:col-span-8">
+                                            <textarea id="description" name="description" rows="2" class="w-full bg-gray-50/50 border border-gray-200 hover:bg-gray-100/50 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 rounded-xl px-4 py-2.5 transition-all duration-200 outline-none text-sm font-medium shadow-sm resize-none" placeholder="เบญเบฐเบ—เบดเบเบฒเบเป€เบเบดเปเบกเป€เบ•เบตเบก (เบเปเปเบเบณเป€เบเบฑเบ)..." maxlength="500">{{ old('description', $userDesc) }}</textarea>
+                                            <x-input-error :messages="$errors->get('description')" class="mt-1" />
+                                        </div>
+                                    </div>
+                                </div>
+
+                        <!-- Buttons: Save & Cancel -->
+                        <div class="flex justify-end gap-3 pt-4 border-t border-gray-100">
+                            <button type="submit" class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-[0_4px_14px_0_rgba(99,102,241,0.39)] hover:shadow-[0_6px_20px_rgba(99,102,241,0.23)] hover:-translate-y-0.5 transition-all duration-200 text-sm cursor-pointer flex items-center justify-center gap-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+                                เบเบฑเบเบ—เบถเบ (Save)
+                            </button>
+                            <a href="{{ route('expense.index') }}" class="px-6 py-2.5 bg-white hover:bg-gray-50 text-gray-700 font-bold rounded-xl border border-gray-200 hover:border-gray-300 transition-all duration-200 text-sm cursor-pointer flex items-center justify-center gap-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+                                เบเบปเบเป€เบฅเบตเบ (Cancel)
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // Auto-sync budget year with transaction date
+        const dateInput = document.getElementById('transaction_date');
+        const budgetYearInput = document.getElementById('budget_year');
+        if (dateInput && budgetYearInput) {
+            dateInput.addEventListener('change', function() {
+                if (this.value) {
+                    const year = this.value.split('-')[0];
+                    budgetYearInput.value = year;
+                }
+            });
+        }
+    </script>
+</x-app-layout>

@@ -14,6 +14,17 @@
     <div class="py-6 sm:py-8 w-full min-w-0">
         <div class="max-w-6xl mx-auto w-full min-w-0 px-3 sm:px-4 lg:px-6 space-y-5">
 
+            {{-- Year Filter --}}
+            <form method="GET" action="{{ route('treasurer.index') }}" class="flex items-center gap-3">
+                <label class="text-xs font-bold text-gray-500 uppercase tracking-widest">ສະແດງຂໍ້ມູນປີ:</label>
+                <select name="year" onchange="this.form.submit()"
+                    class="px-3 py-2 text-sm border border-gray-200 rounded-lg bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-300">
+                    @for($y = date('Y') - 5; $y <= date('Y') + 1; $y++)
+                        <option value="{{ $y }}" {{ $year == $y ? 'selected' : '' }}>{{ $y }}</option>
+                    @endfor
+                </select>
+            </form>
+
             {{-- Stats --}}
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
                 <div class="fns-stat fns-stat--green fns-animate">
@@ -21,23 +32,25 @@
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22" /></svg>
                     </div>
                     <p class="fns-stat-value" style="color:#059669;">{{ number_format($totalIncome, 2) }}</p>
-                    <p class="fns-stat-label">ລາຍຮັບທັງໝົດ (ກີບ)</p>
+                    <p class="fns-stat-label">ລາຍຮັບທັງໝົດ ປີ {{ $year }} (ກີບ)</p>
                 </div>
                 <div class="fns-stat fns-stat--red fns-animate fns-animate-delay-1">
                     <div class="fns-stat-icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6L9 12.75l4.286-4.286a11.95 11.95 0 015.834 5.518l2.74 1.22" /></svg>
                     </div>
                     <p class="fns-stat-value" style="color:#dc2626;">{{ number_format($totalExpense, 2) }}</p>
-                    <p class="fns-stat-label">ລາຍຈ່າຍທັງໝົດ (ກີບ)</p>
+                    <p class="fns-stat-label">ລາຍຈ່າຍທັງໝົດ ປີ {{ $year }} (ກີບ)</p>
                 </div>
                 <div class="fns-stat fns-stat--blue fns-animate fns-animate-delay-2">
                     <div class="fns-stat-icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                     </div>
-                    <p class="fns-stat-value" style="color:#4f46e5;">{{ number_format($totalIncome - $totalExpense, 2) }}</p>
-                    <p class="fns-stat-label">ຍອດຄົງເຫຼືອ (ກີບ)</p>
+                    @php $net = $totalIncome - $totalExpense; @endphp
+                    <p class="fns-stat-value" style="color:{{ $net >= 0 ? '#4f46e5' : '#f43f5e' }};">{{ number_format($net, 2) }}</p>
+                    <p class="fns-stat-label">ຍອດຄົງເຫຼືອ ປີ {{ $year }} (ກີບ)</p>
                 </div>
             </div>
+
 
             {{-- Table --}}
             <div class="fns-card fns-animate">
@@ -79,6 +92,10 @@
                         </tbody>
                     </table>
                 </div>
+
+                @if($transactions->hasPages())
+                    <div class="px-4 py-3 border-t border-gray-100">{{ $transactions->appends(['year' => $year])->links() }}</div>
+                @endif
             </div>
         </div>
     </div>

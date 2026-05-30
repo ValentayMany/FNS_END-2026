@@ -13,59 +13,135 @@ class ReportController extends Controller
 {
     public function index(Request $request)
     {
-        $type = $request->get('type', 'daily');
-        $date = $request->get('date', today()->toDateString());
-        $month = $request->get('month', today()->format('Y-m'));
+        $type     = $request->get('type', 'daily');
+        $date     = $request->get('date', today()->toDateString());
+        $month    = $request->get('month', today()->format('Y-m'));
+        $txnType  = $request->get('txn_type', 'all'); // all | income | expense
 
         if ($type === 'daily') {
             $incomeTransactions = Transaction::with('department', 'chartOfAccount')
-                ->where('type', 'income')
-                ->whereDate('transaction_date', $date)
-                ->get();
-
+                ->where('type', 'income')->whereDate('transaction_date', $date)->get();
             $expenseTransactions = Transaction::with('department', 'chartOfAccount')
-                ->where('type', 'expense')
-                ->whereDate('transaction_date', $date)
-                ->get();
-
+                ->where('type', 'expense')->whereDate('transaction_date', $date)->get();
             $requests = AdvanceRequest::with('requester', 'department', 'paymentTransaction')
                 ->whereIn('status', ['paid', 'cleared'])
-                ->whereHas('paymentTransaction', function ($q) use ($date) {
-                    $q->whereDate('transaction_date', $date);
-                })
+                ->whereHas('paymentTransaction', fn($q) => $q->whereDate('transaction_date', $date))
+                ->get();
+            $year = \Carbon\Carbon::parse($date)->format('Y');
+
+        } elseif ($type === 'yearly') {
+            $year = $request->get('year', today()->format('Y'));
+            $incomeTransactions = Transaction::with('department', 'chartOfAccount')
+                ->where('type', 'income')->whereYear('transaction_date', $year)->get();
+            $expenseTransactions = Transaction::with('department', 'chartOfAccount')
+                ->where('type', 'expense')->whereYear('transaction_date', $year)->get();
+            $requests = AdvanceRequest::with('requester', 'department', 'paymentTransaction')
+                ->whereIn('status', ['paid', 'cleared'])
+                ->whereHas('paymentTransaction', fn($q) => $q->whereYear('transaction_date', $year))
                 ->get();
 
         } else {
+            // monthly
             [$year, $mon] = explode('-', $month);
-
             $incomeTransactions = Transaction::with('department', 'chartOfAccount')
-                ->where('type', 'income')
-                ->whereYear('transaction_date', $year)
-                ->whereMonth('transaction_date', $mon)
-                ->get();
-
+                ->where('type', 'income')->whereYear('transaction_date', $year)->whereMonth('transaction_date', $mon)->get();
             $expenseTransactions = Transaction::with('department', 'chartOfAccount')
-                ->where('type', 'expense')
-                ->whereYear('transaction_date', $year)
-                ->whereMonth('transaction_date', $mon)
-                ->get();
-
+                ->where('type', 'expense')->whereYear('transaction_date', $year)->whereMonth('transaction_date', $mon)->get();
             $requests = AdvanceRequest::with('requester', 'department', 'paymentTransaction')
                 ->whereIn('status', ['paid', 'cleared'])
-                ->whereHas('paymentTransaction', function ($q) use ($year, $mon) {
-                    $q->whereYear('transaction_date', $year)
-                        ->whereMonth('transaction_date', $mon);
-                })
+                ->whereHas('paymentTransaction', fn($q) => $q->whereYear('transaction_date', $year)->whereMonth('transaction_date', $mon))
                 ->get();
         }
 
-        $totalIncome = $incomeTransactions->sum('amount');
-        $totalExpense = $expenseTransactions->sum('amount');
+        $deptId    = $request->get('department_id');
+        $accountId = $request->get('account_id');
+
+        if ($deptId) {
+            $incomeTransactions  = $incomeTransactions->filter(fn($t) => $t->department_id == $deptId)->values();
+            $expenseTransactions = $expenseTransactions->filter(fn($t) => $t->department_id == $deptId)->values();
+            $requests            = $requests->filter(fn($r) => $r->department_id == $deptId)->values();
+        }
+
+        if ($accountId) {
+            $incomeTransactions  = $incomeTransactions->filter(fn($t) => $t->account_id == $accountId)->values();
+            $expenseTransactions = $expenseTransactions->filter(fn($t) => $t->account_id == $accountId)->values();
+        }
+
+        // Revenue Officer เห็นแค่รายรับ — ไม่แสดง Expense หรือ Advance
+        $userRole = auth()->user()->role?->role_name;
+        if ($userRole === 'revenue_officer') {
+            $expenseTransactions = collect();
+            $requests            = collect();
+            $txnType = 'income'; // force income-only view
+        }
+
+        // Accountant เห็นแค่รายจ่าย — ไม่แสดง Income
+        if ($userRole === 'accountant') {
+            $incomeTransactions = collect();
+            $txnType = 'expense'; // force expense-only view
+        }
+
+        // txn_type filter: income-only or expense-only
+        if ($txnType === 'income') {
+            $expenseTransactions = collect();
+            $requests            = collect();
+        } elseif ($txnType === 'expense') {
+            $incomeTransactions = collect();
+        }
+
+        // กรอง expense transactions ที่เกิดจาก advance payment ออก (ป้องกันนับซ้ำ)
+        $advancePaymentTxnIds = $requests->pluck('payment_transaction_id')->filter()->toArray();
+        $expenseTransactions = $expenseTransactions->filter(
+            fn($t) => !in_array($t->id, $advancePaymentTxnIds)
+        )->values();
+
+        $totalIncome  = $incomeTransactions->sum('amount');
+        $totalExpense = $expenseTransactions->sum('amount') + $requests->sum('requested_amount');
+
+
+        $ledger = collect();
+        foreach ($incomeTransactions as $tx) {
+            $ledger->push((object)[
+                'date'         => $tx->transaction_date,
+                'item_name'    => $tx->item_name,
+                'desc'         => $tx->description,
+                'payment_code' => $tx->payment_code,
+                'category'     => $tx->category,
+                'amount_in'    => $tx->amount,
+                'amount_out'   => 0,
+                'department'   => $tx->department?->department_name,
+            ]);
+        }
+        foreach ($expenseTransactions as $tx) {
+            $ledger->push((object)[
+                'date'         => $tx->transaction_date,
+                'item_name'    => $tx->item_name,
+                'desc'         => $tx->description,
+                'payment_code' => $tx->payment_code,
+                'category'     => $tx->category,
+                'amount_in'    => 0,
+                'amount_out'   => $tx->amount,
+                'department'   => $tx->department?->department_name,
+            ]);
+        }
+        foreach ($requests as $req) {
+            $d = $req->paymentTransaction ? $req->paymentTransaction->transaction_date : $req->request_date;
+            $ledger->push((object)[
+                'date'         => $d,
+                'item_name'    => null,
+                'desc'         => $req->description . ' (ເບີກຈ່າຍລ່ວງໜ້າ)',
+                'payment_code' => null,
+                'category'     => null,
+                'amount_in'    => 0,
+                'amount_out'   => $req->requested_amount,
+                'department'   => $req->department?->department_name,
+            ]);
+        }
+        $ledger = $ledger->sortBy('date')->values();
 
         return view('reports.report', compact(
-            'incomeTransactions', 'expenseTransactions', 'requests',
-            'totalIncome', 'totalExpense',
-            'type', 'date', 'month'
+            'incomeTransactions', 'expenseTransactions', 'requests', 'ledger',
+            'totalIncome', 'totalExpense', 'type', 'date', 'month', 'year', 'txnType'
         ));
     }
 
@@ -74,44 +150,100 @@ class ReportController extends Controller
      */
     public function export(Request $request, ReportExcelExportService $excel): StreamedResponse
     {
-        $type = $request->get('type', 'daily');
-        $date = $request->get('date', today()->toDateString());
+        $type  = $request->get('type', 'daily');
+        $date  = $request->get('date', today()->toDateString());
         $month = $request->get('month', today()->format('Y-m'));
+        $year  = $request->get('year', today()->format('Y'));
 
         if ($type === 'daily') {
-            $incomeTransactions = Transaction::with('department')->where('type', 'income')->whereDate('transaction_date', $date)->get();
+            $incomeTransactions  = Transaction::with('department')->where('type', 'income')->whereDate('transaction_date', $date)->get();
             $expenseTransactions = Transaction::with('department')->where('type', 'expense')->whereDate('transaction_date', $date)->get();
             $requests = AdvanceRequest::with('requester', 'department', 'paymentTransaction')
                 ->whereIn('status', ['paid', 'cleared'])
                 ->whereHas('paymentTransaction', fn ($q) => $q->whereDate('transaction_date', $date))
                 ->get();
-        } else {
-            [$year, $mon] = explode('-', $month);
-            $incomeTransactions = Transaction::with('department')->where('type', 'income')->whereYear('transaction_date', $year)->whereMonth('transaction_date', $mon)->get();
-            $expenseTransactions = Transaction::with('department')->where('type', 'expense')->whereYear('transaction_date', $year)->whereMonth('transaction_date', $mon)->get();
+            $fileLabel = $date;
+
+        } elseif ($type === 'yearly') {
+            $incomeTransactions  = Transaction::with('department')->where('type', 'income')->whereYear('transaction_date', $year)->get();
+            $expenseTransactions = Transaction::with('department')->where('type', 'expense')->whereYear('transaction_date', $year)->get();
             $requests = AdvanceRequest::with('requester', 'department', 'paymentTransaction')
                 ->whereIn('status', ['paid', 'cleared'])
-                ->whereHas('paymentTransaction', fn ($q) => $q->whereYear('transaction_date', $year)->whereMonth('transaction_date', $mon))
+                ->whereHas('paymentTransaction', fn ($q) => $q->whereYear('transaction_date', $year))
                 ->get();
+            $fileLabel = $year;
+
+        } else {
+            // monthly
+            [$yr, $mon] = explode('-', $month);
+            $incomeTransactions  = Transaction::with('department')->where('type', 'income')->whereYear('transaction_date', $yr)->whereMonth('transaction_date', $mon)->get();
+            $expenseTransactions = Transaction::with('department')->where('type', 'expense')->whereYear('transaction_date', $yr)->whereMonth('transaction_date', $mon)->get();
+            $requests = AdvanceRequest::with('requester', 'department', 'paymentTransaction')
+                ->whereIn('status', ['paid', 'cleared'])
+                ->whereHas('paymentTransaction', fn ($q) => $q->whereYear('transaction_date', $yr)->whereMonth('transaction_date', $mon))
+                ->get();
+            $fileLabel = str_replace('-', '_', $month);
         }
 
-        $totalIncome = $incomeTransactions->sum('amount');
-        $totalExpense = $expenseTransactions->sum('amount');
+        // Apply same filters as index()
+        $deptId    = $request->get('department_id');
+        $accountId = $request->get('account_id');
+        if ($deptId) {
+            $incomeTransactions  = $incomeTransactions->filter(fn($t) => $t->department_id == $deptId)->values();
+            $expenseTransactions = $expenseTransactions->filter(fn($t) => $t->department_id == $deptId)->values();
+            $requests            = $requests->filter(fn($r) => $r->department_id == $deptId)->values();
+        }
+        if ($accountId) {
+            $incomeTransactions  = $incomeTransactions->filter(fn($t) => $t->account_id == $accountId)->values();
+            $expenseTransactions = $expenseTransactions->filter(fn($t) => $t->account_id == $accountId)->values();
+        }
+
+        // Revenue Officer เห็นแค่รายรับ — ไม่แสดง Expense หรือ Advance
+        $userRole = auth()->user()->role?->role_name;
+        if ($userRole === 'revenue_officer') {
+            $expenseTransactions = collect();
+            $requests            = collect();
+        }
+
+        // Accountant เห็นแค่รายจ่าย — ไม่แสดง Income
+        if ($userRole === 'accountant') {
+            $incomeTransactions = collect();
+        }
+
+        // txn_type filter from request (only applies to roles that can see both)
+        if ($userRole !== 'revenue_officer' && $userRole !== 'accountant') {
+            $txnType = $request->get('txn_type', 'all');
+            if ($txnType === 'income') {
+                $expenseTransactions = collect();
+                $requests            = collect();
+            } elseif ($txnType === 'expense') {
+                $incomeTransactions = collect();
+            }
+        }
+
+        // กรอง expense transactions ที่เกิดจาก advance payment ออก (ป้องกันนับซ้ำ)
+        $advancePaymentTxnIds = $requests->pluck('payment_transaction_id')->filter()->toArray();
+        $expenseTransactions = $expenseTransactions->filter(
+            fn($t) => !in_array($t->id, $advancePaymentTxnIds)
+        )->values();
+
+        $totalIncome  = $incomeTransactions->sum('amount');
+        $totalExpense = $expenseTransactions->sum('amount') + $requests->sum('requested_amount');
 
         $spreadsheet = $excel->build([
-            'incomeTransactions' => $incomeTransactions,
+            'incomeTransactions'  => $incomeTransactions,
             'expenseTransactions' => $expenseTransactions,
-            'requests' => $requests,
-            'totalIncome' => $totalIncome,
-            'totalExpense' => $totalExpense,
+            'requests'            => $requests,
+            'totalIncome'         => $totalIncome,
+            'totalExpense'        => $totalExpense,
         ]);
 
-        $ascii = 'report_'.($type === 'daily' ? $date : str_replace('-', '_', $month)).'.xlsx';
+        $filename = 'report_' . $fileLabel . '.xlsx';
 
         return response()->streamDownload(function () use ($spreadsheet) {
             $writer = new Xlsx($spreadsheet);
             $writer->save('php://output');
-        }, $ascii, [
+        }, $filename, [
             'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         ]);
     }

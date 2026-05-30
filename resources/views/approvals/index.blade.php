@@ -61,7 +61,7 @@
                                     <td class="text-right"><span class="fns-cell-amount">{{ number_format($req->requested_amount, 2) }}</span></td>
                                     <td class="text-center"><span class="fns-cell-date">{{ $req->request_date?->format('d/m/Y') }}</span></td>
                                     <td class="text-center">
-                                        <a href="{{ route('approval.show', $req->id) }}" class="fns-btn fns-btn-primary" style="padding:7px 14px; font-size:0.72rem;">
+                                        <a href="{{ route('approvals.show', $req->id) }}" class="fns-btn fns-btn-primary" style="padding:7px 14px; font-size:0.72rem;">
                                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
                                             ກວດສອບ
                                         </a>

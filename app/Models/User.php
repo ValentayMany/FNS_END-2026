@@ -131,16 +131,16 @@ class User extends Authenticatable
     public function roleDisplay(): string
     {
         $names = [
-            'admin' => 'Admin (ຜູ້ดูแลລະບົບ)',
-            'requester' => 'Requester (ผู้ขออนุมัติ)',
-            'accountant' => 'Accountant (นักบัญชี)',
-            'head_of_finance' => 'Finance Head (หัวหน้าการเงิน)',
-            'deputy_head_of_faculty' => 'Deputy Dean (รองคณบดี)',
-            'head_of_faculty' => 'Dean (คณบดี)',
-            'cashier' => 'Cashier (จ่ายเงิน)',
-            'revenue_officer' => 'Revenue Officer (รับเงิน)',
-            'treasurer' => 'Treasurer (คลังเงิน)',
-            'treasury_reconciliation_officer' => 'Treasury Recon (สะสางคลัง)',
+            'admin' => 'Admin (ຜູ້ດູແລລະບົບ)',
+            'requester' => 'Requester (ຜູ້ຂໍອະນຸມັດ)',
+            'accountant' => 'Accountant (ນາຍບັນຊີ)',
+            'head_of_finance' => 'Finance Head (ຫົວໜ້າການເງິນ)',
+            'deputy_head_of_faculty' => 'Deputy Dean (ຮອງຫົວໜ້າຄະນະ)',
+            'head_of_faculty' => 'Dean (ຫົວໜ້າຄະນະ)',
+            'cashier' => 'Cashier (ຈ່າຍເງິນ)',
+            'revenue_officer' => 'Revenue Officer (ຮັບເງິນ)',
+            'treasurer' => 'Treasurer (ຄັງເງິນ)',
+            'treasury_reconciliation_officer' => 'Treasury Recon (ສະສາງຄັງ)',
         ];
         return $names[$this->role?->role_name] ?? ($this->role?->role_name ?? 'Unknown');
     }

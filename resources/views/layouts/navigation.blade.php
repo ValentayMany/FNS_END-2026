@@ -48,6 +48,12 @@
                         </x-slot>
                         ຕິດຕາມສະຖານะຄຳຂໍ
                     </x-sidebar-link>
+                    <x-sidebar-link :href="route('clearing.index')" :active="request()->routeIs('clearing.index')">
+                        <x-slot name="icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" /></svg>
+                        </x-slot>
+                        ສະສາງເງິນ (Clearing)
+                    </x-sidebar-link>
                 @endif
 
                 @if($role === 'accountant')
@@ -55,21 +61,21 @@
                         <x-slot name="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg></x-slot>
                         ອະນຸມັດຄຳຂໍເບີກຈ່າຍ
                     </x-sidebar-link>
-                    <x-sidebar-link :href="route('revenue.index')" :active="request()->routeIs('revenue.*')">
-                        <x-slot name="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v4.125c0 .621-.504 1.125-1.125 1.125h-2.25A1.125 1.125 0 013 17.25v-4.125zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v8.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125v-8.25zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v12.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" /></svg></x-slot>
-                        ບັນທຶກລາຍຮັບ
-                    </x-sidebar-link>
                     <x-sidebar-link :href="route('expense.index')" :active="request()->routeIs('expense.*')">
                         <x-slot name="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5A3.375 3.375 0 0010.125 2.25H8.25A3.375 3.375 0 004.875 5.625v12.75A3.375 3.375 0 008.25 21.75h7.5A3.75 3.75 0 0019.5 18v-3.75z" /></svg></x-slot>
-                        ບັນທຶກລາຍจ่ายທົ່ວໄປ
+                        ບັນທຶກລາຍຈ່າຍທົ່ວໄປ
                     </x-sidebar-link>
                     <x-sidebar-link :href="route('clearing.pending')" :active="request()->routeIs('clearing.*')">
                         <x-slot name="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 6.75h12M8.25 12h12M8.25 17.25h12M3.75 6.75h.007v.008H3.75V6.75zm0 5.25h.007v.008H3.75V12zm0 5.25h.007v.008H3.75v-.008z" /></svg></x-slot>
                         ສະສາງເງິນ (Clearing)
                     </x-sidebar-link>
-                    <x-sidebar-link :href="route('reports.index')" :active="request()->routeIs('reports.*') && !request()->routeIs('reports.budget_expense')">
+                    <x-sidebar-link :href="route('reports.index')" :active="request()->routeIs('reports.index') || request()->routeIs('reports.export')">
                         <x-slot name="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6a7.5 7.5 0 107.5 7.5h-7.5V6zM13.5 10.5H21A7.5 7.5 0 0013.5 3v7.5z" /></svg></x-slot>
                         ລາຍງານ
+                    </x-sidebar-link>
+                    <x-sidebar-link :href="route('reports.budget-expense')" :active="request()->routeIs('reports.budget-expense')">
+                        <x-slot name="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v4.125c0 .621-.504 1.125-1.125 1.125h-2.25A1.125 1.125 0 013 17.25v-4.125zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v8.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125v-8.25zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v12.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" /></svg></x-slot>
+                        ລາຍຈ່າຍງົບປະມານ
                     </x-sidebar-link>
                 @endif
 

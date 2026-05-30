@@ -13,11 +13,13 @@ class Transaction extends Model
     protected $fillable = [
         'transaction_date',
         'description',
+        'item_name',
         'amount',
         'account_id',
         'department_id',
         'type',
         'category',
+        'payment_code',
     ];
 
     protected $casts = [

@@ -12,7 +12,9 @@ use Illuminate\Support\Facades\Storage;
 
 class ClearingController extends Controller
 {
-    public function __construct(private WorkflowService $workflow) {}
+    public function __construct(private WorkflowService $workflow)
+    {
+    }
 
     /** Requester — รายการที่ต้องส่ง Clearing */
     public function index()
@@ -34,26 +36,27 @@ class ClearingController extends Controller
         }
 
         $request->validate([
-            'attachments'   => 'nullable|array|max:5',
+            'attachments' => 'nullable|array|max:5',
             'attachments.*' => 'file|max:5120|mimes:pdf,jpg,jpeg,png,webp,doc,docx,xls,xlsx',
         ]);
 
         try {
-            // อัปโหลดไฟล์ก่อน submit
+            // ตรวจสอบ status ก่อน upload ไฟล์ (ป้องกัน orphaned files)
+            $this->workflow->submitClearing($advanceRequest, Auth::user());
+
+            // อัปโหลดไฟล์หลังจาก status เปลี่ยนสำเร็จแล้ว
             if ($request->hasFile('attachments')) {
                 foreach ($request->file('attachments') as $file) {
                     $stored = $file->store('clearing-attachments', 'local');
                     AdvanceClearingAttachment::create([
                         'advance_request_id' => $advanceRequest->id,
-                        'original_name'      => $file->getClientOriginalName(),
-                        'stored_name'        => $stored,
-                        'mime_type'          => $file->getMimeType(),
-                        'file_size'          => $file->getSize(),
+                        'original_name' => $file->getClientOriginalName(),
+                        'stored_name' => $stored,
+                        'mime_type' => $file->getMimeType(),
+                        'file_size' => $file->getSize(),
                     ]);
                 }
             }
-
-            $this->workflow->submitClearing($advanceRequest, Auth::user());
 
             return back()->with('success', 'ສົ່ງໃບສະສາງສຳເລັດ');
         } catch (Exception $e) {

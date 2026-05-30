@@ -51,11 +51,19 @@
                                 </td>
                                 <td class="text-gray-500 text-sm">{{ $user->department?->displayName() ?? '-' }}</td>
                                 <td>
-                                    @if($user->is_active)
-                                        <span class="fns-badge fns-badge-approved">ໃຊ້ງານ</span>
-                                    @else
-                                        <span class="fns-badge fns-badge-rejected">ປິດ</span>
-                                    @endif
+                                    <form method="POST" action="{{ route('admin.toggleActive', $user->id) }}" style="display:inline;">
+                                        @csrf
+                                        @if($user->is_active)
+                                            <button type="submit" class="fns-badge fns-badge-approved" style="cursor:pointer; border:none; background:none; padding:0;"
+                                                onclick="return confirm('ຕ້ອງການປິດໃຊ້ງານຜູ້ໃຊ້ນີ້ບໍ?')">
+                                                ✅ ໃຊ້ງານ
+                                            </button>
+                                        @else
+                                            <button type="submit" class="fns-badge fns-badge-rejected" style="cursor:pointer; border:none; background:none; padding:0;">
+                                                ❌ ປິດ
+                                            </button>
+                                        @endif
+                                    </form>
                                 </td>
                                 <td>
                                     <form method="POST" action="{{ route('admin.updateRole', $user->id) }}" class="flex items-center gap-2">
@@ -77,6 +85,10 @@
                         </tbody>
                     </table>
                 </div>
+
+                @if($users->hasPages())
+                    <div class="px-4 py-3 border-t border-gray-100">{{ $users->links() }}</div>
+                @endif
             </div>
         </div>
     </div>

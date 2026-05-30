@@ -31,4 +31,17 @@ class AdminController extends Controller
 
         return back()->with('success', 'ອັບເດດ Role ສຳເລັດ');
     }
+
+    public function toggleActive(User $user, Request $request)
+    {
+        // ป้องกัน admin disable ตัวเอง
+        if ($user->id === $request->user()->id) {
+            return back()->with('error', 'ບໍ່ສາມາດປ່ຽນສະຖານະຕົນເອງໄດ້');
+        }
+
+        $user->update(['is_active' => !$user->is_active]);
+
+        $label = $user->is_active ? 'ເປີດໃຊ້ງານ' : 'ປິດໃຊ້ງານ';
+        return back()->with('success', "ອັບເດດສະຖານະຜູ້ໃຊ້ເປັນ «{$label}» ສຳເລັດ");
+    }
 }
