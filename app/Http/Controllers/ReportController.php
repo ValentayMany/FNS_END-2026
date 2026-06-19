@@ -109,6 +109,7 @@ class ReportController extends Controller
                 'amount_in'    => $tx->amount,
                 'amount_out'   => 0,
                 'department'   => $tx->department?->department_name,
+                'payment_method' => $tx->payment_method,
             ]);
         }
         foreach ($expenseTransactions as $tx) {
@@ -121,6 +122,7 @@ class ReportController extends Controller
                 'amount_in'    => 0,
                 'amount_out'   => $tx->amount,
                 'department'   => $tx->department?->department_name,
+                'payment_method' => null,
             ]);
         }
         foreach ($requests as $req) {
@@ -134,6 +136,7 @@ class ReportController extends Controller
                 'amount_in'    => 0,
                 'amount_out'   => $req->requested_amount,
                 'department'   => $req->department?->department_name,
+                'payment_method' => null,
             ]);
         }
         $ledger = $ledger->sortBy('date')->values();
@@ -157,10 +160,14 @@ class ReportController extends Controller
             ->orderBy('account_code')
             ->get();
 
+        $departments = ($txnType === 'income' || $userRole === 'revenue_officer')
+            ? \App\Models\Department::whereIn('department_name', ['ປທ', 'ປຕ', 'ປອ'])->get()
+            : \App\Models\Department::orderedForSelect();
+
         return view('reports.report', compact(
             'incomeTransactions', 'expenseTransactions', 'requests', 'ledger',
             'totalIncome', 'totalExpense', 'type', 'date', 'month', 'year', 'txnType',
-            'budgetReport', 'selectedAccountId', 'expenseAccounts',
+            'budgetReport', 'selectedAccountId', 'expenseAccounts', 'departments',
         ));
     }
 

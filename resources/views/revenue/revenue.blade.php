@@ -1,15 +1,25 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex flex-col gap-1.5 min-w-0">
-            <div class="flex items-center gap-2">
-                <div class="w-8 h-8 rounded-lg bg-indigo-100 text-indigo-600 flex items-center justify-center shrink-0">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 min-w-0">
+            <div class="flex flex-col gap-1.5 min-w-0">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-lg bg-indigo-100 text-indigo-600 flex items-center justify-center shrink-0">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    </div>
+                    <h2 class="text-xl sm:text-2xl font-extrabold text-gray-900 tracking-tight leading-none">
+                        ບັນທຶກລາຍຮັບ (Revenue)
+                    </h2>
                 </div>
-                <h2 class="text-xl sm:text-2xl font-extrabold text-gray-900 tracking-tight leading-none">
-                    ບັນທຶກລາຍຮັບ (Revenue)
-                </h2>
+                <p class="text-sm font-semibold text-gray-500 pl-10">ບ່ອນບັນທຶກລາຍຮັບ: ຄ່າລົງທະບຽນ ແລະ ຄ່າໜ່ວຍກິດ</p>
             </div>
-            <p class="text-sm font-semibold text-gray-500 pl-10">ບ່ອນບັນທຶກລາຍຮັບ: ຄ່າລົງທະບຽນ ແລະ ຄ່າໜ່ວຍກິດ</p>
+            <a href="{{ route('revenue.dashboard') }}" 
+               class="inline-flex items-center justify-center gap-2 px-4 py-2 text-xs sm:text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 rounded-xl transition-all duration-150 shadow-md shadow-indigo-100 shrink-0">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.003 9.003 0 1020.945 13H11V3.055z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" />
+                </svg>
+                📊 ເບິ່ງ Dashboard ລາຍຮັບ
+            </a>
         </div>
     </x-slot>
 
@@ -31,6 +41,7 @@
 
             <div class="space-y-6">
 
+
                 {{-- Form Card --}}
                 <div class="fns-card border-t-4 border-t-indigo-500 shadow-lg bg-white rounded-2xl overflow-hidden fns-animate">
 
@@ -45,7 +56,16 @@
                         <form method="POST" action="{{ route('revenue.store') }}" class="space-y-4">
                             @csrf
 
-                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                            <div class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+                                {{-- ເລກບັນຊີ / ເລກທີ --}}
+                                <div>
+                                    <label for="payment_code" class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">ເລກທີ (ໃບບິນ) <span class="text-rose-500">*</span></label>
+                                    <input id="payment_code" name="payment_code" type="text" required
+                                        class="ui-input bg-white focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition-all text-sm font-bold w-full"
+                                        value="{{ old('payment_code') }}" placeholder="ເຊັ່ນ: 103906" />
+                                    <x-input-error :messages="$errors->get('payment_code')" class="mt-1" />
+                                </div>
+
                                 {{-- ວັນທີ --}}
                                 <div>
                                     <label for="transaction_date" class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">ວັນທີ <span class="text-rose-500">*</span></label>
@@ -91,6 +111,26 @@
                                     <x-input-error :messages="$errors->get('department_id')" class="mt-1" />
                                 </div>
 
+                                {{-- ວິທີຮັບເງິນ --}}
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">ວິທີຮັບເງິນ <span class="text-rose-500">*</span></label>
+                                    <div class="grid grid-cols-2 gap-2">
+                                        <div>
+                                            <input type="radio" name="payment_method" id="pay_cash" value="cash" required {{ old('payment_method', 'cash') == 'cash' ? 'checked' : '' }} class="sr-only peer" />
+                                            <label for="pay_cash" class="flex items-center justify-center gap-1 px-2 py-2 border border-gray-200 rounded-xl cursor-pointer hover:bg-gray-50 transition-all text-xs font-bold text-gray-600 peer-checked:border-indigo-500 peer-checked:bg-indigo-50 peer-checked:text-indigo-700 peer-checked:ring-1 peer-checked:ring-indigo-500 h-[38px] text-center">
+                                                💵 ເງິນສົດ
+                                            </label>
+                                        </div>
+                                        <div>
+                                            <input type="radio" name="payment_method" id="pay_transfer" value="transfer" required {{ old('payment_method') == 'transfer' ? 'checked' : '' }} class="sr-only peer" />
+                                            <label for="pay_transfer" class="flex items-center justify-center gap-1 px-2 py-2 border border-gray-200 rounded-xl cursor-pointer hover:bg-gray-50 transition-all text-xs font-bold text-gray-600 peer-checked:border-indigo-500 peer-checked:bg-indigo-50 peer-checked:text-indigo-700 peer-checked:ring-1 peer-checked:ring-indigo-500 h-[38px] text-center">
+                                                🏦 ໂອນເຂົ້າ
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <x-input-error :messages="$errors->get('payment_method')" class="mt-1" />
+                                </div>
+
                                 {{-- ຈຳນວນເງິນ --}}
                                 <div>
                                     <label for="amount" class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">ຈຳນວນເງິນ (ກີບ) <span class="text-rose-500">*</span></label>
@@ -106,7 +146,7 @@
                                 </div>
 
                                 {{-- ລາຍລະອຽດ --}}
-                                <div class="sm:col-span-2 lg:col-span-4">
+                                <div class="sm:col-span-2 lg:col-span-5">
                                     <label for="description" class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">ລາຍລະອຽດ <span class="text-gray-400 font-normal lowercase">(ບໍ່ຈຳເປັນ)</span></label>
                                     <textarea id="description" name="description" rows="2"
                                         class="ui-input bg-white focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition-all text-sm w-full resize-none placeholder-gray-300"
@@ -115,14 +155,14 @@
                                 </div>
                             </div>
 
-                            <div class="flex items-center justify-between pt-2 gap-3">
+                            <div class="flex items-center justify-end pt-2 gap-3">
+                                <a href="{{ url()->previous() }}" class="ui-btn bg-gray-100 text-gray-600 hover:bg-gray-200 text-sm py-2.5 px-6 flex items-center gap-2">
+                                    ← ຍົກເລີກ (Cancel)
+                                </a>
                                 <button type="submit" class="ui-btn bg-indigo-500 text-white hover:bg-indigo-600 shadow-lg shadow-indigo-500/30 text-sm py-2.5 px-6 outline-none focus:ring-2 focus:ring-indigo-500 ring-offset-1 flex items-center gap-2">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>
                                     ✓ ບັນທຶກ (Save)
                                 </button>
-                                <a href="{{ url()->previous() }}" class="ui-btn bg-gray-100 text-gray-600 hover:bg-gray-200 text-sm py-2.5 px-6 flex items-center gap-2">
-                                    ← ຍົກເລີກ (Cancel)
-                                </a>
                             </div>
                         </form>
                     </div>
@@ -149,8 +189,10 @@
                             <thead>
                                 <tr class="bg-gray-50/80 border-y border-gray-100">
                                     <th class="py-3 px-4 text-[0.7rem] font-bold text-gray-500 uppercase tracking-wider whitespace-nowrap">ວັນທີ</th>
+                                    <th class="py-3 px-4 text-[0.7rem] font-bold text-gray-500 uppercase tracking-wider whitespace-nowrap">ເລກທີ (ໃບບິນ)</th>
                                     <th class="py-3 px-4 text-[0.7rem] font-bold text-gray-500 uppercase tracking-wider whitespace-nowrap">ປະເພດລາຍຮັບ</th>
                                     <th class="py-3 px-4 text-[0.7rem] font-bold text-gray-500 uppercase tracking-wider whitespace-nowrap">ພາກສ່ວນ</th>
+                                    <th class="py-3 px-4 text-[0.7rem] font-bold text-gray-500 uppercase tracking-wider whitespace-nowrap">ວິທີຮັບເງິນ</th>
                                     <th class="py-3 px-4 text-[0.7rem] font-bold text-gray-500 uppercase tracking-wider text-right whitespace-nowrap">ຈຳນວນ (ກີບ)</th>
                                     <th class="py-3 px-4 text-[0.7rem] font-bold text-gray-500 uppercase tracking-wider text-center whitespace-nowrap">ຈັດການ</th>
                                 </tr>
@@ -164,6 +206,11 @@
                                             </span>
                                         </td>
                                         <td class="py-3.5 px-4">
+                                            <span class="text-sm font-bold text-gray-800 whitespace-nowrap">
+                                                {{ $txn->payment_code ?? '—' }}
+                                            </span>
+                                        </td>
+                                        <td class="py-3.5 px-4">
                                             <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[0.68rem] font-bold bg-indigo-50 text-indigo-700 border border-indigo-100 whitespace-nowrap">
                                                 {{ $txn->category ?? '—' }}
                                             </span>
@@ -172,6 +219,19 @@
                                             <span class="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-100 whitespace-nowrap">
                                                 {{ $txn->department?->displayName() ?? '—' }}
                                             </span>
+                                        </td>
+                                        <td class="py-3.5 px-4">
+                                            @if($txn->payment_method === 'cash')
+                                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[0.68rem] font-bold bg-amber-50 text-amber-700 border border-amber-100 whitespace-nowrap">
+                                                    💵 ເງິນສົດ
+                                                </span>
+                                            @elseif($txn->payment_method === 'transfer')
+                                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[0.68rem] font-bold bg-sky-50 text-sky-700 border border-sky-100 whitespace-nowrap">
+                                                    🏦 ໂອນເຂົ້າ
+                                                </span>
+                                            @else
+                                                <span class="text-gray-400 font-medium">—</span>
+                                            @endif
                                         </td>
                                         <td class="py-3.5 px-4 text-right whitespace-nowrap">
                                             <span class="font-extrabold text-emerald-600 text-[0.95rem] tracking-tight">
@@ -197,7 +257,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="5" class="py-12">
+                                        <td colspan="6" class="py-12">
                                             <div class="flex flex-col items-center justify-center text-center">
                                                 <div class="w-16 h-16 rounded-2xl bg-gray-50 flex items-center justify-center text-gray-400 mb-4 border border-gray-100">
                                                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" class="w-8 h-8"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v4.125c0 .621-.504 1.125-1.125 1.125h-2.25A1.125 1.125 0 013 17.25v-4.125zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v8.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125v-8.25zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v12.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" /></svg>

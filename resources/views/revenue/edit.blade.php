@@ -42,7 +42,15 @@
                         @csrf
                         @method('PUT')
 
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+                            <div>
+                                <label for="payment_code" class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5">ເລກທີ (ໃບບິນ) <span class="text-rose-500">*</span></label>
+                                <input id="payment_code" name="payment_code" type="text" required
+                                    class="w-full px-4 py-2.5 bg-gray-50/50 border border-gray-200 text-gray-800 rounded-xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 focus:bg-white transition-all duration-200 outline-none text-sm font-bold"
+                                    value="{{ old('payment_code', $transaction->payment_code) }}" placeholder="ເຊັ່ນ: 103906" />
+                                <x-input-error :messages="$errors->get('payment_code')" class="mt-1" />
+                            </div>
+
                             <div>
                                 <label for="transaction_date" class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5">ວັນທີ <span class="text-rose-500">*</span></label>
                                 <input id="transaction_date" name="transaction_date" type="date"
@@ -91,6 +99,25 @@
                             </div>
 
                             <div>
+                                <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2.5">ວິທີຮັບເງິນ <span class="text-rose-500">*</span></label>
+                                <div class="grid grid-cols-2 gap-2.5">
+                                    <div>
+                                        <input type="radio" name="payment_method" id="pay_cash" value="cash" required {{ old('payment_method', $transaction->payment_method) == 'cash' ? 'checked' : '' }} class="sr-only peer" />
+                                        <label for="pay_cash" class="flex items-center justify-center gap-1.5 px-3 py-2 border border-gray-200 rounded-xl cursor-pointer hover:bg-gray-50 transition-all text-sm font-bold text-gray-600 peer-checked:border-indigo-500 peer-checked:bg-indigo-50 peer-checked:text-indigo-700 peer-checked:ring-1 peer-checked:ring-indigo-500 h-[42px] text-center">
+                                            💵 ເງິນສົດ
+                                        </label>
+                                    </div>
+                                    <div>
+                                        <input type="radio" name="payment_method" id="pay_transfer" value="transfer" required {{ old('payment_method', $transaction->payment_method) == 'transfer' ? 'checked' : '' }} class="sr-only peer" />
+                                        <label for="pay_transfer" class="flex items-center justify-center gap-1.5 px-3 py-2 border border-gray-200 rounded-xl cursor-pointer hover:bg-gray-50 transition-all text-sm font-bold text-gray-600 peer-checked:border-indigo-500 peer-checked:bg-indigo-50 peer-checked:text-indigo-700 peer-checked:ring-1 peer-checked:ring-indigo-500 h-[42px] text-center">
+                                            🏦 ໂອນເຂົ້າ
+                                        </label>
+                                    </div>
+                                </div>
+                                <x-input-error :messages="$errors->get('payment_method')" class="mt-1" />
+                            </div>
+
+                            <div class="sm:col-span-2">
                                 <label for="amount" class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5">ຈຳນວນເງິນ (ກີບ) <span class="text-rose-500">*</span></label>
                                 <div class="relative">
                                     <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -113,16 +140,16 @@
                         </div>
 
                         <div class="flex flex-col sm:flex-row gap-3 pt-2">
-                            <button type="submit"
-                                class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-xl shadow-[0_4px_14px_0_rgba(99,102,241,0.39)] hover:shadow-[0_6px_20px_rgba(99,102,241,0.23)] hover:-translate-y-0.5 transition-all duration-200 outline-none flex items-center justify-center gap-2 text-sm">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
-                                ບັນທຶກການແກ້ໄຂ
-                            </button>
                             <a href="{{ route('revenue.index') }}"
                                 class="flex-1 bg-white hover:bg-gray-50 text-gray-700 font-bold py-3 px-4 rounded-xl border border-gray-200 hover:border-gray-300 transition-all duration-200 flex items-center justify-center gap-2 text-sm">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
                                 ຍົກເລີກ
                             </a>
+                            <button type="submit"
+                                class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-xl shadow-[0_4px_14px_0_rgba(99,102,241,0.39)] hover:shadow-[0_6px_20px_rgba(99,102,241,0.23)] hover:-translate-y-0.5 transition-all duration-200 outline-none flex items-center justify-center gap-2 text-sm">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+                                ບັນທຶກການແກ້ໄຂ
+                            </button>
                         </div>
                     </form>
                 </div>

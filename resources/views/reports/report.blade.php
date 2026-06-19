@@ -52,24 +52,44 @@
         .print-only { display: none; }
 
         @media print {
-            body * { visibility: hidden !important; display: revert; }
+            /* Hide screen elements */
+            .no-print, header, nav, aside, footer { display: none !important; }
+            
+            /* Reset all layout wrappers to block and visible to avoid squishing and truncation */
+            html, body {
+                background: white !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                width: 100% !important;
+                height: auto !important;
+            }
+            
+            div.flex.h-screen, 
+            div.flex-1.flex-col, 
+            main.relative, 
+            div.max-w-\[1400px\] {
+                display: block !important;
+                height: auto !important;
+                width: 100% !important;
+                max-width: none !important;
+                overflow: visible !important;
+                position: static !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+
             .print-only {
                 display: block !important;
-                visibility: visible !important;
-                position: absolute !important;
-                top: 0 !important; left: 0 !important;
                 width: 100% !important;
-                background: white !important;
-                padding: 12mm 18mm !important;
+                padding: 0 !important;
                 box-sizing: border-box !important;
-                z-index: 99999 !important;
                 font-family: 'Noto Sans Lao', 'Phetsarath OT', sans-serif !important;
             }
-            .print-only * { visibility: visible !important; color: #000 !important; }
-            body { background: white !important; margin: 0 !important; }
-            .p-tbl { width: 100%; border-collapse: collapse; font-size: 10px; margin-top: 12px; }
+            .print-only * { color: #000 !important; }
+            
+            .p-tbl { width: 100%; border-collapse: collapse; font-size: 11px; margin-top: 12px; }
             .p-tbl th, .p-tbl td { border: 1px solid #000 !important; padding: 6px 8px !important; text-align: left; }
-            .p-tbl thead th { background: #fff !important; font-weight: bold !important; font-size: 9.5px; }
+            .p-tbl thead th { background: #fff !important; font-weight: bold !important; font-size: 11px; }
             .p-tbl tfoot td { background: #fff !important; font-weight: bold !important; }
         }
 
@@ -162,7 +182,7 @@
                     <select id="dept_filter" name="department_id"
                         class="h-10 px-3 rounded-xl border border-gray-200 text-sm bg-white focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 outline-none transition-all shadow-sm cursor-pointer">
                         <option value="">ທັງໝົດ</option>
-                        @foreach(\App\Models\Department::all() as $dept)
+                        @foreach($departments as $dept)
                             <option value="{{ $dept->id }}" {{ request('department_id')==$dept->id ? 'selected' : '' }}>{{ $dept->department_name }}</option>
                         @endforeach
                     </select>
@@ -266,131 +286,151 @@
             @endif
         </div>
 
-        {{-- ── Ledger Table ── --}}
-        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-            {{-- Card header --}}
-            <div class="px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-gray-100 bg-gray-50/40">
+        {{-- ── Summary Chart ── --}}
+        @php
+            $chartLabels = [];
+            $chartIncome = [];
+            $chartExpense = [];
+            $grouped = collect($ledger)->groupBy(function($item) use ($type) {
+                return \Carbon\Carbon::parse($item->date)->format($type === 'yearly' ? 'M Y' : 'd M Y');
+            });
+            foreach($grouped as $label => $items) {
+                $chartLabels[] = $label;
+                $chartIncome[] = $items->sum('amount_in');
+                $chartExpense[] = $items->sum('amount_out');
+            }
+        @endphp
+
+        @if(count($chartLabels) > 0)
+        <div class="rpt-card bg-white rounded-2xl border border-gray-100 shadow-sm p-5 no-print" style="animation-delay: 0.25s;">
+            <div class="flex items-center justify-between mb-4">
                 <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 rounded-lg bg-indigo-600 text-white flex items-center justify-center shrink-0 shadow-md shadow-indigo-600/30">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/>
+                    <div class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"/></svg>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-extrabold text-gray-800">ກຣາບສະຫຼຸບການເຄື່ອນໄຫວ (Summary Chart)</h3>
+                    </div>
+                </div>
+            </div>
+            <div style="height: 220px; width: 100%;">
+                <canvas id="summaryChart"></canvas>
+            </div>
+        </div>
+        @endif
+
+        {{-- ── Ledger Table ── --}}
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden" style="border: none; box-shadow: 0 4px 20px rgba(0,0,0,0.03);">
+            {{-- Card header --}}
+            <div class="px-6 py-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-gray-50 bg-white">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-500 text-white flex items-center justify-center shrink-0 shadow-md shadow-indigo-500/20">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 10h16M4 14h16M4 18h16"/>
                         </svg>
                     </div>
                     <div>
-                        <h3 class="text-sm font-extrabold text-gray-800">ລາຍການເຄື່ອນໄຫວ (Ledger)</h3>
-                        <p class="text-xs text-gray-400 leading-none mt-0.5">ປະຫວັດທຸລະກຳທາງການເງິນ ແລະ ຍອດດຸ່ນດ່ຽງສະສົມ</p>
+                        <h3 class="text-lg font-extrabold text-gray-800 tracking-tight">ລາຍການເຄື່ອນໄຫວ (Ledger)</h3>
+                        <p class="text-xs font-semibold text-gray-400 mt-0.5">ປະຫວັດທຸລະກຳທາງການເງິນ ແລະ ຍອດດຸ່ນດ່ຽງສະສົມ</p>
                     </div>
                 </div>
-                <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-indigo-50 text-indigo-600 border border-indigo-100 shrink-0">
-                    <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/><path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"/>
-                    </svg>
+                <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-gray-50 text-gray-500 border border-gray-100 shrink-0">
                     {{ $ledger->count() }} ລາຍການ
                 </span>
             </div>
 
-            <div class="overflow-x-auto touch-pan-x">
+            <div class="overflow-x-auto touch-pan-x" style="max-height: 600px;">
                 <table class="w-full text-left border-collapse" style="min-width:58rem;">
                     <thead>
-                        <tr class="bg-gray-50 border-b border-gray-100">
-                            <th class="py-3 px-4 text-[0.65rem] font-extrabold text-gray-400 uppercase tracking-widest text-center" style="width:48px;">#</th>
-                            <th class="py-3 px-4 text-[0.65rem] font-extrabold text-gray-400 uppercase tracking-widest" style="width:200px;">ຊື່ລາຍການ</th>
-                            <th class="py-3 px-4 text-[0.65rem] font-extrabold text-gray-400 uppercase tracking-widest">ລາຍລະອຽດ</th>
-                            <th class="py-3 px-4 text-[0.65rem] font-extrabold text-gray-400 uppercase tracking-widest" style="width:130px;">ໝວດ</th>
-                            <th class="py-3 px-4 text-[0.65rem] font-extrabold text-gray-400 uppercase tracking-widest text-center" style="width:105px;">ວັນທີ</th>
-                            @if($txnType !== 'expense')
-                            <th class="py-3 px-4 text-[0.65rem] font-extrabold text-gray-400 uppercase tracking-widest text-right" style="width:115px;">ລາຍຮັບ (₭)</th>
-                            @endif
-                            @if($txnType !== 'income')
-                            <th class="py-3 px-4 text-[0.65rem] font-extrabold text-gray-400 uppercase tracking-widest text-right" style="width:115px;">ລາຍຈ່າຍ (₭)</th>
-                            @endif
-                            <th class="py-3 px-4 text-[0.65rem] font-extrabold text-gray-400 uppercase tracking-widest text-right" style="width:125px;">ດຸ່ນດ່ຽງ (₭)</th>
+                        <tr>
+                            <th class="sticky top-0 z-10 bg-white py-4 px-6 text-xs font-extrabold text-gray-400 border-b border-gray-100">ວັນທີ</th>
+                            <th class="sticky top-0 z-10 bg-white py-4 px-6 text-xs font-extrabold text-gray-400 border-b border-gray-100">ເລກທີ (ໃບບິນ)</th>
+                            <th class="sticky top-0 z-10 bg-white py-4 px-6 text-xs font-extrabold text-gray-400 border-b border-gray-100">ພາກສ່ວນ</th>
+                            <th class="sticky top-0 z-10 bg-white py-4 px-6 text-xs font-extrabold text-gray-400 border-b border-gray-100">ປະເພດ</th>
+                            <th class="sticky top-0 z-10 bg-white py-4 px-6 text-xs font-extrabold text-gray-400 border-b border-gray-100">ລາຍລະອຽດ</th>
+                            <th class="sticky top-0 z-10 bg-white py-4 px-6 text-xs font-extrabold text-gray-400 border-b border-gray-100 text-center">ຊ່ອງທາງ</th>
+                            <th class="sticky top-0 z-10 bg-white py-4 px-6 text-xs font-extrabold text-gray-400 border-b border-gray-100 text-right">ຍອດ (₭)</th>
+                            <th class="sticky top-0 z-10 bg-white py-4 px-6 text-xs font-extrabold text-gray-400 border-b border-gray-100 text-right">ດຸ່ນດ່ຽງ (₭)</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-50">
                         @php $balance = 0; @endphp
-                        @forelse ($ledger as $i => $item)
+                        @forelse ($ledger as $item)
                             @php
                                 $balance += ($item->amount_in - $item->amount_out);
                                 $isIncome = $item->amount_in > 0;
                             @endphp
-                            <tr class="rpt-row group">
-                                {{-- Row type indicator --}}
-                                <td class="py-3.5 px-4 text-center relative">
-                                    <div class="absolute inset-y-0 left-0 w-0.5 {{ $isIncome ? 'bg-emerald-400' : 'bg-rose-400' }} opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                                    <span class="text-xs font-bold text-gray-300">{{ $i + 1 }}</span>
+                            <tr class="hover:bg-gray-50/50 transition-colors">
+                                <td class="py-4 px-6 font-mono text-sm text-gray-500 whitespace-nowrap">
+                                    {{ \Carbon\Carbon::parse($item->date)->format('d/m/Y') }}
                                 </td>
-                                <td class="py-3.5 px-4">
-                                    <div class="flex flex-col gap-1">
-                                        <span class="text-sm font-bold text-gray-800 group-hover:text-indigo-700 transition-colors leading-tight">
-                                            {{ $item->item_name ?? '—' }}
+                                <td class="py-4 px-6 font-mono text-sm font-bold text-gray-700 whitespace-nowrap">
+                                    {{ $item->payment_code ?: '—' }}
+                                </td>
+                                <td class="py-4 px-6 whitespace-nowrap">
+                                    @if($item->department)
+                                        <span class="inline-flex items-center px-3 py-1.5 rounded-lg text-[11px] font-extrabold bg-indigo-50 text-indigo-600">
+                                            {{ $item->department }}
                                         </span>
-                                        @if($item->department)
-                                            <span class="inline-flex items-center self-start px-2 py-0.5 rounded-md text-[0.6rem] font-bold bg-violet-50 text-violet-600 border border-violet-100">
-                                                {{ $item->department }}
-                                            </span>
-                                        @endif
+                                    @else
+                                        <span class="text-gray-300">—</span>
+                                    @endif
+                                </td>
+                                <td class="py-4 px-6">
+                                    <div class="font-extrabold text-gray-800 text-sm">
+                                        {{ $item->item_name ?? $item->category ?? '—' }}
                                     </div>
                                 </td>
-                                <td class="py-3.5 px-4 text-sm text-gray-500 max-w-[180px]">
-                                    <span class="line-clamp-2">{{ $item->desc ?? '—' }}</span>
-                                </td>
-                                <td class="py-3.5 px-4">
-                                    @if($item->category)
-                                        <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-bold bg-gray-100 text-gray-600">
-                                            {{ $item->category }}
-                                        </span>
+                                <td class="py-4 px-6 text-sm text-gray-500 max-w-[200px]">
+                                    @if($item->desc)
+                                        <span class="line-clamp-2" title="{{ $item->desc }}">{{ $item->desc }}</span>
                                     @else
-                                        <span class="text-gray-300 text-sm">—</span>
+                                        <span class="text-gray-300">—</span>
                                     @endif
                                 </td>
-                                <td class="py-3.5 px-4 text-center whitespace-nowrap">
-                                    <span class="inline-flex items-center gap-1 text-xs font-semibold text-gray-500 bg-gray-50 border border-gray-100 px-2.5 py-1 rounded-lg">
-                                        {{ \Carbon\Carbon::parse($item->date)->format('d/m/Y') }}
-                                    </span>
+                                <td class="py-4 px-6 text-center whitespace-nowrap">
+                                    @if($item->payment_method === 'cash')
+                                        <span class="inline-flex items-center px-3 py-1.5 rounded-lg text-[11px] font-extrabold bg-amber-50 text-amber-600">
+                                            ເງິນສົດ
+                                        </span>
+                                    @elseif($item->payment_method === 'transfer')
+                                        <span class="inline-flex items-center px-3 py-1.5 rounded-lg text-[11px] font-extrabold bg-cyan-50 text-cyan-600">
+                                            ໂອນເຂົ້າ
+                                        </span>
+                                    @else
+                                        <span class="text-gray-300">—</span>
+                                    @endif
                                 </td>
-                                @if($txnType !== 'expense')
-                                <td class="py-3.5 px-4 text-right whitespace-nowrap">
+                                <td class="py-4 px-6 text-right whitespace-nowrap">
                                     @if($item->amount_in > 0)
-                                        <span class="inline-flex items-center justify-end gap-1 font-extrabold text-sm text-emerald-600">
-                                            <svg class="w-3 h-3 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13a1 1 0 102 0V9.414l1.293 1.293a1 1 0 001.414-1.414z" clip-rule="evenodd"/></svg>
-                                            {{ number_format($item->amount_in, 0) }}
+                                        <span class="font-extrabold text-emerald-600 text-sm">
+                                            + {{ number_format($item->amount_in, 0) }}
+                                        </span>
+                                    @elseif($item->amount_out > 0)
+                                        <span class="font-extrabold text-rose-500 text-sm">
+                                            - {{ number_format($item->amount_out, 0) }}
                                         </span>
                                     @else
-                                        <span class="text-gray-200 text-sm font-bold">—</span>
+                                        <span class="text-gray-300 font-bold">—</span>
                                     @endif
                                 </td>
-                                @endif
-                                @if($txnType !== 'income')
-                                <td class="py-3.5 px-4 text-right whitespace-nowrap">
-                                    @if($item->amount_out > 0)
-                                        <span class="inline-flex items-center justify-end gap-1 font-extrabold text-sm text-rose-500">
-                                            <svg class="w-3 h-3 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v3.586L7.707 9.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 10.586V7z" clip-rule="evenodd"/></svg>
-                                            {{ number_format($item->amount_out, 0) }}
-                                        </span>
-                                    @else
-                                        <span class="text-gray-200 text-sm font-bold">—</span>
-                                    @endif
-                                </td>
-                                @endif
-                                <td class="py-3.5 px-4 text-right whitespace-nowrap">
-                                    <span class="text-sm font-extrabold {{ $balance >= 0 ? 'text-indigo-600' : 'text-rose-600' }}">
-                                        {{ number_format($balance, 0) }} ₭
+                                <td class="py-4 px-6 text-right whitespace-nowrap">
+                                    <span class="text-sm font-extrabold {{ $balance >= 0 ? 'text-gray-800' : 'text-rose-600' }}">
+                                        {{ number_format($balance, 0) }}
                                     </span>
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="{{ 5 + ($txnType !== 'expense' ? 1 : 0) + ($txnType !== 'income' ? 1 : 0) + 1 }}" class="py-16">
+                                <td colspan="7" class="py-16">
                                     <div class="flex flex-col items-center justify-center text-center gap-3">
-                                        <div class="w-16 h-16 rounded-2xl bg-gray-50 border border-gray-100 flex items-center justify-center text-gray-300">
+                                        <div class="w-16 h-16 rounded-2xl bg-gray-50 flex items-center justify-center text-gray-300">
                                             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" class="w-8 h-8">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 17v-2a4 4 0 00-4-4H3m18 0h-2a4 4 0 00-4 4v2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2a4 4 0 00-4-4H3m18 0h-2a4 4 0 00-4 4v2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/>
                                             </svg>
                                         </div>
                                         <div>
-                                            <p class="text-gray-600 font-bold text-sm">ບໍ່ມີຂໍ້ມູນທຸລະກຳ</p>
-                                            <p class="text-xs text-gray-400 mt-0.5">ບໍ່ພົບລາຍການໃນຊ່ວງເວລາທີ່ເລືອກ</p>
+                                            <p class="text-gray-400 font-bold text-sm">ບໍ່ມີຂໍ້ມູນທຸລະກຳ</p>
                                         </div>
                                     </div>
                                 </td>
@@ -400,23 +440,14 @@
 
                     @if($ledger->count() > 0)
                     <tfoot>
-                        <tr class="bg-gradient-to-r from-indigo-50 to-violet-50 border-t-2 border-indigo-100">
-                            <td colspan="5" class="py-4 px-4 text-sm font-extrabold text-indigo-700 text-center tracking-wide">
-                                ລວມທັງໝົດ (Grand Total)
+                        <tr class="bg-gray-50 border-t border-gray-100">
+                            <td colspan="5" class="py-4 px-6 text-sm font-extrabold text-gray-500 text-right">
+                                ລວມຍອດດຸ່ນດ່ຽງ (Grand Total)
                             </td>
-                            @if($txnType !== 'expense')
-                            <td class="py-4 px-4 text-right whitespace-nowrap text-sm font-extrabold text-emerald-600">
-                                {{ number_format($totalIncome, 0) }} ₭
+                            <td class="py-4 px-6 text-right whitespace-nowrap text-sm font-extrabold text-gray-800">
+                                {{ number_format($totalIncome - $totalExpense, 0) }}
                             </td>
-                            @endif
-                            @if($txnType !== 'income')
-                            <td class="py-4 px-4 text-right whitespace-nowrap text-sm font-extrabold text-rose-600">
-                                {{ number_format($totalExpense, 0) }} ₭
-                            </td>
-                            @endif
-                            <td class="py-4 px-4 text-right whitespace-nowrap text-sm font-extrabold text-indigo-700">
-                                {{ number_format($totalIncome - $totalExpense, 0) }} ₭
-                            </td>
+                            <td></td>
                         </tr>
                     </tfoot>
                     @endif
@@ -427,7 +458,11 @@
 
     {{-- ═══════════════════ PRINT VIEW ═══════════════════ --}}
     <div class="print-only" style="font-family:'Noto Sans Lao','Phetsarath OT',sans-serif; color:#000;">
-        @if($budgetReport && ($txnType === 'expense' || $isAccountant))
+        @php
+            $userRole = auth()->user()->role?->role_name ?? '';
+        @endphp
+        
+        @if($budgetReport && ($txnType === 'expense' || (isset($isAccountant) && $isAccountant) || $userRole === 'accountant'))
             @include('reports.partials.budget-expense-print', [
                 'report' => $budgetReport,
                 'type' => $type,
@@ -437,20 +472,30 @@
                 'selectedYear' => $budgetReport['selectedYear'],
                 'selectedAccountId' => $selectedAccountId ?? $budgetReport['account']?->id,
             ])
+        @elseif($txnType === 'income' || $userRole === 'revenue_officer')
+            @include('reports.partials.revenue-print')
         @else
             @php
-                $userRole = auth()->user()->role?->role_name;
-                $slipTitle = $txnType === 'income' ? 'ໃບບິນຮັບເງິນ' : 'ລາຍງານລາຍຮັບ-ລາຍຈ່າຍ';
+                if ($txnType === 'expense' || $userRole === 'accountant') {
+                    $slipTitle = 'ໃບບິນຈ່າຍເງິນ';
+                    $mainTitle = 'ລາຍງານລາຍຈ່າຍ';
+                } elseif ($txnType === 'income' || $userRole === 'revenue_officer') {
+                    $slipTitle = 'ໃບບິນຮັບເງິນ';
+                    $mainTitle = 'ລາຍງານລາຍຮັບ';
+                } else {
+                    $slipTitle = 'ລາຍງານລາຍຮັບ-ລາຍຈ່າຍ';
+                    $mainTitle = 'ລາຍງານລາຍຮັບ-ລາຍຈ່າຍ';
+                }
             @endphp
             <div style="text-align: center; font-size: 10px; font-weight: bold; margin-bottom: 12px; text-decoration: underline;">
                 {{ $slipTitle }}
             </div>
             <div style="text-align: center; margin-bottom: 20px;">
                 <h1 style="font-size: 14px; font-weight: 800; margin: 0;">
-                    {{ $txnType === 'income' ? 'ລາຍງານສະຫຼຸບລາຍຮັບ' : 'ລາຍງານລາຍຮັບ-ລາຍຈ່າຍ' }}
+                    {{ $mainTitle }}
                 </h1>
             </div>
-            {{-- fallback ledger print for income / combined --}}
+            {{-- fallback ledger print for combined --}}
             @include('reports.partials.ledger-print', [
                 'ledger' => $ledger,
                 'txnType' => $txnType,
@@ -461,4 +506,71 @@
             ])
         @endif
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const el = document.getElementById('summaryChart');
+        if(!el) return;
+        const ctx = el.getContext('2d');
+        const labels = @json($chartLabels ?? []);
+        const income = @json($chartIncome ?? []);
+        const expense = @json($chartExpense ?? []);
+
+        // Only show datasets that have data
+        const datasets = [];
+        if(income.some(v => v > 0)) {
+            datasets.push({
+                label: 'ລາຍຮັບ (Income)',
+                data: income,
+                backgroundColor: 'rgba(16, 185, 129, 0.8)', // Emerald
+                borderRadius: 4,
+                maxBarThickness: 32
+            });
+        }
+        if(expense.some(v => v > 0)) {
+            datasets.push({
+                label: 'ລາຍຈ່າຍ (Expense)',
+                data: expense,
+                backgroundColor: 'rgba(244, 63, 94, 0.8)', // Rose
+                borderRadius: 4,
+                maxBarThickness: 32
+            });
+        }
+
+        new Chart(ctx, {
+            type: 'bar',
+            data: { labels, datasets },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'top', labels: { usePointStyle: true, boxWidth: 8, font: { family: "'Noto Sans Lao', sans-serif", weight: 'bold' } } },
+                    tooltip: {
+                        backgroundColor: '#1e293b',
+                        padding: 12,
+                        titleFont: { family: "'Noto Sans Lao', sans-serif" },
+                        bodyFont: { family: "'Noto Sans Lao', sans-serif" },
+                        callbacks: {
+                            label: function(context) {
+                                let val = context.raw || 0;
+                                return context.dataset.label + ': ' + val.toLocaleString() + ' ₭';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: { grid: { display: false } },
+                    y: { 
+                        border: { display: false },
+                        ticks: {
+                            callback: function(v) { return v >= 1000 ? (v/1000)+'K' : v; },
+                            font: { size: 11 }
+                        }
+                    }
+                }
+            }
+        });
+    });
+    </script>
 </x-app-layout>

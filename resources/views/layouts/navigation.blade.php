@@ -91,9 +91,13 @@
                 @endif
 
                 @if($role === 'revenue_officer')
-                    <x-sidebar-link :href="route('revenue.index')" :active="request()->routeIs('revenue.*')">
+                    <x-sidebar-link :href="route('revenue.dashboard')" :active="request()->routeIs('revenue.dashboard')">
+                        <x-slot name="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 3.055A9.003 9.003 0 1020.945 13H11V3.055z" /><path stroke-linecap="round" stroke-linejoin="round" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" /></svg></x-slot>
+                        Dashboard ລາຍຮັບ
+                    </x-sidebar-link>
+                    <x-sidebar-link :href="route('revenue.index')" :active="request()->routeIs('revenue.*') && !request()->routeIs('revenue.dashboard')">
                         <x-slot name="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v4.125c0 .621-.504 1.125-1.125 1.125h-2.25A1.125 1.125 0 013 17.25v-4.125zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v8.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125v-8.25zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v12.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" /></svg></x-slot>
-                        ບັນທຶກລາຍຮັບ
+                        🛡️ ບັນທຶກລາຍຮັບ
                     </x-sidebar-link>
                     <x-sidebar-link :href="route('reports.index')" :active="request()->routeIs('reports.*') && !request()->routeIs('reports.budget_expense')">
                         <x-slot name="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6a7.5 7.5 0 107.5 7.5h-7.5V6zM13.5 10.5H21A7.5 7.5 0 0013.5 3v7.5z" /></svg></x-slot>
@@ -106,6 +110,10 @@
                         <x-slot name="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg></x-slot>
                         ອະນຸມັດຄຳຂໍເບີກຈ່າຍ
                     </x-sidebar-link>
+                    <x-sidebar-link :href="route('revenue.dashboard')" :active="request()->routeIs('revenue.dashboard')">
+                        <x-slot name="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 3.055A9.003 9.003 0 1020.945 13H11V3.055z" /><path stroke-linecap="round" stroke-linejoin="round" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" /></svg></x-slot>
+                        Dashboard ລາຍຮັບ
+                    </x-sidebar-link>
                     <x-sidebar-link :href="route('reports.index')" :active="request()->routeIs('reports.*') && !request()->routeIs('reports.budget_expense')">
                         <x-slot name="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6a7.5 7.5 0 107.5 7.5h-7.5V6zM13.5 10.5H21A7.5 7.5 0 0013.5 3v7.5z" /></svg></x-slot>
                         ລາຍງານ
@@ -116,6 +124,10 @@
                     <x-sidebar-link :href="route('treasurer.index')" :active="request()->routeIs('treasurer.*')">
                         <x-slot name="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 0v3.75m-16.5-3.75v3.75m16.5 0v3.75C20.25 16.153 16.556 18 12 18s-8.25-1.847-8.25-4.125v-3.75m16.5 0c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125" /></svg></x-slot>
                         ຄັງເງິນ (Treasurer)
+                    </x-sidebar-link>
+                    <x-sidebar-link :href="route('revenue.dashboard')" :active="request()->routeIs('revenue.dashboard')">
+                        <x-slot name="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 3.055A9.003 9.003 0 1020.945 13H11V3.055z" /><path stroke-linecap="round" stroke-linejoin="round" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" /></svg></x-slot>
+                        Dashboard ລາຍຮັບ
                     </x-sidebar-link>
                     <x-sidebar-link :href="route('reports.index')" :active="request()->routeIs('reports.*') && !request()->routeIs('reports.budget_expense')">
                         <x-slot name="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6a7.5 7.5 0 107.5 7.5h-7.5V6zM13.5 10.5H21A7.5 7.5 0 0013.5 3v7.5z" /></svg></x-slot>
@@ -131,6 +143,10 @@
                 @endif
 
                 @if($role === 'head_of_finance')
+                    <x-sidebar-link :href="route('revenue.dashboard')" :active="request()->routeIs('revenue.dashboard')">
+                        <x-slot name="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 3.055A9.003 9.003 0 1020.945 13H11V3.055z" /><path stroke-linecap="round" stroke-linejoin="round" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" /></svg></x-slot>
+                        Dashboard ລາຍຮັບ
+                    </x-sidebar-link>
                     <x-sidebar-link :href="route('reports.index')" :active="request()->routeIs('reports.*') && !request()->routeIs('reports.budget_expense')">
                         <x-slot name="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6a7.5 7.5 0 107.5 7.5h-7.5V6zM13.5 10.5H21A7.5 7.5 0 0013.5 3v7.5z" /></svg></x-slot>
                         ລາຍງານ
@@ -141,6 +157,10 @@
                     <x-sidebar-link :href="route('admin.users')" :active="request()->routeIs('admin.users*')">
                         <x-slot name="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.956m-7.128-1.533A15.362 15.362 0 0112 18.75c-4.04 0-7.616-1.52-10.231-3.99A15.38 15.38 0 0112 14.25c2.96 0 5.67.75 8.162 2.05m-15.69-7.143a15.38 15.38 0 0113.626-3.83m-13.626 3.83c1.785-1.895 4.316-3.08 7.126-3.08 3.542 0 6.64 1.83 8.36 4.6" /></svg></x-slot>
                         ຈັດການຜູ້ໃຊ້
+                    </x-sidebar-link>
+                    <x-sidebar-link :href="route('revenue.dashboard')" :active="request()->routeIs('revenue.dashboard')">
+                        <x-slot name="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 3.055A9.003 9.003 0 1020.945 13H11V3.055z" /><path stroke-linecap="round" stroke-linejoin="round" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" /></svg></x-slot>
+                        Dashboard ລາຍຮັບ
                     </x-sidebar-link>
                     <x-sidebar-link :href="route('reports.index')" :active="request()->routeIs('reports.*') && !request()->routeIs('reports.budget_expense')">
                         <x-slot name="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6a7.5 7.5 0 107.5 7.5h-7.5V6zM13.5 10.5H21A7.5 7.5 0 0013.5 3v7.5z" /></svg></x-slot>

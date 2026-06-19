@@ -17,17 +17,152 @@ class RevenueController extends Controller
         'ຄ່າບໍລິການວິຊາການ',
     ];
 
+    public function dashboard(Request $request)
+    {
+        $startDate = $request->input('start_date', now()->startOfMonth()->toDateString());
+        $endDate = $request->input('end_date', now()->toDateString());
+
+        $departments = Department::whereIn('department_name', ['ປທ', 'ປຕ', 'ປອ'])->get();
+        $deptIds = $departments->pluck('id')->toArray();
+
+        // 1. Selected Period Stats
+        $periodTransactions = Transaction::where('type', 'income')
+            ->whereBetween('transaction_date', [$startDate, $endDate])
+            ->whereIn('department_id', $deptIds)
+            ->get();
+
+        $dailyStats = [];
+        foreach ($departments as $dept) {
+            $deptTxns = $periodTransactions->where('department_id', $dept->id);
+            $dailyStats[$dept->department_name] = [
+                'total' => $deptTxns->sum('amount'),
+                'cash' => $deptTxns->where('payment_method', 'cash')->sum('amount'),
+                'transfer' => $deptTxns->where('payment_method', 'transfer')->sum('amount'),
+            ];
+        }
+
+        // 2. Overall Stats (All-time Grand Total)
+        $allTransactions = Transaction::where('type', 'income')
+            ->whereIn('department_id', $deptIds)
+            ->get();
+
+        $overallStats = [];
+        foreach ($departments as $dept) {
+            $deptTxns = $allTransactions->where('department_id', $dept->id);
+            $overallStats[$dept->department_name] = [
+                'total' => $deptTxns->sum('amount'),
+                'cash' => $deptTxns->where('payment_method', 'cash')->sum('amount'),
+                'transfer' => $deptTxns->where('payment_method', 'transfer')->sum('amount'),
+            ];
+        }
+
+        // 3. Daily Trend Data (Line Chart)
+        $dailyTrendsRaw = Transaction::where('type', 'income')
+            ->whereBetween('transaction_date', [$startDate, $endDate])
+            ->whereIn('department_id', $deptIds)
+            ->selectRaw('transaction_date, 
+                SUM(amount) as total,
+                SUM(CASE WHEN payment_method = "cash" THEN amount ELSE 0 END) as cash,
+                SUM(CASE WHEN payment_method = "transfer" THEN amount ELSE 0 END) as transfer')
+            ->groupBy('transaction_date')
+            ->orderBy('transaction_date')
+            ->get()
+            ->keyBy(function($item) {
+                return \Carbon\Carbon::parse($item->transaction_date)->toDateString();
+            });
+
+        $dailyTrends = collect();
+        $currentDate = \Carbon\Carbon::parse($startDate);
+        $endDateObj = \Carbon\Carbon::parse($endDate);
+        
+        while ($currentDate <= $endDateObj) {
+            $dateStr = $currentDate->toDateString();
+            if ($dailyTrendsRaw->has($dateStr)) {
+                $dailyTrends->push($dailyTrendsRaw->get($dateStr));
+            } else {
+                $dailyTrends->push((object)[
+                    'transaction_date' => $dateStr,
+                    'total' => 0,
+                    'cash' => 0,
+                    'transfer' => 0
+                ]);
+            }
+            $currentDate->addDay();
+        }
+
+        // 4. Payment Method Proportion (Doughnut Chart)
+        $paymentBreakdown = [
+            'cash' => $periodTransactions->where('payment_method', 'cash')->sum('amount'),
+            'transfer' => $periodTransactions->where('payment_method', 'transfer')->sum('amount'),
+        ];
+
+        // 5. Recent Transactions in this period (take 10)
+        $recentTransactions = Transaction::with('department')
+            ->where('type', 'income')
+            ->whereBetween('transaction_date', [$startDate, $endDate])
+            ->whereIn('department_id', $deptIds)
+            ->latest('transaction_date')
+            ->latest('id')
+            ->take(10)
+            ->get();
+
+        return view('revenue.dashboard', compact(
+            'departments',
+            'dailyStats',
+            'overallStats',
+            'startDate',
+            'endDate',
+            'dailyTrends',
+            'paymentBreakdown',
+            'recentTransactions'
+        ));
+    }
+
     public function index()
     {
         $transactions = Transaction::with('department', 'chartOfAccount')
             ->where('type', 'income')
             ->latest('transaction_date')
+            ->latest('id')
             ->paginate(15);
 
-        $departments = Department::all();
+        $departments = Department::whereIn('department_name', ['ປທ', 'ປຕ', 'ປອ'])->get();
+        $deptIds = $departments->pluck('id')->toArray();
         $categories = $this->incomeCategories;
 
-        return view('revenue.revenue', compact('transactions', 'departments', 'categories'));
+        // Daily Stats (Today)
+        $today = today()->toDateString();
+        $todayTransactions = Transaction::where('type', 'income')
+            ->whereDate('transaction_date', $today)
+            ->whereIn('department_id', $deptIds)
+            ->get();
+
+        $dailyStats = [];
+        foreach ($departments as $dept) {
+            $deptTxns = $todayTransactions->where('department_id', $dept->id);
+            $dailyStats[$dept->department_name] = [
+                'total' => $deptTxns->sum('amount'),
+                'cash' => $deptTxns->where('payment_method', 'cash')->sum('amount'),
+                'transfer' => $deptTxns->where('payment_method', 'transfer')->sum('amount'),
+            ];
+        }
+
+        // Overall Stats (All-time)
+        $allTransactions = Transaction::where('type', 'income')
+            ->whereIn('department_id', $deptIds)
+            ->get();
+
+        $overallStats = [];
+        foreach ($departments as $dept) {
+            $deptTxns = $allTransactions->where('department_id', $dept->id);
+            $overallStats[$dept->department_name] = [
+                'total' => $deptTxns->sum('amount'),
+                'cash' => $deptTxns->where('payment_method', 'cash')->sum('amount'),
+                'transfer' => $deptTxns->where('payment_method', 'transfer')->sum('amount'),
+            ];
+        }
+
+        return view('revenue.revenue', compact('transactions', 'departments', 'categories', 'dailyStats', 'overallStats'));
     }
 
     public function store(Request $request)
@@ -39,6 +174,8 @@ class RevenueController extends Controller
             'description'      => 'nullable|string|max:500',
             'amount'           => 'required|numeric|min:1',
             'department_id'    => 'required|exists:departments,id',
+            'payment_method'   => 'required|in:cash,transfer',
+            'payment_code'     => 'nullable|string|max:50',
         ]);
 
         $category = $request->input('category');
@@ -52,6 +189,8 @@ class RevenueController extends Controller
             'description'      => $request->input('description'),
             'amount'           => $request->input('amount'),
             'department_id'    => $request->input('department_id'),
+            'payment_method'   => $request->input('payment_method'),
+            'payment_code'     => $request->input('payment_code'),
             'type'             => 'income',
         ]);
 
@@ -62,7 +201,7 @@ class RevenueController extends Controller
     {
         abort_if($transaction->type !== 'income', 403);
 
-        $departments = Department::all();
+        $departments = Department::whereIn('department_name', ['ປທ', 'ປຕ', 'ປອ'])->get();
         $categories = $this->incomeCategories;
 
         return view('revenue.edit', compact('transaction', 'departments', 'categories'));
@@ -79,6 +218,8 @@ class RevenueController extends Controller
             'description'      => 'nullable|string|max:500',
             'amount'           => 'required|numeric|min:1',
             'department_id'    => 'required|exists:departments,id',
+            'payment_method'   => 'required|in:cash,transfer',
+            'payment_code'     => 'nullable|string|max:50',
         ]);
 
         $category = $request->input('category');
@@ -92,6 +233,8 @@ class RevenueController extends Controller
             'description'      => $request->input('description'),
             'amount'           => $request->input('amount'),
             'department_id'    => $request->input('department_id'),
+            'payment_method'   => $request->input('payment_method'),
+            'payment_code'     => $request->input('payment_code'),
         ]);
 
         return redirect()->route('revenue.index')->with('success', 'ແກ້ໄຂລາຍຮັບສຳເລັດ');

@@ -40,7 +40,12 @@
             @php $pb += ($item->amount_in - $item->amount_out); @endphp
             <tr>
                 <td style="text-align:center; border:1px solid #000;">{{ $i + 1 }}</td>
-                <td style="border:1px solid #000;">{{ $item->item_name ?? $item->desc ?? '—' }}</td>
+                <td style="border:1px solid #000;">
+                    {{ $item->item_name ?? $item->desc ?? '—' }}
+                    @if(isset($item->payment_method) && $item->payment_method)
+                        ({{ $item->payment_method === 'cash' ? 'ເງິນສົດ' : 'ໂອນເຂົ້າ' }})
+                    @endif
+                </td>
                 <td style="border:1px solid #000;">{{ $item->desc ?? '—' }}</td>
                 <td style="text-align:center; border:1px solid #000;">{{ \Carbon\Carbon::parse($item->date)->format('d-m-Y') }}</td>
                 @if($txnType !== 'expense')

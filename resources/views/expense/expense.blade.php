@@ -74,9 +74,10 @@
                                 {{-- ຊື່ລາຍການຈ່າຍ --}}
                                 <div class="sm:col-span-2">
                                     <label for="item_name" class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">ຊື່ລາຍການຈ່າຍ <span class="text-red-500">*</span></label>
-                                    <input id="item_name" name="item_name" type="text"
+                                    <input id="item_name" name="item_name" type="text" list="item_name_suggestions" autocomplete="off"
                                         class="ui-input bg-white focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition-all text-sm w-full"
                                         value="{{ old('item_name') }}" placeholder="ຊື່ລາຍການຈ່າຍ" required />
+                                    <datalist id="item_name_suggestions"></datalist>
                                 </div>
 
                                 {{-- ຈໍານວນເງິນ --}}
@@ -351,6 +352,41 @@
                         })
                         .catch(err => console.error('Error fetching next payment code:', err));
                 }
+            });
+        }
+
+        // Fetch suggestions for item_name
+        const itemNameInput = document.getElementById('item_name');
+        const datalist = document.getElementById('item_name_suggestions');
+        
+        if (itemNameInput && datalist) {
+            const fetchSuggestions = (query = '') => {
+                fetch(`/expense/item-suggestions?q=${encodeURIComponent(query)}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        datalist.innerHTML = '';
+                        data.forEach(item => {
+                            const option = document.createElement('option');
+                            option.value = item;
+                            datalist.appendChild(option);
+                        });
+                    })
+                    .catch(err => console.error('Error fetching suggestions:', err));
+            };
+
+            itemNameInput.addEventListener('focus', function() {
+                if (!this.value) {
+                    fetchSuggestions('');
+                }
+            });
+
+            let debounceTimer;
+            itemNameInput.addEventListener('input', function() {
+                clearTimeout(debounceTimer);
+                const val = this.value;
+                debounceTimer = setTimeout(() => {
+                    fetchSuggestions(val);
+                }, 300);
             });
         }
     </script>

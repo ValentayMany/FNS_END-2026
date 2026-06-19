@@ -54,21 +54,30 @@ class ReportExcelExportService
         $row = 1;
 
         // --- ລາຍຮັບ ---
-        $row = $this->sectionTitle($sheet, $row, '=== ລາຍຮັບ ===', 5);
-        $row = $this->tableHeaderRow($sheet, $row, ['ວັນທີ', 'ປະເພດ', 'ລາຍລະອຽດ', 'ພາກສ່ວນ', 'ຈຳນວນ (ກີບ)'], 5);
+        $row = $this->sectionTitle($sheet, $row, '=== ລາຍຮັບ ===', 6);
+        $row = $this->tableHeaderRow($sheet, $row, ['ວັນທີ', 'ປະເພດ', 'ລາຍລະອຽດ', 'ພາກສ່ວນ', 'ວິທີຮັບເງິນ', 'ຈຳນວນ (ກີບ)'], 6);
         foreach ($income as $t) {
             $sheet->setCellValue([1, $row], $t->transaction_date?->format('d/m/Y'));
             $sheet->setCellValue([2, $row], $this->lao($t->category ?? '-'));
             $sheet->setCellValue([3, $row], $this->lao($t->description));
             $sheet->setCellValue([4, $row], $this->lao($t->department?->displayName()));
-            $this->setAmountCell($sheet, 5, $row, (float) $t->amount);
+            
+            $method = '—';
+            if ($t->payment_method === 'cash') {
+                $method = 'ເງິນສົດ';
+            } elseif ($t->payment_method === 'transfer') {
+                $method = 'ໂອນເຂົ້າ';
+            }
+            $sheet->setCellValue([5, $row], $this->lao($method));
+            
+            $this->setAmountCell($sheet, 6, $row, (float) $t->amount);
             $row++;
         }
         if ($income->isNotEmpty()) {
-            $sheet->setCellValue([4, $row], $this->lao('ລວມລາຍຮັບ'));
-            $sheet->getStyle([4, $row])->getFont()->setBold(true);
-            $this->setAmountCell($sheet, 5, $row, (float) $income->sum('amount'));
+            $sheet->setCellValue([5, $row], $this->lao('ລວມລາຍຮັບ'));
             $sheet->getStyle([5, $row])->getFont()->setBold(true);
+            $this->setAmountCell($sheet, 6, $row, (float) $income->sum('amount'));
+            $sheet->getStyle([6, $row])->getFont()->setBold(true);
             $row++;
         }
         $row++;

@@ -80,6 +80,7 @@ Route::middleware(['auth', 'role:accountant'])
     ->group(function () {
         Route::get('/expense', [ExpenseController::class, 'index'])->name('expense.index');
         Route::get('/expense/next-code', [ExpenseController::class, 'getNextCode'])->name('expense.next-code');
+        Route::get('/expense/item-suggestions', [ExpenseController::class, 'itemSuggestions'])->name('expense.item-suggestions');
         Route::post('/expense', [ExpenseController::class, 'store'])->name('expense.store');
         Route::get('/expense/{transaction}/edit', [ExpenseController::class, 'edit'])->name('expense.edit');
         Route::put('/expense/{transaction}', [ExpenseController::class, 'update'])->name('expense.update');
@@ -108,6 +109,11 @@ Route::middleware(['auth', 'role:admin'])
     });
 
 // ---- Reports ----
+Route::middleware(['auth', 'role:admin,head_of_finance,deputy_head_of_faculty,head_of_faculty,treasurer,revenue_officer'])
+    ->group(function () {
+        Route::get('/revenue/dashboard', [RevenueController::class, 'dashboard'])->name('revenue.dashboard');
+    });
+
 Route::middleware(['auth', 'role:admin,accountant,head_of_finance,deputy_head_of_faculty,head_of_faculty,treasurer,revenue_officer'])
     ->group(function () {
         Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');

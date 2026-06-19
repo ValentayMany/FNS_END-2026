@@ -161,6 +161,40 @@ class ExpenseController extends Controller
         return back()->with('success', 'ລຶບລາຍຈ່າຍສຳເລັດ');
     }
 
+    public function itemSuggestions(Request $request)
+    {
+        $q = $request->query('q', '');
+        
+        $query = Transaction::where('type', 'expense')
+            ->whereNotNull('item_name')
+            ->where('item_name', '!=', '');
+            
+        if ($q !== '') {
+            $query->where('item_name', 'like', "%{$q}%");
+        }
+        
+        $suggestions = $query->select('item_name')
+            ->selectRaw('COUNT(*) as count')
+            ->groupBy('item_name')
+            ->orderBy('count', 'desc')
+            ->limit(10)
+            ->pluck('item_name');
+            
+        $defaults = ['Cash', 'Fuel', 'Office Supplies', 'Electricity', 'Water Bill'];
+        
+        $result = $suggestions->toArray();
+        if (empty($q)) {
+            $result = array_values(array_unique(array_merge($result, $defaults)));
+        } else {
+            $matchedDefaults = array_filter($defaults, function($item) use ($q) {
+                return stripos($item, $q) !== false;
+            });
+            $result = array_values(array_unique(array_merge($result, $matchedDefaults)));
+        }
+        
+        return response()->json(array_slice($result, 0, 10));
+    }
+
     private function ensureEditableExpense(Transaction $transaction): void
     {
         abort_if($transaction->type !== 'expense', 403);
