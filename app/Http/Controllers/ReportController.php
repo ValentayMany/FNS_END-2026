@@ -101,6 +101,8 @@ class ReportController extends Controller
         $ledger = collect();
         foreach ($incomeTransactions as $tx) {
             $ledger->push((object)[
+                'id'           => $tx->id,
+                'type'         => 'income',
                 'date'         => $tx->transaction_date,
                 'item_name'    => $tx->item_name,
                 'desc'         => $tx->description,
@@ -114,6 +116,8 @@ class ReportController extends Controller
         }
         foreach ($expenseTransactions as $tx) {
             $ledger->push((object)[
+                'id'           => $tx->id,
+                'type'         => 'expense',
                 'date'         => $tx->transaction_date,
                 'item_name'    => $tx->item_name,
                 'desc'         => $tx->description,
@@ -128,6 +132,8 @@ class ReportController extends Controller
         foreach ($requests as $req) {
             $d = $req->paymentTransaction ? $req->paymentTransaction->transaction_date : $req->request_date;
             $ledger->push((object)[
+                'id'           => $req->id,
+                'type'         => 'request',
                 'date'         => $d,
                 'item_name'    => null,
                 'desc'         => $req->description . ' (ເບີກຈ່າຍລ່ວງໜ້າ)',

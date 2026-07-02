@@ -75,12 +75,13 @@
                     </div>
                     
                     <!-- Subtle footer / watermark -->
-                    <footer class="mt-auto py-6 text-center text-xs font-medium text-gray-400/80">
+                    <footer class="mt-auto py-6 text-center text-xs font-medium text-gray-400/80 no-print">
                         &copy; {{ date('Y') }} Financial Management System. All rights reserved.
                     </footer>
                 </main>
             </div>
             
         </div>
+        @stack('modals')
     </body>
 </html>

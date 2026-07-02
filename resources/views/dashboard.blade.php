@@ -1,8 +1,29 @@
+@php
+    $role = Auth::user()->role?->role_name;
+    $isExpenseTheme = in_array($role, [
+        'accountant',
+        'cashier',
+        'head_of_faculty',
+        'deputy_head_of_faculty',
+        'treasurer',
+        'treasury_reconciliation_officer',
+        'head_of_finance'
+    ]);
+    
+    $themeColor = $isExpenseTheme ? 'rose-500' : 'indigo-500';
+    $themeBorder = $isExpenseTheme ? 'border-l-rose-500' : 'border-l-indigo-500';
+    $themeBg = $isExpenseTheme ? 'bg-rose-50/50' : 'bg-indigo-50/50';
+    $themeText = $isExpenseTheme ? 'text-rose-600' : 'text-indigo-600';
+    $themeBadge = $isExpenseTheme ? 'bg-rose-100 text-rose-700' : 'bg-indigo-100 text-indigo-700';
+    $themeHoverText = $isExpenseTheme ? 'group-hover:text-rose-700' : 'group-hover:text-indigo-700';
+    $themeButtonText = $isExpenseTheme ? 'text-rose-600 hover:text-rose-800' : 'text-indigo-600 hover:text-indigo-800';
+    $themeButtonBg = $isExpenseTheme ? 'bg-rose-50 hover:bg-rose-100' : 'bg-indigo-50 hover:bg-indigo-100';
+@endphp
 <x-app-layout>
     <x-slot name="header">
         <h2 class="text-xl sm:text-2xl font-extrabold text-gray-900 tracking-tight leading-none min-w-0">
             🏠 ໜ້າຫຼັກ (Dashboard) — {{ Auth::user()->full_name ?? Auth::user()->username }}
-            <span class="block sm:inline text-sm font-semibold text-indigo-500 mt-1 sm:mt-0 sm:ml-2 tracking-wider uppercase">({{ Auth::user()->roleDisplay() }})</span>
+            <span class="block sm:inline text-sm font-semibold text-{{ $isExpenseTheme ? 'rose' : 'indigo' }}-500 mt-1 sm:mt-0 sm:ml-2 tracking-wider uppercase">({{ Auth::user()->roleDisplay() }})</span>
         </h2>
     </x-slot>
 
@@ -11,13 +32,13 @@
 
             {{-- Action List สำหรับ Approver --}}
             @if($actionList && $actionList->count() > 0)
-            <div class="fns-card fns-animate border-l-4 border-l-indigo-500">
-                <div class="fns-card-header flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between min-w-0 bg-indigo-50/50">
+            <div class="fns-card fns-animate {{ $themeBorder }}">
+                <div class="fns-card-header flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between min-w-0 {{ $themeBg }}">
                     <h3 class="fns-card-title flex items-center gap-2">
-                        <svg class="w-5 h-5 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                        <svg class="w-5 h-5 {{ $themeText }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
                         ລາຍການທີ່ຕ້ອງດຳເນີນການ
                     </h3>
-                    <span class="bg-indigo-100 text-indigo-700 text-xs font-bold px-3 py-1 rounded-full shadow-sm">
+                    <span class="{{ $themeBadge }} text-xs font-bold px-3 py-1 rounded-full shadow-sm">
                         {{ $actionList->total() }} ລາຍການ
                     </span>
                 </div>
@@ -25,7 +46,7 @@
                     @foreach($actionList as $req)
                     <div class="px-5 py-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between hover:bg-gray-50 transition-colors min-w-0 group">
                         <div class="min-w-0">
-                            <p class="font-bold text-gray-800 break-words group-hover:text-indigo-700 transition-colors">#{{ $req->id }} — {{ $req->description }}</p>
+                            <p class="font-bold text-gray-800 break-words {{ $themeHoverText }} transition-colors">#{{ $req->id }} — {{ $req->description }}</p>
                             <p class="text-sm font-medium text-gray-500 break-words flex items-center gap-2 mt-1">
                                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
                                 {{ $req->requester?->full_name }} 
@@ -35,7 +56,7 @@
                         </div>
                         <div class="text-left sm:text-right shrink-0 flex flex-col sm:items-end">
                             <p class="font-extrabold text-gray-900 text-lg">{{ number_format($req->requested_amount, 2) }} <span class="text-sm text-gray-400">ກີບ</span></p>
-                            <a href="{{ route('approvals.show', $req) }}" class="inline-flex items-center gap-1 text-sm font-bold text-indigo-600 hover:text-indigo-800 transition-colors mt-1 bg-indigo-50 px-3 py-1 rounded-lg hover:bg-indigo-100">
+                            <a href="{{ route('approvals.show', $req) }}" class="inline-flex items-center gap-1 text-sm font-bold {{ $themeButtonText }} transition-colors mt-1 {{ $themeButtonBg }} px-3 py-1 rounded-lg">
                                 ດຳເນີນການ 
                                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /></svg>
                             </a>

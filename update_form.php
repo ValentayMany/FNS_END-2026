@@ -10,14 +10,14 @@ function generateFormContent($isEdit) {
     $budYearVal = $isEdit ? "{{ old('budget_year', \$expense->budget_year) }}" : "{{ old('budget_year', date('Y')) }}";
     $itemNameVal = $isEdit ? "{{ old('item_name', \$expense->item_name) }}" : "{{ old('item_name') }}";
     $amountVal = $isEdit ? "{{ old('amount', \$expense->amount) }}" : "{{ old('amount') }}";
-    
+
     // Select values
     $accOld = $isEdit ? "old('account_id', \$expense->account_id)" : "old('account_id')";
     $deptOld = $isEdit ? "old('department_id', \$expense->department_id)" : "old('department_id')";
     $catOld = $isEdit ? "old('category', \$expense->category)" : "old('category')";
     $typeOld = $isEdit ? "old('expense_type', \$expense->expense_type)" : "old('expense_type')";
     $chanOld = $isEdit ? "old('channel_type', \$expense->channel_type)" : "old('channel_type')";
-    
+
     $descVal = $isEdit ? "{{ old('description', \$expense->description) }}" : "{{ old('description') }}";
     $btnText = $isEdit ? "ອັບເດດລາຍຈ່າຍ" : "ບັນທຶກລາຍຈ່າຍວິຊາການ";
 
@@ -95,7 +95,7 @@ function generateFormContent($isEdit) {
                                         </select>
                                     </div>
                                     <div>
-                                        <label for="category" class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">ຊ່ອງລາຍຈ່າຍ <span class="text-red-500">*</span></label>
+                                        <label for="category" class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">ຮ່ວງລາຍຈ່າຍ <span class="text-red-500">*</span></label>
                                         <select id="category" name="category" required class="ui-input bg-white focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition-all text-sm w-full cursor-pointer">
                                             <option value="ງົບປະມານສົ່ງເສີມວິຊາການ" {{ {$catOld} == 'ງົບປະມານສົ່ງເສີມວິຊາການ' ? 'selected' : '' }}>ງົບປະມານສົ່ງເສີມວິຊາການ</option>
                                             <option value="ຮັບໃຊ້ການທົດລອງ" {{ {$catOld} == 'ຮັບໃຊ້ການທົດລອງ' ? 'selected' : '' }}>ຮັບໃຊ້ການທົດລອງ</option>
@@ -145,16 +145,16 @@ function processFile($filePath, $isEdit) {
         $startPattern = '<div class="fns-card-body bg-white relative z-10 p-6 sm:p-8">';
     }
     $startPos = strpos($content, $startPattern);
-    
+
     if ($startPos !== false) {
         $formEndPos = strpos($content, '</form>', $startPos);
         if ($formEndPos !== false) {
             $divEndPos = strpos($content, '</div>', $formEndPos);
-            
+
             if ($divEndPos !== false) {
                 $before = substr($content, 0, $startPos);
                 $after = substr($content, $divEndPos + 6);
-                
+
                 $newForm = generateFormContent($isEdit);
                 $newContent = $before . $newForm . $after;
                 file_put_contents($filePath, $newContent);

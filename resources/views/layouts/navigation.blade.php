@@ -57,23 +57,27 @@
                 @endif
 
                 @if($role === 'accountant')
-                    <x-sidebar-link :href="route('approvals.index')" :active="request()->routeIs('approvals.*')">
+                    <x-sidebar-link :href="route('approvals.index')" :active="request()->routeIs('approvals.*')" color="rose">
                         <x-slot name="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg></x-slot>
                         ອະນຸມັດຄຳຂໍເບີກຈ່າຍ
                     </x-sidebar-link>
-                    <x-sidebar-link :href="route('expense.index')" :active="request()->routeIs('expense.*')">
+                    <x-sidebar-link :href="route('expense.index')" :active="request()->routeIs('expense.index') || request()->routeIs('expense.edit')" color="rose">
                         <x-slot name="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5A3.375 3.375 0 0010.125 2.25H8.25A3.375 3.375 0 004.875 5.625v12.75A3.375 3.375 0 008.25 21.75h7.5A3.75 3.75 0 0019.5 18v-3.75z" /></svg></x-slot>
                         ບັນທຶກລາຍຈ່າຍທົ່ວໄປ
                     </x-sidebar-link>
-                    <x-sidebar-link :href="route('clearing.pending')" :active="request()->routeIs('clearing.*')">
+                    <x-sidebar-link :href="route('expense.history')" :active="request()->routeIs('expense.history')" color="rose">
+                        <x-slot name="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg></x-slot>
+                        ປະຫວັດການຈ່າຍເງິນ
+                    </x-sidebar-link>
+                    <x-sidebar-link :href="route('clearing.pending')" :active="request()->routeIs('clearing.*')" color="rose">
                         <x-slot name="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 6.75h12M8.25 12h12M8.25 17.25h12M3.75 6.75h.007v.008H3.75V6.75zm0 5.25h.007v.008H3.75V12zm0 5.25h.007v.008H3.75v-.008z" /></svg></x-slot>
                         ສະສາງເງິນ (Clearing)
                     </x-sidebar-link>
-                    <x-sidebar-link :href="route('reports.index')" :active="request()->routeIs('reports.index') || request()->routeIs('reports.export')">
+                    <x-sidebar-link :href="route('reports.index')" :active="request()->routeIs('reports.index') || request()->routeIs('reports.export')" color="rose">
                         <x-slot name="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6a7.5 7.5 0 107.5 7.5h-7.5V6zM13.5 10.5H21A7.5 7.5 0 0013.5 3v7.5z" /></svg></x-slot>
-                        ລາຍງານ
+                        Dashboard
                     </x-sidebar-link>
-                    <x-sidebar-link :href="route('reports.budget-expense')" :active="request()->routeIs('reports.budget-expense')">
+                    <x-sidebar-link :href="route('reports.budget-expense')" :active="request()->routeIs('reports.budget-expense')" color="rose">
                         <x-slot name="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v4.125c0 .621-.504 1.125-1.125 1.125h-2.25A1.125 1.125 0 013 17.25v-4.125zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v8.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125v-8.25zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v12.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" /></svg></x-slot>
                         ລາຍຈ່າຍງົບປະມານ
                     </x-sidebar-link>
@@ -178,12 +182,25 @@
         <div class="relative" x-data="{ openProfile: false }">
             <button @click="openProfile = !openProfile" @click.away="openProfile = false" class="w-full flex items-center justify-between p-2 rounded-xl hover:bg-white hover:shadow-sm ring-1 ring-transparent hover:ring-gray-200 transition-all text-left focus:outline-none">
                 <div class="flex items-center gap-3 overflow-hidden">
-                    <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-indigo-500 to-sky-400 flex items-center justify-center text-white text-sm font-bold shadow-sm shrink-0">
+                    @php
+                        $roleName = Auth::user()->role?->role_name;
+                        $avatarBg = match($roleName) {
+                            'revenue_officer' => 'from-indigo-500 to-violet-600',
+                            'accountant' => 'from-rose-500 to-pink-600',
+                            default => 'from-indigo-500 to-sky-400'
+                        };
+                        $roleTextColor = match($roleName) {
+                            'revenue_officer' => 'text-indigo-600',
+                            'accountant' => 'text-rose-600',
+                            default => 'text-indigo-500'
+                        };
+                    @endphp
+                    <div class="w-9 h-9 rounded-full bg-gradient-to-tr {{ $avatarBg }} flex items-center justify-center text-white text-sm font-bold shadow-sm shrink-0">
                         {{ mb_substr(Auth::user()->full_name ?? Auth::user()->username, 0, 1) }}
                     </div>
                     <div class="min-w-0">
                         <p class="text-sm font-bold text-gray-800 truncate leading-none mb-1">{{ Auth::user()->full_name ?? Auth::user()->username }}</p>
-                        <p class="text-[0.65rem] font-bold text-indigo-500 uppercase tracking-wider truncate leading-none">{{ Auth::user()->roleDisplay() }}</p>
+                        <p class="text-[0.65rem] font-bold {{ $roleTextColor }} uppercase tracking-wider truncate leading-none">{{ Auth::user()->roleDisplay() }}</p>
                     </div>
                 </div>
                 <svg class="w-4 h-4 text-gray-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l4-4 4 4m0 6l-4 4-4-4" /></svg>

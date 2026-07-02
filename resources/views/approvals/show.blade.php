@@ -2,7 +2,7 @@
     <x-slot name="header">
         <div class="flex items-center justify-between gap-4">
             <div class="flex items-center gap-3 min-w-0">
-                <div class="fns-card-header-icon shrink-0" style="background:#f5f3ff; color:#7c3aed;" aria-hidden="true">
+                <div class="fns-card-header-icon shrink-0" style="background:#fff1f2; color:#e11d48;" aria-hidden="true">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 13.5l.5 1.75a2.25 2.25 0 001.5 1.5l1.75.5-1.75.5a2.25 2.25 0 00-1.5 1.5L18 21l-.5-1.75a2.25 2.25 0 00-1.5-1.5l-1.75-.5 1.75-.5a2.25 2.25 0 001.5-1.5L18 13.5z" /></svg>
                 </div>
                 <div class="min-w-0">
@@ -82,7 +82,7 @@
                         </div>
                         <div class="sm:col-span-2">
                             <div class="fns-label mb-1">ຈຳນວນເງິນ</div>
-                            <div class="text-xl sm:text-2xl font-extrabold text-indigo-600 tracking-tight">{{ number_format($advanceRequest->requested_amount, 2) }} ກີບ</div>
+                            <div class="text-xl sm:text-2xl font-extrabold text-rose-600 tracking-tight">{{ number_format($advanceRequest->requested_amount, 2) }} ກີບ</div>
                         </div>
                         <div class="sm:col-span-2 bg-gray-50 border border-gray-100 rounded-xl p-4">
                             <div class="fns-label mb-1">ລາຍລະອຽດ</div>
@@ -94,19 +94,19 @@
 
             @if ($advanceRequest->canBeActedBy(Auth::user()))
                 <div class="fns-card fns-animate fns-animate-delay-1">
-                    <div class="fns-card-header bg-indigo-50/50">
+                    <div class="fns-card-header bg-rose-50/50">
                         <div class="flex items-center gap-3">
-                            <div class="fns-card-header-icon" style="background:#6366f1; color:white;">
+                            <div class="fns-card-header-icon" style="background:#f43f5e; color:white;">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                             </div>
                             <div>
-                                <h3 class="fns-card-title text-indigo-900">ດຳເນີນການ</h3>
-                                <p class="fns-card-subtitle text-indigo-600/70">ອະນຸມັດ ຫຼື ປະຕິເສດຄຳຂໍນີ້</p>
+                                <h3 class="fns-card-title text-rose-900">ດຳເນີນການ</h3>
+                                <p class="fns-card-subtitle text-rose-600/70">อະນຸມັດ ຫຼື ປະຕິເສດຄຳຂໍນີ້</p>
                             </div>
                         </div>
                     </div>
                     <div class="fns-card-body space-y-5">
-                        <form method="POST" action="{{ route('approval.approve', $advanceRequest) }}">
+                        <form method="POST" action="{{ route('approvals.approve', $advanceRequest) }}">
                             @csrf
                             <div class="flex flex-col sm:flex-row gap-3">
                                 <input type="text" name="comment" placeholder="ໝາຍເຫດການອະນຸມັດ (ຖ້າມີ)" class="fns-input flex-1">
@@ -117,7 +117,7 @@
                             </div>
                         </form>
                         <div class="h-px bg-gray-100"></div>
-                        <form method="POST" action="{{ route('approval.reject', $advanceRequest) }}">
+                        <form method="POST" action="{{ route('approvals.reject', $advanceRequest) }}">
                             @csrf
                             <div class="flex flex-col sm:flex-row gap-3">
                                 <input type="text" name="comment" placeholder="ເຫດຜົນການປະຕິເສດ *" required class="fns-input flex-1">
@@ -153,7 +153,7 @@
                         @forelse ($advanceRequest->workflowLogs as $log)
                             <div class="relative">
                                 <div class="absolute -left-[26px] top-1 w-[20px] h-[20px] rounded-full flex items-center justify-center bg-white border border-gray-200 shadow-sm" aria-hidden="true">
-                                    <div class="w-2.5 h-2.5 rounded-full {{ str_contains($log->action, 'approved') ? 'bg-emerald-500' : (str_contains($log->action, 'rejected') ? 'bg-red-500' : 'bg-indigo-500') }}"></div>
+                                    <div class="w-2.5 h-2.5 rounded-full {{ str_contains($log->action, 'approved') ? 'bg-emerald-500' : (str_contains($log->action, 'rejected') ? 'bg-red-500' : 'bg-rose-500') }}"></div>
                                 </div>
                                 <div>
                                     <p class="text-sm font-bold text-gray-800">

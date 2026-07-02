@@ -44,7 +44,7 @@
 
                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
                             <div>
-                                <label for="payment_code" class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5">ເລກທີ (ໃບບິນ) <span class="text-rose-500">*</span></label>
+                                <label for="payment_code" class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5">ເລກທີ (ໃບບິນ) <span class="text-indigo-500">*</span></label>
                                 <input id="payment_code" name="payment_code" type="text" required
                                     class="w-full px-4 py-2.5 bg-gray-50/50 border border-gray-200 text-gray-800 rounded-xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 focus:bg-white transition-all duration-200 outline-none text-sm font-bold"
                                     value="{{ old('payment_code', $transaction->payment_code) }}" placeholder="ເຊັ່ນ: 103906" />
@@ -52,7 +52,7 @@
                             </div>
 
                             <div>
-                                <label for="transaction_date" class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5">ວັນທີ <span class="text-rose-500">*</span></label>
+                                <label for="transaction_date" class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5">ວັນທີ <span class="text-indigo-500">*</span></label>
                                 <input id="transaction_date" name="transaction_date" type="date"
                                     class="w-full px-4 py-2.5 bg-gray-50/50 border border-gray-200 text-gray-800 rounded-xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 focus:bg-white transition-all duration-200 outline-none text-sm font-medium"
                                     value="{{ old('transaction_date', $transaction->transaction_date->toDateString()) }}" required />
@@ -61,7 +61,7 @@
 
                             <div class="space-y-2">
                                 <div>
-                                    <label for="category" class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5">ປະເພດລາຍຮັບ <span class="text-rose-500">*</span></label>
+                                    <label for="category" class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5">ປະເພດລາຍຮັບ <span class="text-indigo-500">*</span></label>
                                     @php
                                         $isCustom = !in_array($transaction->category, $categories);
                                     @endphp
@@ -75,7 +75,7 @@
                                     <x-input-error :messages="$errors->get('category')" class="mt-1" />
                                 </div>
                                 <div id="custom_category_wrapper" class="{{ old('category', $isCustom ? '__custom__' : $transaction->category) == '__custom__' ? '' : 'hidden' }}">
-                                    <label for="custom_category" class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5">ລະບຸປະເພດລາຍຮັບອື່ນໆ <span class="text-rose-500">*</span></label>
+                                    <label for="custom_category" class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5">ລະບຸປະເພດລາຍຮັບອື່ນໆ <span class="text-indigo-500">*</span></label>
                                     <input id="custom_category" name="custom_category" type="text"
                                         class="w-full px-4 py-2.5 bg-gray-50/50 border border-gray-200 text-gray-800 rounded-xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 focus:bg-white transition-all duration-200 outline-none text-sm font-bold"
                                         value="{{ old('custom_category', $isCustom ? $transaction->category : '') }}" placeholder="ປ້ອນປະເພດລາຍຮັບອື່ນໆ..." />
@@ -86,7 +86,7 @@
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
                             <div>
-                                <label for="department_id" class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5">ພາກສ່ວນ <span class="text-rose-500">*</span></label>
+                                <label for="department_id" class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5">ພາກສ່ວນ <span class="text-indigo-500">*</span></label>
                                 <select id="department_id" name="department_id" required class="w-full px-4 py-2.5 bg-gray-50/50 border border-gray-200 text-gray-800 rounded-xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 focus:bg-white transition-all duration-200 outline-none text-sm font-medium">
                                     <option value="">-- ເລືອກພາກສ່ວນ --</option>
                                     @foreach ($departments as $dept)
@@ -99,7 +99,7 @@
                             </div>
 
                             <div>
-                                <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2.5">ວິທີຮັບເງິນ <span class="text-rose-500">*</span></label>
+                                <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2.5">ວິທີຮັບເງິນ <span class="text-indigo-500">*</span></label>
                                 <div class="grid grid-cols-2 gap-2.5">
                                     <div>
                                         <input type="radio" name="payment_method" id="pay_cash" value="cash" required {{ old('payment_method', $transaction->payment_method) == 'cash' ? 'checked' : '' }} class="sr-only peer" />
@@ -118,7 +118,7 @@
                             </div>
 
                             <div class="sm:col-span-2">
-                                <label for="amount" class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5">ຈຳນວນເງິນ (ກີບ) <span class="text-rose-500">*</span></label>
+                                <label for="amount" class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5">ຈຳນວນເງິນ (ກີບ) <span class="text-indigo-500">*</span></label>
                                 <div class="relative">
                                     <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                                         <span class="text-gray-400 font-bold sm:text-sm">&#x20AD;</span>
@@ -146,7 +146,7 @@
                                 ຍົກເລີກ
                             </a>
                             <button type="submit"
-                                class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-xl shadow-[0_4px_14px_0_rgba(99,102,241,0.39)] hover:shadow-[0_6px_20px_rgba(99,102,241,0.23)] hover:-translate-y-0.5 transition-all duration-200 outline-none flex items-center justify-center gap-2 text-sm">
+                                class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-xl shadow-[0_4px_14px_0_rgba(79,70,229,0.39)] hover:shadow-[0_6px_20px_rgba(79,70,229,0.23)] hover:-translate-y-0.5 transition-all duration-200 outline-none flex items-center justify-center gap-2 text-sm">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
                                 ບັນທຶກການແກ້ໄຂ
                             </button>

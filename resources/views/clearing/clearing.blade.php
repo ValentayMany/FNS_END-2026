@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex flex-col gap-0.5">
-            <p class="text-xs font-medium text-indigo-400 uppercase tracking-widest">ການສະສາງ</p>
+            <p class="text-xs font-medium text-rose-400 uppercase tracking-widest">ການສະສາງ</p>
             <h2 class="text-lg sm:text-xl font-bold text-gray-800">ໃບສະສາງ (Clearing)</h2>
         </div>
     </x-slot>
@@ -30,7 +30,7 @@
                             <span class="text-xs font-semibold text-gray-400">#{{ $req->id }}</span>
                             <p class="font-bold text-gray-800 text-sm mt-1 break-words">{{ $req->description }}</p>
                         </div>
-                        <span class="text-lg font-extrabold text-indigo-600 whitespace-nowrap">{{ number_format($req->requested_amount, 2) }} ກີບ</span>
+                        <span class="text-lg font-extrabold text-rose-600 whitespace-nowrap">{{ number_format($req->requested_amount, 2) }} ກີບ</span>
                     </div>
 
                     {{-- Details --}}
@@ -60,14 +60,14 @@
 
                         @if ($req->clearingAttachments->count() > 0)
                             <div class="mt-4 p-4 bg-gray-50 border border-gray-100 rounded-xl">
-                                <div class="fns-label" style="color:#6366f1; margin-bottom:10px;">
+                                <div class="fns-label" style="color:#f43f5e; margin-bottom:10px;">
                                     ໄຟລ໌ທີ່ແນບ ({{ $req->clearingAttachments->count() }})
                                 </div>
                                 <div class="flex flex-wrap gap-2">
                                     @foreach ($req->clearingAttachments as $att)
                                         <a href="{{ route('clearing.download', $att) }}"
-                                           class="inline-flex items-center gap-2 text-xs font-semibold text-gray-700 bg-white border border-gray-200 px-3 py-1.5 rounded-full hover:border-indigo-300 hover:shadow-sm transition">
-                                            <svg class="w-3.5 h-3.5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                                           class="inline-flex items-center gap-2 text-xs font-semibold text-gray-700 bg-white border border-gray-200 px-3 py-1.5 rounded-full hover:border-rose-300 hover:shadow-sm transition">
+                                            <svg class="w-3.5 h-3.5 text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
                                             {{ $att->original_name }}
                                             <span class="text-gray-400">({{ $att->file_size_for_humans }})</span>
                                         </a>
@@ -96,7 +96,7 @@
                                     </label>
                                     <input type="file" name="attachments[]" multiple
                                         accept=".pdf,.jpg,.jpeg,.png,.webp,.doc,.docx,.xls,.xlsx"
-                                        class="fns-input file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-indigo-500 file:text-white hover:file:bg-indigo-600 file:cursor-pointer">
+                                        class="fns-input file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-rose-500 file:text-white hover:file:bg-rose-600 file:cursor-pointer">
                                     @error('attachments.*')
                                         <p class="text-red-600 text-xs mt-2 font-medium">{{ $message }}</p>
                                     @enderror

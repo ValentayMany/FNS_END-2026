@@ -3,7 +3,7 @@
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 w-full min-w-0">
             <div class="flex flex-col gap-1.5 min-w-0">
                 <div class="flex items-center gap-2">
-                    <div class="w-8 h-8 rounded-lg bg-indigo-100 text-indigo-600 flex items-center justify-center shrink-0">
+                    <div class="w-8 h-8 rounded-lg bg-rose-100 text-rose-600 flex items-center justify-center shrink-0">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                         </svg>
@@ -17,7 +17,7 @@
             
             <div class="flex items-center gap-2 shrink-0 no-print">
                 <button onclick="window.print()" 
-                    class="ui-btn bg-indigo-600 text-white hover:bg-indigo-700 shadow-md shadow-indigo-600/20 text-xs py-2.5 px-4 flex items-center gap-1.5 font-bold transition-all duration-150">
+                    class="ui-btn bg-rose-600 text-white hover:bg-rose-700 shadow-md shadow-rose-600/20 text-xs py-2.5 px-4 flex items-center gap-1.5 font-bold transition-all duration-150">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
                     </svg>
@@ -86,15 +86,15 @@
                 <div class="border-b border-gray-100 bg-gray-50/50 p-2 sm:px-5 sm:py-3 flex overflow-x-auto">
                     <div class="flex gap-1.5 p-1 bg-gray-200/60 rounded-lg inline-flex">
                         <a href="{{ route('reports.budget-expense', array_merge(request()->except('type'), ['type' => 'daily'])) }}" 
-                           class="px-5 py-1.5 text-xs font-bold rounded-md transition-all whitespace-nowrap {{ $type === 'daily' ? 'bg-white text-indigo-600 shadow-sm ring-1 ring-black/5' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-200/50' }}">
+                           class="px-5 py-1.5 text-xs font-bold rounded-md transition-all whitespace-nowrap {{ $type === 'daily' ? 'bg-white text-rose-600 shadow-sm ring-1 ring-black/5' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-200/50' }}">
                            ປະຈຳວັນ
                         </a>
                         <a href="{{ route('reports.budget-expense', array_merge(request()->except('type'), ['type' => 'monthly'])) }}" 
-                           class="px-5 py-1.5 text-xs font-bold rounded-md transition-all whitespace-nowrap {{ $type === 'monthly' ? 'bg-white text-indigo-600 shadow-sm ring-1 ring-black/5' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-200/50' }}">
+                           class="px-5 py-1.5 text-xs font-bold rounded-md transition-all whitespace-nowrap {{ $type === 'monthly' ? 'bg-white text-rose-600 shadow-sm ring-1 ring-black/5' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-200/50' }}">
                            ປະຈຳເດືອນ
                         </a>
                         <a href="{{ route('reports.budget-expense', array_merge(request()->except('type'), ['type' => 'yearly'])) }}" 
-                           class="px-5 py-1.5 text-xs font-bold rounded-md transition-all whitespace-nowrap {{ $type === 'yearly' ? 'bg-white text-indigo-600 shadow-sm ring-1 ring-black/5' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-200/50' }}">
+                           class="px-5 py-1.5 text-xs font-bold rounded-md transition-all whitespace-nowrap {{ $type === 'yearly' ? 'bg-white text-rose-600 shadow-sm ring-1 ring-black/5' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-200/50' }}">
                            ປະຈຳປີ
                         </a>
                     </div>
@@ -108,11 +108,11 @@
                                 {{ $type === 'daily' ? 'ວັນທີ' : ($type === 'monthly' ? 'ເດືອນ' : 'ປີງົບປະມານ') }}
                             </label>
                             @if($type === 'daily')
-                                <input type="date" name="date" value="{{ $date }}" class="ui-input bg-white focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition-all text-sm h-10 min-w-[160px]">
+                                <input type="date" name="date" value="{{ $date }}" class="ui-input bg-white focus:ring-rose-500 focus:border-rose-500 shadow-sm transition-all text-sm h-10 min-w-[160px]">
                             @elseif($type === 'monthly')
-                                <input type="month" name="month" value="{{ $month }}" class="ui-input bg-white focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition-all text-sm h-10 min-w-[160px]">
+                                <input type="month" name="month" value="{{ $month }}" class="ui-input bg-white focus:ring-rose-500 focus:border-rose-500 shadow-sm transition-all text-sm h-10 min-w-[160px]">
                             @else
-                                <select name="year" class="ui-input bg-white focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition-all text-sm h-10 min-w-[120px] cursor-pointer">
+                                <select name="year" class="ui-input bg-white focus:ring-rose-500 focus:border-rose-500 shadow-sm transition-all text-sm h-10 min-w-[120px] cursor-pointer">
                                     @for($y = date('Y')-5; $y <= date('Y')+2; $y++)
                                         <option value="{{ $y }}" {{ $year == $y ? 'selected' : '' }}>{{ $y }}</option>
                                     @endfor
@@ -122,7 +122,7 @@
                         
                         <div class="flex flex-col gap-1.5 min-w-[240px] flex-1">
                             <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider">ໝວດບັນຊີງົບປະມານ</label>
-                            <select name="account_id" class="ui-input bg-white focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition-all text-sm h-10 cursor-pointer">
+                            <select name="account_id" class="ui-input bg-white focus:ring-rose-500 focus:border-rose-500 shadow-sm transition-all text-sm h-10 cursor-pointer">
                                 <option value="">-- ເລືອກໝວດບັນຊີ --</option>
                                 @foreach($lineItems as $li)
                                     <option value="{{ $li->account_id }}" {{ $selectedAccountId == $li->account_id ? 'selected' : '' }}>
@@ -132,7 +132,7 @@
                             </select>
                         </div>
                         
-                        <button type="submit" class="ui-btn bg-indigo-500 hover:bg-indigo-600 text-white font-bold h-10 px-5 flex items-center justify-center gap-2 text-sm shadow-lg shadow-indigo-500/25 transition-all duration-150 shrink-0">
+                        <button type="submit" class="ui-btn bg-rose-500 hover:bg-rose-600 text-white font-bold h-10 px-5 flex items-center justify-center gap-2 text-sm shadow-lg shadow-rose-500/25 transition-all duration-150 shrink-0">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                             </svg>
@@ -148,7 +148,7 @@
                     <div class="p-5 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                         <div>
                             <h3 class="text-base font-extrabold text-gray-800 flex items-center gap-2">
-                                <span class="w-1.5 h-5 rounded-full bg-indigo-500 block"></span>
+                                <span class="w-1.5 h-5 rounded-full bg-rose-500 block"></span>
                                 {{ $report['account']?->account_name ?? 'ໝວດບັນຊີ' }}
                             </h3>
                             <p class="text-xs text-gray-400 mt-0.5">ເລກບັນຊີ: {{ $report['account']?->account_code ?? '-' }}</p>
@@ -158,14 +158,14 @@
                     {{-- KPIs Widgets --}}
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 border-b border-gray-100 p-5 bg-gray-50/20">
                         <div class="fns-card bg-white shadow-sm border border-gray-100 p-4 rounded-xl flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center border border-indigo-100 shrink-0">
+                            <div class="w-10 h-10 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center border border-rose-100 shrink-0">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                 </svg>
                             </div>
                             <div>
                                 <span class="block text-[10px] text-gray-400 font-bold uppercase tracking-wider">ງົບປະມານອະນຸມັດ</span>
-                                <span class="block text-lg font-extrabold text-indigo-600">{{ number_format($report['budget'], 0) }} ₭</span>
+                                <span class="block text-lg font-extrabold text-rose-600">{{ number_format($report['budget'], 0) }} ₭</span>
                             </div>
                         </div>
                         <div class="fns-card bg-white shadow-sm border border-gray-100 p-4 rounded-xl flex items-center gap-3">
@@ -211,9 +211,9 @@
                             </thead>
                             <tbody class="divide-y divide-gray-100">
                                 @forelse($report['transactions'] as $idx => $txn)
-                                    <tr class="hover:bg-indigo-50/30 transition-colors duration-150 group">
+                                    <tr class="hover:bg-rose-50/30 transition-colors duration-150 group">
                                         <td class="py-3.5 px-4 text-center text-sm font-semibold text-gray-400">{{ $idx + 1 }}</td>
-                                        <td class="py-3.5 px-4 text-sm font-bold text-gray-800 group-hover:text-indigo-700 transition-colors">{{ $txn->item_name ?: $txn->description }}</td>
+                                        <td class="py-3.5 px-4 text-sm font-bold text-gray-800 group-hover:text-rose-700 transition-colors">{{ $txn->item_name ?: $txn->description }}</td>
                                         <td class="py-3.5 px-4 text-center whitespace-nowrap text-sm font-medium text-gray-500">
                                             {{ $txn->transaction_date?->format('d-m-Y') }}
                                         </td>
@@ -256,7 +256,7 @@
             @else
                 <div class="fns-card bg-white shadow-md rounded-2xl border border-gray-100 p-12 text-center fns-animate">
                     <div class="flex flex-col items-center justify-center">
-                        <div class="w-16 h-16 rounded-2xl bg-indigo-50 text-indigo-500 flex items-center justify-center mb-4 border border-indigo-100 shrink-0">
+                        <div class="w-16 h-16 rounded-2xl bg-rose-50 text-rose-500 flex items-center justify-center mb-4 border border-rose-100 shrink-0">
                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                             </svg>

@@ -15,6 +15,10 @@ return Application::configure(basePath: dirname(__DIR__))
             'role' => \App\Http\Middleware\CheckRole::class,
         ]);
 
+        $middleware->validateCsrfTokens(except: [
+            'logout',
+        ]);
+
         // ตัด DB connection หลังทุก request เพื่อป้องกัน max_user_connections
         $middleware->appendToGroup('web', [
             \App\Http\Middleware\EnsureUserIsActive::class,

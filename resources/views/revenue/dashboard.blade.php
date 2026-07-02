@@ -5,7 +5,7 @@
                 <h2 style="font-size:24px; font-weight:800; color:#111827; margin:0; line-height:1.2;">ແຜງຄວບຄຸມລາຍຮັບ</h2>
                 <p style="font-size:14px; color:#6b7280; margin-top:4px; font-weight:500;">{{ \Carbon\Carbon::parse($startDate)->format('d/m/Y') }} – {{ \Carbon\Carbon::parse($endDate)->format('d/m/Y') }}</p>
             </div>
-            <a href="{{ route('revenue.index') }}" style="display:flex; align-items:center; gap:8px; background:#4f46e5; color:#fff; padding:12px 24px; border-radius:16px; font-weight:700; font-size:14px; text-decoration:none; box-shadow:0 4px 12px rgba(79,70,229,0.3); transition:all 0.2s;">
+            <a href="{{ route('revenue.index') }}" style="display:flex; align-items:center; gap:8px; background:linear-gradient(135deg, #4f46e5, #6366f1); color:#fff; padding:12px 24px; border-radius:16px; font-weight:700; font-size:14px; text-decoration:none; box-shadow:0 4px 14px rgba(79,70,229,0.35); transition:all 0.2s;">
                 <svg style="width:20px; height:20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
                 ບັນທຶກລາຍຮັບ
             </a>
@@ -62,7 +62,7 @@
             height: 44px;
             font-family: inherit;
         }
-        .filter-input:focus { border-color: #818cf8; background: #fff; box-shadow: 0 0 0 4px rgba(99,102,241,0.1); }
+        .filter-input:focus { border-color: #38bdf8; background: #fff; box-shadow: 0 0 0 4px rgba(14,165,233,0.1); }
         
         .filter-presets {
             display: flex;
@@ -90,11 +90,11 @@
             font-family: inherit;
         }
         .preset-btn:hover { background: #e2e8f0; color: #1e293b; }
-        .preset-btn.active { background: #6366f1; color: #fff; box-shadow: 0 4px 12px rgba(99,102,241,0.25); }
+        .preset-btn.active { background: #4f46e5; color: #fff; box-shadow: 0 4px 12px rgba(79,70,229,0.3); }
 
         .btn-search {
             height: 44px;
-            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            background: linear-gradient(135deg, #4f46e5, #6366f1);
             color: #fff;
             border: none;
             border-radius: 14px;
@@ -105,7 +105,7 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            box-shadow: 0 4px 12px rgba(99,102,241,0.3);
+            box-shadow: 0 4px 14px rgba(79,70,229,0.35);
             transition: all 0.2s;
             font-family: inherit;
         }
@@ -145,21 +145,21 @@
         .dot { width: 10px; height: 10px; border-radius: 50%; }
 
         /* Gradients & Colors */
-        .grad-indigo { background: linear-gradient(135deg, #6366f1, #8b5cf6); }
-        .grad-cyan { background: linear-gradient(135deg, #0ea5e9, #2dd4bf); }
-        .grad-violet { background: linear-gradient(135deg, #a855f7, #ec4899); }
+        .grad-indigo { background: linear-gradient(135deg, #4f46e5, #6366f1); }
+        .grad-cyan { background: linear-gradient(135deg, #4338ca, #6366f1); }
+        .grad-violet { background: linear-gradient(135deg, #6366f1, #818cf8); }
         .grad-amber { background: linear-gradient(135deg, #f59e0b, #f97316); }
 
         .tag-indigo { background: #e0e7ff; color: #4338ca; }
-        .tag-cyan { background: #cffafe; color: #0369a1; }
-        .tag-violet { background: #f3e8ff; color: #7e22ce; }
+        .tag-cyan { background: #e0e7ff; color: #3730a3; }
+        .tag-violet { background: #eef2ff; color: #4f46e5; }
 
         /* Tabs */
         .tabs-container { display: flex; justify-content: center; margin: 32px 0; }
         .tabs-wrap { display: inline-flex; background: #fff; padding: 8px; border-radius: 99px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); border: 1px solid #f3f4f6; gap: 4px; }
         .tab-btn { padding: 12px 28px; border-radius: 99px; font-size: 14px; font-weight: 700; color: #64748b; background: transparent; border: none; cursor: pointer; transition: 0.2s; font-family: inherit; }
         .tab-btn:hover { color: #1e293b; background: #f8fafc; }
-        .tab-btn.active { background: #1e293b; color: #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        .tab-btn.active { background: linear-gradient(135deg, #4f46e5, #6366f1); color: #fff; box-shadow: 0 6px 20px rgba(79, 70, 229, 0.4); }
 
         /* Overview Layout */
         .overview-grid { display: grid; grid-template-columns: 1fr; gap: 24px; }
@@ -541,27 +541,27 @@
     window.addEventListener('load',()=>{
         /* c1 */
         (()=>{const el=document.getElementById('c1');if(!el)return;const ctx=el.getContext('2d');
-            new Chart(ctx,{type:'line',data:{labels:LBL,datasets:[{label:'ລາຍຮັບ',data:TOT,backgroundColor:mkGrad(ctx,'rgba(99,102,241,0.8)','rgba(99,102,241,0.1)'),fill:true,borderWidth:0,tension:.4,pointRadius:0,pointHoverRadius:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:TIP},scales:{x:XAX,y:YAX},interaction:{mode:'index',intersect:false}}});
+            new Chart(ctx,{type:'line',data:{labels:LBL,datasets:[{label:'ລາຍຮັບ',data:TOT,backgroundColor:mkGrad(ctx,'rgba(2,132,199,0.8)','rgba(2,132,199,0.1)'),fill:true,borderWidth:0,tension:.4,pointRadius:0,pointHoverRadius:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:TIP},scales:{x:XAX,y:YAX},interaction:{mode:'index',intersect:false}}});
         })();
         /* c2 */
         (()=>{const el=document.getElementById('c2');if(!el)return;
-            new Chart(el.getContext('2d'),{type:'doughnut',data:{labels:['ເງິນສົດ','ໂອນເຂົ້າ'],datasets:[{data:hasPay?[+PB.cash,+PB.transfer]:[1,1],backgroundColor:hasPay?['#f59e0b','#6366f1']:['#f1f5f9','#f8fafc'],borderWidth:0,hoverOffset:6}]},options:{responsive:true,maintainAspectRatio:false,cutout:'75%',plugins:{legend:{display:false},tooltip:{enabled:hasPay,...TIP}}}});
+            new Chart(el.getContext('2d'),{type:'doughnut',data:{labels:['ເງິນສົດ','ໂອນເຂົ້າ'],datasets:[{data:hasPay?[+PB.cash,+PB.transfer]:[1,1],backgroundColor:hasPay?['#f59e0b','#0284c7']:['#f1f5f9','#f8fafc'],borderWidth:0,hoverOffset:6}]},options:{responsive:true,maintainAspectRatio:false,cutout:'75%',plugins:{legend:{display:false},tooltip:{enabled:hasPay,...TIP}}}});
         })();
         /* c3 */
         (()=>{const el=document.getElementById('c3');if(!el)return;
-            new Chart(el.getContext('2d'),{type:'bar',data:{labels:['ປທ','ປຕ','ປອ'],datasets:[{data:DVALS,backgroundColor:['#6366f1','#06b6d4','#a855f7'],borderRadius:8,barThickness:40}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:TIP},scales:{x:XAX,y:YAX}}});
+            new Chart(el.getContext('2d'),{type:'bar',data:{labels:['ປທ','ປຕ','ປອ'],datasets:[{data:DVALS,backgroundColor:['#0284c7','#06b6d4','#6366f1'],borderRadius:8,barThickness:40}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:TIP},scales:{x:XAX,y:YAX}}});
         })();
         /* c4 */
         (()=>{const el=document.getElementById('c4');if(!el)return;const ctx=el.getContext('2d');
-            new Chart(ctx,{type:'line',data:{labels:LBL,datasets:[{label:'ເງິນສົດ',data:CSH,backgroundColor:mkGrad(ctx,'rgba(245,158,11,0.7)','rgba(245,158,11,0.1)'),fill:true,borderWidth:0,tension:.4,pointRadius:0,pointHoverRadius:0},{label:'ໂອນເຂົ້າ',data:TXF,backgroundColor:mkGrad(ctx,'rgba(99,102,241,0.7)','rgba(99,102,241,0.1)'),fill:true,borderWidth:0,tension:.4,pointRadius:0,pointHoverRadius:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{font:{weight:'bold'},usePointStyle:true,color:'#475569'}},tooltip:TIP},scales:{x:XAX,y:{...YAX,stacked:true}},interaction:{mode:'index',intersect:false}}});
+            new Chart(ctx,{type:'line',data:{labels:LBL,datasets:[{label:'ເງິນສົດ',data:CSH,backgroundColor:mkGrad(ctx,'rgba(245,158,11,0.7)','rgba(245,158,11,0.1)'),fill:true,borderWidth:0,tension:.4,pointRadius:0,pointHoverRadius:0},{label:'ໂອນເຂົ້າ',data:TXF,backgroundColor:mkGrad(ctx,'rgba(2,132,199,0.7)','rgba(2,132,199,0.1)'),fill:true,borderWidth:0,tension:.4,pointRadius:0,pointHoverRadius:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{font:{weight:'bold'},usePointStyle:true,color:'#475569'}},tooltip:TIP},scales:{x:XAX,y:{...YAX,stacked:true}},interaction:{mode:'index',intersect:false}}});
         })();
         /* c5 */
         (()=>{const el=document.getElementById('c5');if(!el)return;
-            new Chart(el.getContext('2d'),{type:'doughnut',data:{labels:['ເງິນສົດ','ໂອນເຂົ້າ'],datasets:[{data:hasPay?[+PB.cash,+PB.transfer]:[1,1],backgroundColor:hasPay?['#f59e0b','#6366f1']:['#f1f5f9','#f8fafc'],borderWidth:0,hoverOffset:6}]},options:{responsive:true,maintainAspectRatio:false,cutout:'75%',plugins:{legend:{position:'bottom',labels:{font:{weight:'bold'},usePointStyle:true,color:'#475569'}},tooltip:{enabled:hasPay,...TIP}}}});
+            new Chart(el.getContext('2d'),{type:'doughnut',data:{labels:['ເງິນສົດ','ໂອນເຂົ້າ'],datasets:[{data:hasPay?[+PB.cash,+PB.transfer]:[1,1],backgroundColor:hasPay?['#f59e0b','#0284c7']:['#f1f5f9','#f8fafc'],borderWidth:0,hoverOffset:6}]},options:{responsive:true,maintainAspectRatio:false,cutout:'75%',plugins:{legend:{position:'bottom',labels:{font:{weight:'bold'},usePointStyle:true,color:'#475569'}},tooltip:{enabled:hasPay,...TIP}}}});
         })();
         /* c6 */
         (()=>{const el=document.getElementById('c6');if(!el)return;
-            new Chart(el.getContext('2d'),{type:'bar',data:{labels:['ປທ','ປຕ','ປອ'],datasets:[{data:DVALS,backgroundColor:['#6366f1','#06b6d4','#a855f7'],borderRadius:12,barThickness:50}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:TIP},scales:{x:XAX,y:YAX}}});
+            new Chart(el.getContext('2d'),{type:'bar',data:{labels:['ປທ','ປຕ','ປອ'],datasets:[{data:DVALS,backgroundColor:['#0284c7','#06b6d4','#6366f1'],borderRadius:12,barThickness:50}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:TIP},scales:{x:XAX,y:YAX}}});
         })();
     });
     </script>

@@ -41,6 +41,12 @@ Route::middleware(['auth', 'role:accountant,head_of_finance,deputy_head_of_facul
         Route::post('/approvals/{advanceRequest}/reject',  [ApprovalController::class, 'reject'])->name('approvals.reject');
     });
 
+// ---- Payment History (Shared) ----
+Route::middleware(['auth', 'role:accountant,head_of_finance,deputy_head_of_faculty,head_of_faculty,cashier,admin'])
+    ->group(function () {
+        Route::get('/payment-history', [ExpenseController::class, 'paymentHistory'])->name('expense.history');
+    });
+
 // ---- Cashier ----
 Route::middleware(['auth', 'role:cashier'])
     ->group(function () {
@@ -82,6 +88,8 @@ Route::middleware(['auth', 'role:accountant'])
         Route::get('/expense/next-code', [ExpenseController::class, 'getNextCode'])->name('expense.next-code');
         Route::get('/expense/item-suggestions', [ExpenseController::class, 'itemSuggestions'])->name('expense.item-suggestions');
         Route::post('/expense', [ExpenseController::class, 'store'])->name('expense.store');
+        Route::post('/expense/store-batch', [ExpenseController::class, 'storeBatch'])->name('expense.store-batch');
+        Route::get('/expense/print-balance', [ExpenseController::class, 'printBalance'])->name('expense.print-balance');
         Route::get('/expense/{transaction}/edit', [ExpenseController::class, 'edit'])->name('expense.edit');
         Route::put('/expense/{transaction}', [ExpenseController::class, 'update'])->name('expense.update');
         Route::delete('/expense/{transaction}', [ExpenseController::class, 'destroy'])->name('expense.destroy');

@@ -87,11 +87,23 @@ class ApprovalController extends Controller
             return true;
         }
 
-        if (! $user->isApprover()) {
+        if (! $user->isApprover() && ! $user->isCashier() && ! $user->isAdmin()) {
             return false;
         }
 
         return $advanceRequest->status !== 'draft';
     }
 
+    public function paymentHistory()
+    {
+        $user = Auth::user();
+
+        // Fetch all requests that are not draft
+        $requests = AdvanceRequest::where('status', '!=', 'draft')
+            ->with('requester', 'department')
+            ->latest('request_date')
+            ->paginate(15);
+
+        return view('approvals.history', compact('requests', 'user'));
+    }
 }

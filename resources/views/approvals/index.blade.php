@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex flex-col gap-0.5">
-            <p class="text-xs font-medium text-indigo-400 uppercase tracking-widest">ການອະນຸມັດ</p>
+            <p class="text-xs font-medium text-rose-400 uppercase tracking-widest">ການອະນຸມັດ</p>
             <h2 class="text-lg sm:text-xl font-bold text-gray-800">ລາຍການທີ່ຕ້ອງອະນຸມັດ</h2>
         </div>
     </x-slot>
