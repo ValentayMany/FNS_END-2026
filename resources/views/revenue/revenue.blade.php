@@ -24,7 +24,7 @@
     </x-slot>
 
     <div class="py-6 sm:py-8 w-full min-w-0">
-        <div class="max-w-[1400px] mx-auto w-full min-w-0 px-3 sm:px-4 lg:px-6">
+        <div class="max-w-full mx-auto w-full min-w-0 px-4 sm:px-6 lg:px-8">
 
             @if (session('success'))
                 <div class="fns-alert fns-alert-success fns-animate mb-6 shadow-sm border-l-4 border-l-indigo-500 rounded-lg">
@@ -57,12 +57,32 @@
                             @csrf
 
                             <div class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-                                {{-- ເລກບັນຊີ / ເລກທີ --}}
+                                {{-- ເລກທີ (auto-increment) --}}
                                 <div>
-                                    <label for="payment_code" class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">ເລກທີ (ໃບບິນ) <span class="text-indigo-500">*</span></label>
-                                    <input id="payment_code" name="payment_code" type="text" required
-                                        class="ui-input bg-white focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition-all text-sm font-bold w-full"
-                                        value="{{ old('payment_code') }}" placeholder="ເຊັ່ນ: 103906" />
+                                    <label for="payment_code" class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">
+                                        ເລກທີ (ໃບບິນ) <span class="text-indigo-500">*</span>
+                                    </label>
+                                    <div class="relative">
+                                        <input id="payment_code" name="payment_code" type="text" required
+                                            class="ui-input bg-white focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition-all text-sm font-bold w-full pr-16"
+                                            value="{{ old('payment_code', $nextCode ?? '') }}"
+                                            placeholder="ເຊັ່ນ: 103906"
+                                            autocomplete="off" />
+                                        {{-- Badge: แสดงเมื่อค่าตรงกับ nextCode --}}
+                                        @if($nextCode ?? false)
+                                        <span id="auto-badge"
+                                            class="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] font-bold px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-600 pointer-events-none select-none transition-opacity"
+                                            style="white-space:nowrap;">
+                                            ອັດຕະໂນມັດ
+                                        </span>
+                                        @endif
+                                    </div>
+                                    @if($nextCode ?? false)
+                                    <p class="mt-1 text-[11px] text-gray-400">
+                                        ເລກຕໍ່ໄປ: <strong class="text-indigo-500">{{ $nextCode }}</strong>
+                                        — ສາມາດແກ້ໄຂໄດ້
+                                    </p>
+                                    @endif
                                     <x-input-error :messages="$errors->get('payment_code')" class="mt-1" />
                                 </div>
 
@@ -133,14 +153,19 @@
 
                                 {{-- ຈຳນວນເງິນ --}}
                                 <div>
-                                    <label for="amount" class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">ຈຳນວນເງິນ (ກີບ) <span class="text-indigo-500">*</span></label>
+                                    <label for="amount_display" class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">ຈຳນວນເງິນ (ກີບ) <span class="text-indigo-500">*</span></label>
                                     <div class="relative">
                                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                             <span class="text-gray-400 font-bold sm:text-sm">₭</span>
                                         </div>
-                                        <input id="amount" name="amount" type="number" min="1" step="0.01"
+                                        {{-- Display field: shows 300,000 --}}
+                                        <input id="amount_display" type="text" inputmode="numeric"
                                             class="ui-input bg-white pl-8 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition-all font-bold text-indigo-700 w-full"
-                                            value="{{ old('amount') }}" placeholder="0.00" required />
+                                            value="{{ old('amount') ? number_format(old('amount'), 0, '.', ',') : '' }}"
+                                            placeholder="0" autocomplete="off" />
+                                        {{-- Hidden field: stores clean number for form submit --}}
+                                        <input id="amount" name="amount" type="hidden"
+                                            value="{{ old('amount') }}" />
                                     </div>
                                     <x-input-error :messages="$errors->get('amount')" class="mt-1" />
                                 </div>
@@ -179,15 +204,25 @@
                             </h3>
                             <p class="text-xs text-gray-400 mt-0.5">ສະແດງລາຍການລ່າສຸດທີ່ຖືກບັນທຶກ</p>
                         </div>
-                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-indigo-50 text-indigo-600 border border-indigo-100">
-                            ທັງໝົດ {{ $transactions->total() }} ລາຍການ
-                        </span>
+                        <div class="flex items-center gap-2">
+                            <button type="button" id="batchDeleteBtn" onclick="openBatchDeleteModal()" style="display:none;"
+                                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold shadow-sm transition-all duration-150">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                                ລຶບທັງໝົດ (<span id="selectedCount">0</span>)
+                            </button>
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-indigo-50 text-indigo-600 border border-indigo-100">
+                                ທັງໝົດ {{ $transactions->total() }} ລາຍການ
+                            </span>
+                        </div>
                     </div>
 
                     <div class="overflow-x-auto touch-pan-x">
                         <table class="fns-table w-full text-left border-collapse" style="min-width:40rem;">
                             <thead>
                                 <tr class="bg-gray-50/80 border-y border-gray-100">
+                                    <th class="py-3 px-3 text-[0.7rem] font-bold text-gray-500 uppercase tracking-wider text-center whitespace-nowrap" style="width:40px;">
+                                        <input type="checkbox" id="selectAllCheckbox" onclick="toggleSelectAll(this)" class="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 border-gray-300 cursor-pointer" />
+                                    </th>
                                     <th class="py-3 px-4 text-[0.7rem] font-bold text-gray-500 uppercase tracking-wider whitespace-nowrap">ວັນທີ</th>
                                     <th class="py-3 px-4 text-[0.7rem] font-bold text-gray-500 uppercase tracking-wider whitespace-nowrap">ເລກທີ (ໃບບິນ)</th>
                                     <th class="py-3 px-4 text-[0.7rem] font-bold text-gray-500 uppercase tracking-wider whitespace-nowrap">ປະເພດລາຍຮັບ</th>
@@ -200,6 +235,9 @@
                             <tbody class="divide-y divide-gray-100">
                                 @forelse ($transactions as $txn)
                                     <tr class="hover:bg-indigo-50/40 transition-colors duration-150 group">
+                                        <td class="py-3.5 px-3 text-center whitespace-nowrap">
+                                            <input type="checkbox" class="item-checkbox w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 border-gray-300 cursor-pointer" value="{{ $txn->id }}" onchange="updateBatchDeleteBtn()" />
+                                        </td>
                                         <td class="py-3.5 px-4 whitespace-nowrap">
                                             <span class="text-sm font-semibold text-gray-600 group-hover:text-indigo-700 transition-colors">
                                                 {{ $txn->transaction_date?->format('d/m/Y') }}
@@ -248,7 +286,7 @@
                                                 </a>
                                                 <button type="button"
                                                     onclick="openDeleteModal('{{ $txn->id }}', '{{ addslashes($txn->category) }}')"
-                                                    class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold bg-rose-50 text-rose-600 border border-rose-100 hover:bg-rose-100 hover:border-rose-300 transition-all duration-150">
+                                                    class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold bg-purple-50 text-purple-600 border border-purple-100 hover:bg-purple-100 hover:border-purple-300 transition-all duration-150">
                                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                                                     ລຶບ
                                                 </button>
@@ -288,8 +326,8 @@
         <div style="position:absolute; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px);" onclick="closeDeleteModal()"></div>
         <div style="position:relative; display:flex; align-items:center; justify-content:center; width:100%; height:100%; padding:1rem;">
             <div class="bg-white rounded-2xl shadow-2xl fns-animate" style="max-width:24rem; width:100%; padding:1.5rem; position:relative; z-index:1;">
-                <div class="flex items-center justify-center w-14 h-14 rounded-full bg-rose-100 mx-auto mb-4">
-                    <svg class="w-7 h-7 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                <div class="flex items-center justify-center w-14 h-14 rounded-full bg-purple-100 mx-auto mb-4">
+                    <svg class="w-7 h-7 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                 </div>
                 <h3 class="text-lg font-extrabold text-gray-900 text-center mb-1">ຢືນຢັນການລຶບ</h3>
                 <p class="text-sm text-gray-500 text-center mb-1">ທ່ານຕ້ອງການລຶບລາຍການຮັບ:</p>
@@ -304,7 +342,36 @@
                             ຍົກເລີກ
                         </button>
                         <button type="submit"
-                            class="flex-1 bg-rose-600 hover:bg-rose-700 text-white font-bold py-2.5 px-4 rounded-xl shadow-lg hover:-translate-y-0.5 transition-all duration-150 text-sm">
+                            class="flex-1 bg-purple-600 hover:bg-purple-700 text-white font-bold py-2.5 px-4 rounded-xl shadow-lg hover:-translate-y-0.5 transition-all duration-150 text-sm">
+                            ລຶບເລີຍ
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    {{-- Batch Delete Confirmation Modal --}}
+    <div id="batchDeleteModal" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; z-index:99999;" aria-modal="true" role="dialog">
+        <div style="position:absolute; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px);" onclick="closeBatchDeleteModal()"></div>
+        <div style="position:relative; display:flex; align-items:center; justify-content:center; width:100%; height:100%; padding:1rem;">
+            <div class="bg-white rounded-2xl shadow-2xl fns-animate" style="max-width:24rem; width:100%; padding:1.5rem; position:relative; z-index:1;">
+                <div class="flex items-center justify-center w-14 h-14 rounded-full bg-purple-100 mx-auto mb-4">
+                    <svg class="w-7 h-7 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                </div>
+                <h3 class="text-lg font-extrabold text-gray-900 text-center mb-1">ຢືນຢັນການລຶບທັງໝົດ</h3>
+                <p class="text-sm text-gray-500 text-center mb-1">ທ່ານຕ້ອງການລຶບ <span id="batchCountText" class="font-bold text-purple-600"></span> ລາຍການທີ່ເລືອກ?</p>
+                <p class="text-xs text-gray-400 text-center mb-5">ການລຶບນີ້ບໍ່ສາມາດກູ້ຄືນໄດ້</p>
+                <form id="batchDeleteForm" action="{{ route('revenue.destroy-batch') }}" method="POST">
+                    @csrf
+                    <div id="batchDeleteInputs"></div>
+                    <div class="flex gap-3">
+                        <button type="button" onclick="closeBatchDeleteModal()"
+                            class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-2.5 px-4 rounded-xl transition-all duration-150 text-sm">
+                            ຍົກເລີກ
+                        </button>
+                        <button type="submit"
+                            class="flex-1 bg-purple-600 hover:bg-purple-700 text-white font-bold py-2.5 px-4 rounded-xl shadow-lg hover:-translate-y-0.5 transition-all duration-150 text-sm">
                             ລຶບເລີຍ
                         </button>
                     </div>
@@ -314,6 +381,56 @@
     </div>
 
     <script>
+        function toggleSelectAll(master) {
+            const checkboxes = document.querySelectorAll('.item-checkbox');
+            checkboxes.forEach(cb => cb.checked = master.checked);
+            updateBatchDeleteBtn();
+        }
+
+        function updateBatchDeleteBtn() {
+            const checkboxes = document.querySelectorAll('.item-checkbox:checked');
+            const btn = document.getElementById('batchDeleteBtn');
+            const countSpan = document.getElementById('selectedCount');
+            if (checkboxes.length > 0) {
+                btn.style.display = 'inline-flex';
+                countSpan.innerText = checkboxes.length;
+            } else {
+                btn.style.display = 'none';
+                countSpan.innerText = '0';
+                const master = document.getElementById('selectAllCheckbox');
+                if (master) master.checked = false;
+            }
+        }
+
+        function openBatchDeleteModal() {
+            const checkboxes = document.querySelectorAll('.item-checkbox:checked');
+            if (checkboxes.length === 0) return;
+            
+            const container = document.getElementById('batchDeleteInputs');
+            container.innerHTML = '';
+            checkboxes.forEach(cb => {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'ids[]';
+                input.value = cb.value;
+                container.appendChild(input);
+            });
+            
+            document.getElementById('batchCountText').innerText = checkboxes.length + ' ';
+            const modal = document.getElementById('batchDeleteModal');
+            modal.style.display = 'block';
+            if (modal.parentElement !== document.body) {
+                document.body.appendChild(modal);
+            }
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeBatchDeleteModal() {
+            const modal = document.getElementById('batchDeleteModal');
+            if (modal) modal.style.display = 'none';
+            document.body.style.overflow = '';
+        }
+
         function teleportModal() {
             const modal = document.getElementById('deleteModal');
             if (modal && modal.parentElement !== document.body) {
@@ -342,7 +459,12 @@
             }
             document.body.style.overflow = '';
         }
-        document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDeleteModal(); });
+        document.addEventListener('keydown', e => { 
+            if (e.key === 'Escape') {
+                closeDeleteModal();
+                closeBatchDeleteModal();
+            }
+        });
 
         // Toggle custom category input
         document.getElementById('category').addEventListener('change', function() {
@@ -358,5 +480,57 @@
                 customInput.value = '';
             }
         });
+
+        // Auto-badge toggle for payment_code
+        (function() {
+            const input  = document.getElementById('payment_code');
+            const badge  = document.getElementById('auto-badge');
+            if (!input || !badge) return;
+            const autoVal = input.value.trim(); // value pre-filled from server = nextCode
+            input.addEventListener('input', function() {
+                if (this.value.trim() === autoVal) {
+                    badge.style.opacity = '1';
+                } else {
+                    badge.style.opacity = '0';
+                }
+            });
+        })();
+
+        // Live comma-format for amount (300000 → 300,000)
+        (function() {
+            const display = document.getElementById('amount_display');
+            const hidden  = document.getElementById('amount');
+            if (!display || !hidden) return;
+
+            function formatComma(val) {
+                const clean = val.replace(/[^0-9]/g, '');
+                if (!clean) return '';
+                return parseInt(clean, 10).toLocaleString('en-US');
+            }
+
+            display.addEventListener('input', function() {
+                const pos   = this.selectionStart;
+                const before = this.value.length;
+                const formatted = formatComma(this.value);
+                this.value = formatted;
+                // restore cursor as best we can
+                const diff = formatted.length - before;
+                this.setSelectionRange(pos + diff, pos + diff);
+                // sync to hidden
+                hidden.value = formatted.replace(/,/g, '') || '';
+            });
+
+            // validate on form submit
+            display.closest('form').addEventListener('submit', function(e) {
+                const raw = display.value.replace(/,/g, '');
+                if (!raw || parseInt(raw) < 1) {
+                    e.preventDefault();
+                    display.focus();
+                    display.style.borderColor = '#ef4444';
+                    return;
+                }
+                hidden.value = raw;
+            });
+        })();
     </script>
 </x-app-layout>

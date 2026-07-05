@@ -17,7 +17,7 @@
         * { box-sizing: border-box; }
         .noscroll::-webkit-scrollbar { display: none; }
         .noscroll { -ms-overflow-style: none; scrollbar-width: none; }
-        
+
         /* Bento Box Core Styles */
         .bento-card {
             background: #ffffff;
@@ -63,7 +63,7 @@
             font-family: inherit;
         }
         .filter-input:focus { border-color: #38bdf8; background: #fff; box-shadow: 0 0 0 4px rgba(14,165,233,0.1); }
-        
+
         .filter-presets {
             display: flex;
             gap: 6px;
@@ -124,8 +124,8 @@
         .kpi-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; }
         .kpi-header-left { display: flex; align-items: center; gap: 14px; }
         .kpi-icon {
-            width: 52px; height: 52px; border-radius: 18px; 
-            display: flex; align-items: center; justify-content: center; 
+            width: 52px; height: 52px; border-radius: 18px;
+            display: flex; align-items: center; justify-content: center;
             color: #fff; box-shadow: 0 8px 16px rgba(0,0,0,0.1);
         }
         .kpi-title { font-size: 20px; font-weight: 800; color: #1e293b; margin:0; line-height:1.2; }
@@ -203,12 +203,12 @@
         {{-- ─── 1. Filter Row ─────────────────────────────── --}}
         <div class="bento-card filter-bar">
             <form id="ffrm" method="GET" action="{{ route('revenue.dashboard') }}" style="display:flex; flex-wrap:wrap; align-items:flex-end; gap:20px; width:100%;">
-                
+
                 <div class="filter-group">
                     <label>ວັນທີເລີ່ມຕົ້ນ</label>
                     <input type="date" name="start_date" id="sd" value="{{ $startDate }}" class="filter-input">
                 </div>
-                
+
                 <div class="filter-group">
                     <label>ວັນທີສິ້ນສຸດ</label>
                     <input type="date" name="end_date" id="ed" value="{{ $endDate }}" class="filter-input">
@@ -229,23 +229,27 @@
 
         {{-- ─── 2. KPI Cards ───────────────────────────── --}}
         @php
-            $cards = [
-                ['ປຕ','ປະລິນຍາຕີ','tag-cyan','grad-cyan',
-                 '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>'],
-                ['ປທ','ປະລິນຍາໂທ','tag-indigo','grad-indigo',
-                 '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>'],
-                ['ປອ','ປະລິນຍາເອກ','tag-violet','grad-violet',
-                 '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>'],
+            $stylePresets = [
+                ['tag-cyan','grad-cyan','<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>'],
+                ['tag-indigo','grad-indigo','<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>'],
+                ['tag-violet','grad-violet','<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>'],
             ];
         @endphp
 
         <div class="kpi-grid">
-            @foreach($cards as [$dept,$lbl,$tagClass,$gradClass,$icon])
+            @foreach($departments as $idx => $dModel)
             @php
-                $tot  = $dailyStats[$dept]['total']    ?? 0;
-                $cash = $dailyStats[$dept]['cash']     ?? 0;
-                $txf  = $dailyStats[$dept]['transfer'] ?? 0;
-                $all  = $overallStats[$dept]['total']  ?? 0;
+                $st = $stylePresets[$idx % count($stylePresets)];
+                $tagClass = $st[0];
+                $gradClass = $st[1];
+                $icon = $st[2];
+
+                $dName = $dModel->displayName();
+                $statsData = $dailyStats[$dModel->id] ?? $dailyStats[$dName] ?? ['total' => 0, 'cash' => 0, 'transfer' => 0];
+
+                $tot  = $statsData['total'] ?? 0;
+                $cash = $statsData['cash'] ?? 0;
+                $txf  = $statsData['transfer'] ?? 0;
                 $cp   = $tot > 0 ? round($cash/$tot*100) : 0;
             @endphp
             <div class="bento-card">
@@ -256,10 +260,10 @@
                         </div>
                         <div>
                             <p class="kpi-subtitle">ພາກສ່ວນ</p>
-                            <p class="kpi-title">{{ $dept }}</p>
+                            <p class="kpi-title">{{ $dName }}</p>
                         </div>
                     </div>
-                    <span class="kpi-tag {{ $tagClass }}">{{ $lbl }}</span>
+                    <span class="kpi-tag {{ $tagClass }}">{{ $dName }}</span>
                 </div>
 
                 <span class="kpi-amount-label">ຍອດລວມຊ່ວງນີ້</span>
@@ -302,14 +306,14 @@
         </div>
 
         {{-- ─── 4. Tab Contents ───────────────────────── --}}
-        
+
         {{-- OVERVIEW TAB --}}
         <div id="tab-overview" class="overview-grid">
             {{-- Big Total Card --}}
-            @php $sumTotal = array_sum(array_column($dailyStats, 'total')); @endphp
+            @php $totalAmountDisplay = $sumTotal ?? 0; @endphp
             <div class="bento-card grad-indigo big-total-card" style="border:none;">
                 <div class="big-total-label">ລາຍຮັບທັງໝົດຊ່ວງນີ້</div>
-                <div class="big-total-amount">{{ number_format($sumTotal,0) }}<span>₭</span></div>
+                <div class="big-total-amount">{{ number_format($totalAmountDisplay,0) }}<span>₭</span></div>
                 <div class="big-total-date">{{ \Carbon\Carbon::parse($startDate)->format('d M Y') }} - {{ \Carbon\Carbon::parse($endDate)->format('d M Y') }}</div>
             </div>
 
@@ -368,7 +372,7 @@
                 </div>
                 <div style="flex:1; min-height:320px; position:relative;"><canvas id="c4"></canvas></div>
             </div>
-            
+
             <div style="display:flex; flex-direction:column; gap:24px;">
                 <div class="bento-card" style="flex:1; display:flex; flex-direction:column;">
                     <div class="chart-header">
@@ -376,7 +380,7 @@
                     </div>
                     <div style="flex:1; min-height:180px; position:relative; display:flex; align-items:center; justify-content:center;"><canvas id="c5"></canvas></div>
                 </div>
-                
+
                 @php $cnt=$recentTransactions->count();$mx=$recentTransactions->max('amount')??0;$av=$recentTransactions->avg('amount')??0; @endphp
                 <div class="bento-card">
                     <p class="chart-subtitle" style="margin-bottom:16px;">ສະຖິຕິການຮັບເງິນ</p>
@@ -413,7 +417,7 @@
                 <div class="chart-header"><h3 class="chart-title">ສັດສ່ວນ (%)</h3></div>
                 @php
                     $sa = array_sum(array_column($dailyStats,'total'));
-                    $dc = ['ປທ'=>['grad-indigo','#4f46e5'],'ປຕ'=>['grad-cyan','#0891b2'],'ປອ'=>['grad-violet','#7c3aed']];
+                    $dc = ['ປະລິນຍາໂທ'=>['grad-indigo','#4f46e5'],'ປະລິນຍາຕີ'=>['grad-cyan','#0891b2'],'ປະລິນຍາເອກ'=>['grad-violet','#7c3aed']];
                 @endphp
                 <div style="display:flex; flex-direction:column; gap:24px; margin-top:24px;">
                     @foreach($dc as $dn=>[$bg,$tc])
@@ -523,7 +527,9 @@
     const LBL=DT.map(i=>{const p=(i.transaction_date||'').split('T')[0].split('-');return p.length===3?`${p[2]}/${p[1]}`:i.transaction_date;});
     const TOT=DT.map(i=>+i.total), CSH=DT.map(i=>+i.cash), TXF=DT.map(i=>+i.transfer);
     const hasPay=+PB.cash>0||+PB.transfer>0;
-    const DVALS=['ປທ','ປຕ','ປອ'].map(d=>+(DS[d]?.total||0));
+    const DEPT_MODELS=@json($departments);
+    const DLABELS=DEPT_MODELS.map(d => d.department_name);
+    const DVALS=DEPT_MODELS.map(d => +(DS[d.id]?.total || DS[d.department_name]?.total || 0));
 
     Chart.defaults.font.family = "inherit";
     Chart.defaults.color = '#64748b';
@@ -549,7 +555,7 @@
         })();
         /* c3 */
         (()=>{const el=document.getElementById('c3');if(!el)return;
-            new Chart(el.getContext('2d'),{type:'bar',data:{labels:['ປທ','ປຕ','ປອ'],datasets:[{data:DVALS,backgroundColor:['#0284c7','#06b6d4','#6366f1'],borderRadius:8,barThickness:40}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:TIP},scales:{x:XAX,y:YAX}}});
+            new Chart(el.getContext('2d'),{type:'bar',data:{labels:DLABELS,datasets:[{data:DVALS,backgroundColor:['#0284c7','#06b6d4','#6366f1'],borderRadius:8,barThickness:40}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:TIP},scales:{x:XAX,y:YAX}}});
         })();
         /* c4 */
         (()=>{const el=document.getElementById('c4');if(!el)return;const ctx=el.getContext('2d');
@@ -561,7 +567,7 @@
         })();
         /* c6 */
         (()=>{const el=document.getElementById('c6');if(!el)return;
-            new Chart(el.getContext('2d'),{type:'bar',data:{labels:['ປທ','ປຕ','ປອ'],datasets:[{data:DVALS,backgroundColor:['#0284c7','#06b6d4','#6366f1'],borderRadius:12,barThickness:50}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:TIP},scales:{x:XAX,y:YAX}}});
+            new Chart(el.getContext('2d'),{type:'bar',data:{labels:DLABELS,datasets:[{data:DVALS,backgroundColor:['#0284c7','#06b6d4','#6366f1'],borderRadius:12,barThickness:50}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:TIP},scales:{x:XAX,y:YAX}}});
         })();
     });
     </script>

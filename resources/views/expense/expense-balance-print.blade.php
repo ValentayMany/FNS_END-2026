@@ -279,11 +279,12 @@
                 box-shadow: none !important;
                 border: none !important;
                 border-radius: 0 !important;
-                padding: 15mm 18mm !important;
-                min-height: 297mm !important;
+                padding: 10mm 15mm !important;
+                min-height: auto !important;
                 margin-bottom: 0 !important;
                 box-sizing: border-box;
                 display: none !important;
+                page-break-inside: avoid !important;
             }
 
             .print-sheet.print-active {
@@ -336,21 +337,19 @@
             <div class="sheet-label"><span class="sheet-label-dot"></span> ໃບທີ {{ $sheetIndex + 1 }} — ຮ່ວງ: {{ $account?->account_name }}</div>
             <div id="sheet-{{ $sheetIndex }}" class="print-sheet hidden-screen">
 
-                {{-- Document Header: Centered Layout matching Picture 2 & 3 --}}
+                {{-- Document Header --}}
                 <div class="sheet-header-center">
-                    <div class="sheet-top-label">ໃບຕິດຕາມຈ່າຍ</div>
+                    <div class="sheet-top-label">ໃບບິນຈ່າຍເງິນ</div>
                     <h1 class="sheet-title">ຕິດຕາມລາຍຈ່າຍງົບປະມານ {{ $account?->account_name }}</h1>
-                    <h2 class="sheet-subtitle">
-                        @if($s1['budget_label'])
-                            {{ $s1['budget_label'] }}
-                        @endif
-                    </h2>
+                    @if($s1['budget_label'])
+                        <h2 class="sheet-subtitle">{{ $s1['budget_label'] }}</h2>
+                    @endif
                 </div>
 
                 <div class="sheet-meta-row">
                     <div class="sheet-meta-left">
-                        <div>ລາຍລະອຽດລາຍຈ່າຍ: {{ count($s1['transactions']) }}</div>
-                        <div>ເລກບັນຊີຈ່າຍ:</div>
+                        <div>ລະຫັດລາຍຈ່າຍ: {{ count($s1['transactions']) }}</div>
+                        <div>ຊ່ອງງົບປະມານ:</div>
                         <div>{{ $formattedCode }}</div>
                     </div>
                     <div class="sheet-meta-right">
@@ -366,7 +365,7 @@
                         <tr>
                             <th style="width: 8%;">ລຳດັບ</th>
                             <th style="width: 45%;">ເນື້ອໃນລາຍຈ່າຍ</th>
-                            <th style="width: 17%;">ວันທີ-ເດືອນ-ປີ</th>
+                            <th style="width: 17%;">ວັນທີ-ເດືອນ-ປີ</th>
                             <th style="width: 15%;">ລາຍຈ່າຍ</th>
                             <th style="width: 15%;">ດຸ່ນດ່ຽງ</th>
                         </tr>
@@ -422,20 +421,22 @@
             <div class="sheet-label"><span class="sheet-label-dot"></span> ໃບທີ {{ $sheetIndex + 1 }} — ຕາມພາກສ່ວນ: {{ $s2['department_name'] }}</div>
             <div id="sheet-{{ $sheetIndex }}" class="print-sheet hidden-screen">
 
-                {{-- Document Header: Centered Layout matching Picture 2 & 3 --}}
+                {{-- Document Header --}}
                 <div class="sheet-header-center">
-                    <div class="sheet-top-label">ໃບຕິດຕາມຈ່າຍ</div>
+                    <div class="sheet-top-label">ໃບບິນຮັບເງິນ</div>
                     <h1 class="sheet-title">ຕິດຕາມລາຍຈ່າຍງົບປະມານ {{ $account?->account_name }}</h1>
-                    <h2 class="sheet-subtitle">{{ $s2['department_name'] }}</h2>
                 </div>
 
-                <div class="sheet-meta-row">
-                    <div class="sheet-meta-left">
-                        <div>ລາຍລະອຽດລາຍຈ່າຍ: {{ count($s2['transactions']) }}</div>
+                <div class="sheet-meta-row" style="align-items: center;">
+                    <div class="sheet-meta-left" style="width: 33%;">
+                        <div>ລະຫັດລາຍຈ່າຍ: {{ count($s2['transactions']) }}</div>
                         <div>ເລກບັນຊີຈ່າຍ:</div>
                         <div>{{ $rawCode }}</div>
                     </div>
-                    <div class="sheet-meta-right">
+                    <div style="width: 34%; text-align: center; font-weight: 700; font-size: 13px;">
+                        {{ $s2['department_name'] }}
+                    </div>
+                    <div class="sheet-meta-right" style="width: 33%;">
                         <div>ຕົວເລກອະນຸມັດ: {{ number_format($s2['budget'], 0, ',', '.') }}</div>
                         <div>ຈ່າຍແລ້ວ: {{ number_format($s2['totalSpent'], 0, ',', '.') }}</div>
                         <div class="highlight-remaining">ຍັງເຫຼືອ: {{ number_format($s2['remaining'], 0, ',', '.') }}</div>
@@ -560,10 +561,12 @@
             }
         });
 
-        window.addEventListener('DOMContentLoaded', () => {
+        window.onload = function() {
             showSheet(0);
-            setTimeout(() => printCurrentSheet(), 500);
-        });
+            setTimeout(function() {
+                printCurrentSheet();
+            }, 500);
+        };
     </script>
 </body>
 </html>

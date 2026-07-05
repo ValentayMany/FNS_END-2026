@@ -10,7 +10,11 @@ class Department extends Model
 
     public $timestamps = false;
 
-    protected $fillable = ['department_name', 'department_type'];
+    protected $fillable = ['department_name', 'department_type', 'dept_code', 'budget_amount'];
+
+    protected $casts = [
+        'budget_amount' => 'decimal:2',
+    ];
 
     /**
      * ຊື່ພາກສ່ວນຕາມຖານຂໍ້ມູນ (department_name) ສຳລັບ dropdown / ຕາຕະລາງ.
@@ -43,11 +47,11 @@ class Department extends Model
         $map = [
             'computer' => 'ພາກວິຊາຄອມພິວເຕີ',
             'com' => 'ພາກວິຊາຄອມພິວເຕີ',
-            'central' => 'ພາກສ່ວນກາງ',
-            'center' => 'ພາກສ່ວນກາງ',
-            'ພາກສ່ວນກາງ' => 'ພາກສ່ວນກາງ',
-            'ສ່ວນກາງ' => 'ພາກສ່ວນກາງ',
-            'ກາງ' => 'ພາກສ່ວນກາງ',
+            'central' => 'ສ່ວນກາງ',
+            'center' => 'ສ່ວນກາງ',
+            'ພາກສ່ວນກາງ' => 'ສ່ວນກາງ',
+            'ສ່ວນກາງ' => 'ສ່ວນກາງ',
+            'ກາງ' => 'ສ່ວນກາງ',
         ];
 
         if (isset($map[$key])) {
@@ -62,20 +66,14 @@ class Department extends Model
             return '—';
         }
 
-        if (preg_match('/[\x{0E80}-\x{0EFF}]/u', $name)) {
-            if (str_starts_with($name, 'ພາກສ່ວນ') || str_starts_with($name, 'ພາກວິຊາ')) {
-                return $name;
-            }
-
-            return 'ພາກສ່ວນ'.$name;
-        }
-
-        return 'ພາກວິຊາ '.$name;
+        return $name;
     }
 
     public static function orderedForSelect()
     {
         return static::query()
+            ->where('department_name', 'not like', '%ປະລິນ%')
+            ->where('department_name', 'not like', '%ປະລິມ%')
             ->orderByRaw("CASE WHEN department_type = 'central' OR department_name IN ('ພາກສ່ວນກາງ', 'ສ່ວນກາງ') THEN 0 ELSE 1 END")
             ->orderBy('department_name')
             ->get();
@@ -84,5 +82,15 @@ class Department extends Model
     public function users()
     {
         return $this->hasMany(User::class);
+    }
+
+    public function advanceRequests()
+    {
+        return $this->hasMany(\App\Models\AdvanceRequest::class, 'department_id');
+    }
+
+    public function transactions()
+    {
+        return $this->hasMany(\App\Models\Transaction::class, 'department_id');
     }
 }

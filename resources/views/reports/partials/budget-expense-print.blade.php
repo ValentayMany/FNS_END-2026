@@ -10,18 +10,20 @@
     $formattedCode = strlen($rawCode) === 8
         ? substr($rawCode, 0, 2).'.'.substr($rawCode, 2, 2).'.'.substr($rawCode, 4, 2).'.'.substr($rawCode, 6, 2)
         : $rawCode;
-    $deptId = request('department_id');
-    $deptObj = $deptId ? \App\Models\Department::find($deptId) : null;
-    $deptName = $deptObj ? $deptObj->displayName() : 'ພາກວິຊາວິທະຍາສາດຄອມພິວເຕີ';
-    if ($deptName === 'Computer') {
-        $deptName = 'ພາກວິຊາວິທະຍາສາດຄອມພິວເຕີ';
-    }
+
+    // ---- Department: ໃຊ້ $selectedDeptId ທີ່ controller ສ້ົ່ງມາ (auto-default ຫາ dept ທຳອິດ) ----
+    $deptObj = $selectedDeptId ? \App\Models\Department::find($selectedDeptId) : null;
+    $deptName  = $deptObj ? $deptObj->displayName() : '—';
+    $deptCode  = $deptObj?->dept_code ?? '';
+    $deptBudget = $deptObj?->budget_amount ?? null;
+
     $sigDate = $type === 'daily'
         ? \Carbon\Carbon::parse($date)->format('d-m-Y')
         : ($type === 'monthly'
             ? \Carbon\Carbon::parse($month.'-01')->format('d-m-Y')
             : now()->format('d-m-Y'));
 @endphp
+
 
 <div style="text-align: center; font-size: 10px; font-weight: bold; margin-bottom: 15px; text-decoration: underline; text-underline-offset: 2px;">
     {{ $slipTitle }}
@@ -38,7 +40,7 @@
 
 <div style="display: flex; justify-content: space-between; align-items: flex-start; font-size: 11px; color: #000; margin-bottom: 15px; line-height: 1.6;">
     <div style="width: 35%;">
-        <p style="margin: 0;">ລະຫັດລາຍຈ່າຍ: <b>{{ $report['transactions']->count() }}</b></p>
+        <p style="margin: 0;">ລະຫັດພາກ/ສ່ວນ: <b>{{ $deptCode ?: '—' }}</b></p>
         <p style="margin: 4px 0 0;">
             @if($userRole === 'revenue_officer')
                 ເລກບັນຊີຈ່າຍ: <b>{{ $rawCode }}</b>
@@ -48,7 +50,13 @@
         </p>
     </div>
     <div style="width: 30%; text-align: center; font-weight: bold; padding-top: 15px;">
+        @if($deptCode)
+            <span style="display:inline-block;background:#1e3a5f;color:#f0b429;font-size:9px;font-weight:800;padding:1px 7px;border-radius:4px;letter-spacing:0.05em;margin-right:4px;">{{ $deptCode }}</span>
+        @endif
         {{ $deptName }}
+        @if($deptBudget !== null)
+            <br><span style="font-size:9px;font-weight:600;color:#555;">ງົບ: {{ number_format($deptBudget, 0, ',', '.') }} ₭</span>
+        @endif
     </div>
     <div style="width: 35%; text-align: right;">
         <p style="margin: 0;">ຕົວເລກອະນຸມັດ: <b>{{ number_format($report['budget'], 0, ',', '.') }}</b></p>
@@ -58,6 +66,7 @@
 </div>
 
 <table class="p-tbl">
+
     <thead>
         <tr style="font-weight: bold; background: #fff;">
             <th style="width: 45px; text-align: center; font-weight: bold; border: 1px solid #000 !important;">ລຳດັບ</th>
@@ -75,10 +84,16 @@
                     $lineText = trim((string) ($txn->description ?? ''));
                 }
                 $rowBalance = $txn->running_balance ?? 0;
+                $txnDeptCode = $txn->department?->dept_code ?? '';
             @endphp
             <tr>
                 <td style="text-align: center; border: 1px solid #000 !important;">{{ $idx + 1 }}</td>
-                <td style="text-align: left; border: 1px solid #000 !important;">{{ $lineText ?: '—' }}</td>
+                <td style="text-align: left; border: 1px solid #000 !important;">
+                    @if($txnDeptCode)
+                        <span style="font-weight:bold; color:#1e3a5f;">[{{ $txnDeptCode }}]</span>
+                    @endif
+                    {{ $lineText ?: '—' }}
+                </td>
                 <td style="text-align: center; border: 1px solid #000 !important;">{{ $txn->transaction_date?->format('d-m-Y') }}</td>
                 <td style="text-align: right; border: 1px solid #000 !important;">{{ number_format($txn->amount, 0, ',', '.') }}</td>
                 <td style="text-align: right; border: 1px solid #000 !important;">{{ number_format($rowBalance, 0, ',', '.') }}</td>

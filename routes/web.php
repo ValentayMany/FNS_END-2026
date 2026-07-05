@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\DepartmentSetupController;
 use App\Http\Controllers\ApprovalController;
 use App\Http\Controllers\CashierController;
 use App\Http\Controllers\ClearingController;
@@ -71,11 +72,18 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/clearing-attachment/{attachment}/download', [ClearingController::class, 'downloadAttachment'])->name('clearing.download');
 });
 
-// ---- Revenue (Revenue Officer only) ----
+// ---- Revenue ----
+Route::middleware(['auth', 'role:revenue_officer,admin,accountant,head_of_finance,deputy_head_of_faculty,head_of_faculty,treasurer'])
+    ->group(function () {
+        Route::get('/revenue/history', [RevenueController::class, 'history'])->name('revenue.history');
+        Route::get('/revenue/dashboard', [RevenueController::class, 'dashboard'])->name('revenue.dashboard');
+    });
+
 Route::middleware(['auth', 'role:revenue_officer'])
     ->group(function () {
         Route::get('/revenue', [RevenueController::class, 'index'])->name('revenue.index');
         Route::post('/revenue', [RevenueController::class, 'store'])->name('revenue.store');
+        Route::post('/revenue/batch-delete', [RevenueController::class, 'destroyBatch'])->name('revenue.destroy-batch');
         Route::get('/revenue/{transaction}/edit', [RevenueController::class, 'edit'])->name('revenue.edit');
         Route::put('/revenue/{transaction}', [RevenueController::class, 'update'])->name('revenue.update');
         Route::delete('/revenue/{transaction}', [RevenueController::class, 'destroy'])->name('revenue.destroy');
@@ -89,6 +97,7 @@ Route::middleware(['auth', 'role:accountant'])
         Route::get('/expense/item-suggestions', [ExpenseController::class, 'itemSuggestions'])->name('expense.item-suggestions');
         Route::post('/expense', [ExpenseController::class, 'store'])->name('expense.store');
         Route::post('/expense/store-batch', [ExpenseController::class, 'storeBatch'])->name('expense.store-batch');
+        Route::post('/expense/batch-delete', [ExpenseController::class, 'destroyBatch'])->name('expense.destroy-batch');
         Route::get('/expense/print-balance', [ExpenseController::class, 'printBalance'])->name('expense.print-balance');
         Route::get('/expense/{transaction}/edit', [ExpenseController::class, 'edit'])->name('expense.edit');
         Route::put('/expense/{transaction}', [ExpenseController::class, 'update'])->name('expense.update');
@@ -108,6 +117,14 @@ Route::middleware(['auth', 'role:treasury_reconciliation_officer'])
         Route::post('/treasury/reconcile', [TreasuryController::class, 'store'])->name('treasury.reconcile');
     });
 
+// ---- Head of Finance — Department Setup ----
+Route::middleware(['auth', 'role:head_of_finance'])->group(function () {
+    Route::get('/department-setup', [DepartmentSetupController::class, 'index'])->name('department-setup.index');
+    Route::post('/department-setup', [DepartmentSetupController::class, 'store'])->name('department-setup.store');
+    Route::put('/department-setup/{department}', [DepartmentSetupController::class, 'update'])->name('department-setup.update');
+    Route::delete('/department-setup/{department}', [DepartmentSetupController::class, 'destroy'])->name('department-setup.destroy');
+});
+
 // ---- Admin ----
 Route::middleware(['auth', 'role:admin'])
     ->group(function () {
@@ -117,10 +134,6 @@ Route::middleware(['auth', 'role:admin'])
     });
 
 // ---- Reports ----
-Route::middleware(['auth', 'role:admin,head_of_finance,deputy_head_of_faculty,head_of_faculty,treasurer,revenue_officer'])
-    ->group(function () {
-        Route::get('/revenue/dashboard', [RevenueController::class, 'dashboard'])->name('revenue.dashboard');
-    });
 
 Route::middleware(['auth', 'role:admin,accountant,head_of_finance,deputy_head_of_faculty,head_of_faculty,treasurer,revenue_officer'])
     ->group(function () {

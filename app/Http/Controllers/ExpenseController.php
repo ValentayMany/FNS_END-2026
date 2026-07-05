@@ -161,6 +161,26 @@ class ExpenseController extends Controller
         return back()->with('success', 'ລຶບລາຍຈ່າຍສຳເລັດ');
     }
 
+    public function destroyBatch(Request $request)
+    {
+        $ids = $request->input('ids', []);
+        if (!empty($ids)) {
+            $txns = Transaction::where('type', 'expense')
+                ->whereIn('id', $ids)
+                ->whereDoesntHave('advanceRequest')
+                ->get();
+
+            $count = 0;
+            foreach ($txns as $txn) {
+                $txn->delete();
+                $count++;
+            }
+
+            return back()->with('success', 'ລຶບລາຍການທີ່ເລືອກສຳເລັດແລ້ວ (' . $count . ' ລາຍການ)');
+        }
+        return back()->with('error', 'ກະລຸນາເລືອກລາຍການທີ່ຕ້ອງການລຶບ');
+    }
+
     public function itemSuggestions(Request $request)
     {
         $q = $request->query('q', '');
@@ -308,21 +328,30 @@ class ExpenseController extends Controller
 
             $budgetLabel = $builder->budgetTypeLabel($year, (int) $accountId);
 
+            $deptObj = $firstTxn->department;
+            $deptCode = $deptObj?->dept_code ?? '';
+
             // Sheet 1: ຮ່ວງ level (formatted code, with budget, no department name, shows budget type label)
             $sheet1Data = [
-                'account'      => $account,
-                'transactions' => $reportData['transactions'] ?? collect(),
-                'budget'       => $reportData['budget'] ?? 0.0,
-                'totalSpent'   => $reportData['totalSpent'] ?? 0.0,
-                'periodSpent'  => $reportData['periodSpent'] ?? 0.0,
-                'remaining'    => $reportData['remaining'] ?? 0.0,
-                'selectedYear' => $year,
-                'budget_label' => $budgetLabel,
+                'account'         => $account,
+                'transactions'    => $reportData['transactions'] ?? collect(),
+                'budget'          => $reportData['budget'] ?? 0.0,
+                'totalSpent'      => $reportData['totalSpent'] ?? 0.0,
+                'periodSpent'     => $reportData['periodSpent'] ?? 0.0,
+                'remaining'       => $reportData['remaining'] ?? 0.0,
+                'selectedYear'    => $year,
+                'budget_label'    => $budgetLabel,
+                'dept_code'       => $deptCode,
+                'department'      => $deptObj,
             ];
 
-            // Sheet 2: Department/ພາກສ່ວນ level (raw code, budget = 0, with department name)
-            // Running balance starts at 0 and decreases for each transaction in the batch
-            $deptRunning = 0.0;
+            // Sheet 2: Department/ພາກສ່ວນ level (raw code, with department budget, department name)
+            // Running balance starts at department's budget_amount and decreases for each transaction
+            $deptBudget = (float) ($deptObj?->budget_amount ?? 0.0);
+            $deptSpent  = (float) $allDeptTxns->sum('amount');
+            $deptRemaining = $deptBudget - $deptSpent;
+
+            $deptRunning = $deptBudget;
             $deptTxns = $allDeptTxns->map(function ($t) use (&$deptRunning) {
                 $clone = clone $t;
                 $deptRunning -= (float) $t->amount;
@@ -333,12 +362,14 @@ class ExpenseController extends Controller
             $sheet2Data = [
                 'account'         => $account,
                 'transactions'    => $deptTxns,
-                'budget'          => 0.0,
-                'totalSpent'      => (float) $allDeptTxns->sum('amount'),
-                'periodSpent'     => (float) $allDeptTxns->sum('amount'),
-                'remaining'       => -(float) $allDeptTxns->sum('amount'),
+                'budget'          => $deptBudget,
+                'totalSpent'      => $deptSpent,
+                'periodSpent'     => $deptSpent,
+                'remaining'       => $deptRemaining,
                 'selectedYear'    => $year,
-                'department_name' => $firstTxn->department?->expenseSectionLabel() ?? 'ພາກສ່ວນກາງ',
+                'department_name' => $deptObj?->displayName() ?? ($firstTxn->department?->expenseSectionLabel() ?? 'ພາກສ່ວນກາງ'),
+                'dept_code'       => $deptCode,
+                'department'      => $deptObj,
             ];
 
             $reports[] = [

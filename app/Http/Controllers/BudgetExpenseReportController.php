@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\ChartOfAccount;
+use App\Models\Department;
 use App\Models\Transaction;
 use App\Services\BudgetExpenseReportBuilder;
 use Illuminate\Http\Request;
@@ -71,6 +72,16 @@ class BudgetExpenseReportController extends Controller
             );
         }
 
+        // ---- Departments for print header ----
+        $departments = Department::orderBy('dept_code')->orderBy('department_name')->get();
+        $selectedDeptId = $request->get('department_id');
+
+        // Auto-pick: if none selected, default to first dept that has a dept_code
+        if (!$selectedDeptId) {
+            $defaultDept = $departments->firstWhere('dept_code', '!=', null);
+            $selectedDeptId = $defaultDept?->id;
+        }
+
         return view('reports.budget-expense-report', compact(
             'type', 'date', 'month', 'year',
             'lineItems',
@@ -78,6 +89,8 @@ class BudgetExpenseReportController extends Controller
             'selectedAccountId',
             'plan',
             'report',
+            'departments',
+            'selectedDeptId',
         ));
     }
 }

@@ -101,7 +101,7 @@
     </style>
 
     <div class="py-6 sm:py-8 w-full min-w-0 no-print">
-        <div class="max-w-5xl mx-auto w-full min-w-0 px-3 sm:px-4 lg:px-6 space-y-5 sm:space-y-6">
+        <div class="w-full min-w-0 space-y-5 sm:space-y-6">
 
             @if (session('success'))
                 <div class="fns-alert fns-alert-success fns-animate">
@@ -195,12 +195,26 @@
                         </h3>
                         <p class="text-xs text-gray-400 mt-0.5">ລາຍການທີ່ຖືກບັນທຶກໃນຊ່ວງເວລານີ້</p>
                     </div>
+                    @if(auth()->user()->isAccountant() || auth()->user()->isAdmin())
+                        <div class="flex items-center gap-2">
+                            <button type="button" id="batchDeleteBtn" onclick="openBatchDeleteModal()" style="display:none;"
+                                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold shadow-sm transition-all duration-150">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                                ລຶບທັງໝົດ (<span id="selectedCount">0</span>)
+                            </button>
+                        </div>
+                    @endif
                 </div>
 
                 <div class="overflow-x-auto touch-pan-x">
                     <table class="fns-table w-full text-left border-collapse" style="min-width: 48rem;">
                         <thead>
                             <tr class="bg-gray-50/80 border-y border-gray-100">
+                                @if(auth()->user()->isAccountant() || auth()->user()->isAdmin())
+                                    <th class="py-3 px-3 text-xs font-bold text-gray-500 uppercase tracking-wider text-center" style="width: 40px;">
+                                        <input type="checkbox" id="selectAllCheckbox" onclick="toggleSelectAll(this)" class="w-4 h-4 rounded text-rose-600 focus:ring-rose-500 border-gray-300 cursor-pointer" />
+                                    </th>
+                                @endif
                                 <th class="py-3 px-4 text-xs font-bold text-gray-500 uppercase tracking-wider text-center" style="width: 110px;">ວັນທີ</th>
                                 <th class="py-3 px-4 text-xs font-bold text-gray-500 uppercase tracking-wider text-center" style="width: 120px;">ເລກທີໃບບິນ</th>
                                 <th class="py-3 px-4 text-xs font-bold text-gray-500 uppercase tracking-wider text-center" style="width: 130px;">ພາກສ່ວນ</th>
@@ -214,6 +228,11 @@
                         <tbody>
                             @forelse($transactions as $txn)
                                 <tr class="hover:bg-gray-50/30 transition-colors border-b border-gray-50">
+                                    @if(auth()->user()->isAccountant() || auth()->user()->isAdmin())
+                                        <td class="py-3.5 px-3 text-center">
+                                            <input type="checkbox" class="item-checkbox w-4 h-4 rounded text-rose-600 focus:ring-rose-500 border-gray-300 cursor-pointer" value="{{ $txn->id }}" onchange="updateBatchDeleteBtn()" />
+                                        </td>
+                                    @endif
                                     <td class="py-3.5 px-4 text-center">
                                         <span class="text-sm font-semibold text-gray-600">{{ $txn->transaction_date?->format('d/m/Y') }}</span>
                                     </td>
@@ -260,7 +279,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="6" class="py-8">
+                                    <td colspan="7" class="py-8">
                                         <div class="fns-empty py-6 text-center">
                                             <p class="text-sm font-semibold text-gray-400">ບໍ່ມີປະຫວັດການຈ່າຍເງິນໃນຊ່ວງເວລານີ້</p>
                                         </div>
@@ -392,7 +411,90 @@
             </div>
         </div>
 
+    {{-- Batch Delete Confirmation Modal --}}
+        <div id="batchDeleteModal" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; z-index:99999;" aria-modal="true" role="dialog">
+            <div style="position:absolute; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px);" onclick="closeBatchDeleteModal()"></div>
+            <div style="position:relative; display:flex; align-items:center; justify-content:center; width:100%; height:100%; padding:1rem;">
+                <div class="bg-white rounded-2xl shadow-2xl fns-animate" style="max-width:24rem; width:100%; padding:1.5rem; position:relative; z-index:1;">
+                    <div class="flex items-center justify-center w-14 h-14 rounded-full bg-rose-100 mx-auto mb-4">
+                        <svg class="w-7 h-7 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                    </div>
+                    <h3 class="text-lg font-extrabold text-gray-900 text-center mb-1">ຢືນຢັນການລຶບທັງໝົດ</h3>
+                    <p class="text-sm text-gray-500 text-center mb-1">ທ່ານຕ້ອງການລຶບ <span id="batchCountText" class="font-bold text-rose-600"></span> ລາຍການທີ່ເລືອກ?</p>
+                    <p class="text-xs text-gray-400 text-center mb-5">ການລຶບນີ້ບໍ່ສາມາດກູ້ຄືນໄດ້</p>
+                    <form id="batchDeleteForm" action="{{ route('expense.destroy-batch') }}" method="POST">
+                        @csrf
+                        <div id="batchDeleteInputs"></div>
+                        <div class="flex gap-3">
+                            <button type="button" onclick="closeBatchDeleteModal()"
+                                class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-2.5 px-4 rounded-xl transition-all duration-150 text-sm">
+                                ຍົກເລີກ
+                            </button>
+                            <button type="submit"
+                                class="flex-1 bg-rose-600 hover:bg-rose-700 text-white font-bold py-2.5 px-4 rounded-xl shadow-lg hover:-translate-y-0.5 transition-all duration-150 text-sm">
+                                ລຶບເລີຍ
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
         <script>
+            function toggleSelectAll(master) {
+                const checkboxes = document.querySelectorAll('.item-checkbox');
+                checkboxes.forEach(cb => cb.checked = master.checked);
+                updateBatchDeleteBtn();
+            }
+
+            function updateBatchDeleteBtn() {
+                const checkboxes = document.querySelectorAll('.item-checkbox:checked');
+                const btn = document.getElementById('batchDeleteBtn');
+                const countSpan = document.getElementById('selectedCount');
+                if (btn) {
+                    if (checkboxes.length > 0) {
+                        btn.style.display = 'inline-flex';
+                        if (countSpan) countSpan.innerText = checkboxes.length;
+                    } else {
+                        btn.style.display = 'none';
+                        if (countSpan) countSpan.innerText = '0';
+                        const master = document.getElementById('selectAllCheckbox');
+                        if (master) master.checked = false;
+                    }
+                }
+            }
+
+            function openBatchDeleteModal() {
+                const checkboxes = document.querySelectorAll('.item-checkbox:checked');
+                if (checkboxes.length === 0) return;
+                
+                const container = document.getElementById('batchDeleteInputs');
+                container.innerHTML = '';
+                checkboxes.forEach(cb => {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'ids[]';
+                    input.value = cb.value;
+                    container.appendChild(input);
+                });
+                
+                document.getElementById('batchCountText').innerText = checkboxes.length + ' ';
+                const modal = document.getElementById('batchDeleteModal');
+                if (modal) {
+                    modal.style.display = 'block';
+                    if (modal.parentElement !== document.body) {
+                        document.body.appendChild(modal);
+                    }
+                }
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeBatchDeleteModal() {
+                const modal = document.getElementById('batchDeleteModal');
+                if (modal) modal.style.display = 'none';
+                document.body.style.overflow = '';
+            }
+
             function teleportModal() {
                 const modal = document.getElementById('deleteModal');
                 if (modal && modal.parentElement !== document.body) {
@@ -421,7 +523,12 @@
                 }
                 document.body.style.overflow = '';
             }
-            document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDeleteModal(); });
+            document.addEventListener('keydown', e => { 
+                if (e.key === 'Escape') {
+                    closeDeleteModal();
+                    closeBatchDeleteModal();
+                }
+            });
         </script>
     @endif
 </x-app-layout>

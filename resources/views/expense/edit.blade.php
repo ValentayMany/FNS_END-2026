@@ -86,14 +86,15 @@
                                             value="{{ old('budget_year', $transaction->transaction_date?->format('Y')) }}" />
                                     </div>
                                     <div>
-                                        <label for="amount" class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">ຈຳນວນເງິນຈ່າຍ <span class="text-red-500">*</span></label>
+                                        <label for="amount_display" class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">ຈຳນວນເງິນຈ່າຍ <span class="text-red-500">*</span></label>
                                         <div class="relative">
                                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                                 <span class="text-gray-400 font-bold sm:text-sm">₭</span>
                                             </div>
-                                            <input id="amount" name="amount" type="number" min="1" step="0.01"
+                                            <input id="amount_display" type="text" inputmode="numeric" autocomplete="off"
                                                 class="ui-input bg-white pl-8 focus:ring-rose-500 focus:border-rose-500 shadow-sm transition-all font-bold text-rose-700 w-full"
-                                                value="{{ old('amount', $transaction->amount) }}" placeholder="ຈຳນວນເງິນຈ່າຍ" required />
+                                                value="{{ number_format(old('amount', $transaction->amount), 0, '.', ',') }}" placeholder="ຈຳນວນເງິນຈ່າຍ" required />
+                                            <input id="amount" name="amount" type="hidden" value="{{ old('amount', $transaction->amount) }}" />
                                         </div>
                                     </div>
 
@@ -103,7 +104,7 @@
                                         <x-fns.select-wrap>
                                             <div x-data="editAccountDropdown()" class="relative w-full">
                                                 <!-- Trigger Button -->
-                                                <button type="button" @click="open = !open; if (open) { $nextTick(() => $refs.searchInput.focus()) }" @click.away="open = false"
+                                                <button type="button" @click.stop="open = !open; if (open) { $nextTick(() => $refs.searchInput.focus()) }" @click.outside="open = false"
                                                     class="ui-input bg-white focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 shadow-sm transition-all text-sm w-full cursor-pointer pr-10 py-2.5 px-4 rounded-xl text-left border border-gray-200 block truncate">
                                                     <span x-text="selectedText" class="truncate text-gray-700"></span>
                                                 </button>
@@ -203,7 +204,7 @@
                                         <x-fns.select-wrap>
                                             <select id="department_id" name="department_id" required class="fns-select ui-input bg-white focus:ring-rose-500 focus:border-rose-500 shadow-sm transition-all text-sm w-full cursor-pointer pr-10">
                                                 @foreach ($departments as $dept)
-                                                    @if ($dept->department_type === 'central' || $dept->department_name === 'ພາກສ່ວນກາງ')
+                                                    @if (!str_contains($dept->department_name, 'ປະລິນ') && !str_contains($dept->department_name, 'ປະລິມ'))
                                                         <option value="{{ $dept->id }}" {{ old('department_id', $transaction->department_id) == $dept->id ? 'selected' : '' }}>
                                                             {{ $dept->expenseSectionLabel() }}
                                                         </option>
@@ -313,6 +314,32 @@
                     fetchSuggestions(val);
                 }, 300);
             });
+        // Live comma-separator formatting for amount input (e.g. 300,000)
+        const amtDispEdit = document.getElementById('amount_display');
+        const amtValEdit  = document.getElementById('amount');
+
+        function formatCommasEdit(v) {
+            if (!v && v !== 0) return '';
+            const digits = String(v).replace(/\D/g, '');
+            if (!digits) return '';
+            return new Intl.NumberFormat('en-US').format(digits);
+        }
+
+        if (amtDispEdit && amtValEdit) {
+            amtDispEdit.addEventListener('input', function() {
+                const digits = this.value.replace(/\D/g, '');
+                if (digits) {
+                    this.value = formatCommasEdit(digits);
+                    amtValEdit.value = digits;
+                } else {
+                    this.value = '';
+                    amtValEdit.value = '';
+                }
+            });
+
+            if (amtValEdit.value) {
+                amtDispEdit.value = formatCommasEdit(amtValEdit.value);
+            }
         }
     </script>
 </x-app-layout>

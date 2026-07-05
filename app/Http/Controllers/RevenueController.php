@@ -22,23 +22,27 @@ class RevenueController extends Controller
         $startDate = $request->input('start_date', now()->startOfMonth()->toDateString());
         $endDate = $request->input('end_date', now()->toDateString());
 
-        $departments = Department::whereIn('department_name', ['ປທ', 'ປຕ', 'ປອ'])->get();
+        $departments = Department::where('department_type', 'income')->orderBy('id')->get();
         $deptIds = $departments->pluck('id')->toArray();
 
         // 1. Selected Period Stats
         $periodTransactions = Transaction::where('type', 'income')
-            ->whereBetween('transaction_date', [$startDate, $endDate])
+            ->whereDate('transaction_date', '>=', $startDate)
+            ->whereDate('transaction_date', '<=', $endDate)
             ->whereIn('department_id', $deptIds)
             ->get();
 
         $dailyStats = [];
         foreach ($departments as $dept) {
             $deptTxns = $periodTransactions->where('department_id', $dept->id);
-            $dailyStats[$dept->department_name] = [
+            $st = [
                 'total' => $deptTxns->sum('amount'),
                 'cash' => $deptTxns->where('payment_method', 'cash')->sum('amount'),
                 'transfer' => $deptTxns->where('payment_method', 'transfer')->sum('amount'),
             ];
+            $dailyStats[$dept->id] = $st;
+            $dailyStats[$dept->department_name] = $st;
+            $dailyStats[str_replace(['ຢ', 'ມ'], ['ຍ', 'ນ'], $dept->department_name)] = $st;
         }
 
         // 2. Overall Stats (All-time Grand Total)
@@ -49,16 +53,20 @@ class RevenueController extends Controller
         $overallStats = [];
         foreach ($departments as $dept) {
             $deptTxns = $allTransactions->where('department_id', $dept->id);
-            $overallStats[$dept->department_name] = [
+            $st = [
                 'total' => $deptTxns->sum('amount'),
                 'cash' => $deptTxns->where('payment_method', 'cash')->sum('amount'),
                 'transfer' => $deptTxns->where('payment_method', 'transfer')->sum('amount'),
             ];
+            $overallStats[$dept->id] = $st;
+            $overallStats[$dept->department_name] = $st;
+            $overallStats[str_replace(['ຢ', 'ມ'], ['ຍ', 'ນ'], $dept->department_name)] = $st;
         }
 
         // 3. Daily Trend Data (Line Chart)
         $dailyTrendsRaw = Transaction::where('type', 'income')
-            ->whereBetween('transaction_date', [$startDate, $endDate])
+            ->whereDate('transaction_date', '>=', $startDate)
+            ->whereDate('transaction_date', '<=', $endDate)
             ->whereIn('department_id', $deptIds)
             ->selectRaw('transaction_date, 
                 SUM(amount) as total,
@@ -99,12 +107,15 @@ class RevenueController extends Controller
         // 5. Recent Transactions in this period (take 10)
         $recentTransactions = Transaction::with('department')
             ->where('type', 'income')
-            ->whereBetween('transaction_date', [$startDate, $endDate])
+            ->whereDate('transaction_date', '>=', $startDate)
+            ->whereDate('transaction_date', '<=', $endDate)
             ->whereIn('department_id', $deptIds)
             ->latest('transaction_date')
             ->latest('id')
             ->take(10)
             ->get();
+
+        $sumTotal = $periodTransactions->sum('amount');
 
         return view('revenue.dashboard', compact(
             'departments',
@@ -114,7 +125,8 @@ class RevenueController extends Controller
             'endDate',
             'dailyTrends',
             'paymentBreakdown',
-            'recentTransactions'
+            'recentTransactions',
+            'sumTotal'
         ));
     }
 
@@ -126,7 +138,7 @@ class RevenueController extends Controller
             ->latest('id')
             ->paginate(15);
 
-        $departments = Department::whereIn('department_name', ['ປທ', 'ປຕ', 'ປອ'])->get();
+        $departments = Department::where('department_type', 'income')->orderBy('id')->get();
         $deptIds = $departments->pluck('id')->toArray();
         $categories = $this->incomeCategories;
 
@@ -140,11 +152,14 @@ class RevenueController extends Controller
         $dailyStats = [];
         foreach ($departments as $dept) {
             $deptTxns = $todayTransactions->where('department_id', $dept->id);
-            $dailyStats[$dept->department_name] = [
+            $st = [
                 'total' => $deptTxns->sum('amount'),
                 'cash' => $deptTxns->where('payment_method', 'cash')->sum('amount'),
                 'transfer' => $deptTxns->where('payment_method', 'transfer')->sum('amount'),
             ];
+            $dailyStats[$dept->id] = $st;
+            $dailyStats[$dept->department_name] = $st;
+            $dailyStats[str_replace(['ຢ', 'ມ'], ['ຍ', 'ນ'], $dept->department_name)] = $st;
         }
 
         // Overall Stats (All-time)
@@ -155,14 +170,31 @@ class RevenueController extends Controller
         $overallStats = [];
         foreach ($departments as $dept) {
             $deptTxns = $allTransactions->where('department_id', $dept->id);
-            $overallStats[$dept->department_name] = [
+            $st = [
                 'total' => $deptTxns->sum('amount'),
                 'cash' => $deptTxns->where('payment_method', 'cash')->sum('amount'),
                 'transfer' => $deptTxns->where('payment_method', 'transfer')->sum('amount'),
             ];
+            $overallStats[$dept->id] = $st;
+            $overallStats[$dept->department_name] = $st;
+            $overallStats[str_replace(['ຢ', 'ມ'], ['ຍ', 'ນ'], $dept->department_name)] = $st;
         }
 
-        return view('revenue.revenue', compact('transactions', 'departments', 'categories', 'dailyStats', 'overallStats'));
+        // Next payment_code (auto-suggest)
+        $lastCode = Transaction::where('type', 'income')
+            ->whereNotNull('payment_code')
+            ->orderByDesc('id')
+            ->value('payment_code');
+        $nextCode = null;
+        if ($lastCode && preg_match('/\d+$/', $lastCode, $m)) {
+            $num    = intval($m[0]) + 1;
+            $prefix = substr($lastCode, 0, strlen($lastCode) - strlen($m[0]));
+            $nextCode = $prefix . str_pad($num, strlen($m[0]), '0', STR_PAD_LEFT);
+        } elseif ($lastCode) {
+            $nextCode = $lastCode; // can't parse, just show same
+        }
+
+        return view('revenue.revenue', compact('transactions', 'departments', 'categories', 'dailyStats', 'overallStats', 'nextCode'));
     }
 
     public function store(Request $request)
@@ -201,7 +233,7 @@ class RevenueController extends Controller
     {
         abort_if($transaction->type !== 'income', 403);
 
-        $departments = Department::whereIn('department_name', ['ປທ', 'ປຕ', 'ປອ'])->get();
+        $departments = Department::where('department_type', 'income')->orderBy('id')->get();
         $categories = $this->incomeCategories;
 
         return view('revenue.edit', compact('transaction', 'departments', 'categories'));
@@ -247,5 +279,55 @@ class RevenueController extends Controller
         $transaction->delete();
 
         return back()->with('success', 'ລຶບລາຍຮັບສຳເລັດ');
+    }
+
+    public function destroyBatch(Request $request)
+    {
+        $ids = $request->input('ids', []);
+        if (!empty($ids)) {
+            $count = Transaction::where('type', 'income')
+                ->whereIn('id', $ids)
+                ->delete();
+            return back()->with('success', 'ລຶບລາຍການທີ່ເລືອກສຳເລັດແລ້ວ (' . $count . ' ລາຍການ)');
+        }
+        return back()->with('error', 'ກະລຸນາເລືອກລາຍການທີ່ຕ້ອງການລຶບ');
+    }
+
+    public function history(Request $request)
+    {
+        $type = $request->query('type', 'daily');
+        $date = $request->query('date', date('Y-m-d'));
+        $month = $request->query('month', date('Y-m'));
+        $year = $request->query('year', date('Y'));
+
+        $query = Transaction::with('department')
+            ->where('type', 'income');
+
+        if ($type === 'daily' && $date) {
+            $query->whereDate('transaction_date', $date);
+        } elseif ($type === 'monthly' && $month) {
+            $parts = explode('-', $month);
+            if (count($parts) === 2) {
+                $query->whereYear('transaction_date', $parts[0])
+                    ->whereMonth('transaction_date', $parts[1]);
+            }
+        } elseif ($type === 'yearly' && $year) {
+            $query->whereYear('transaction_date', $year);
+        }
+
+        $summaryTotal = (float) $query->sum('amount');
+        $summaryCount = (int) $query->count();
+
+        $transactions = $query->latest('transaction_date')->paginate(10)->withQueryString();
+
+        return view('revenue.history', compact(
+            'transactions',
+            'type',
+            'date',
+            'month',
+            'year',
+            'summaryTotal',
+            'summaryCount'
+        ));
     }
 }

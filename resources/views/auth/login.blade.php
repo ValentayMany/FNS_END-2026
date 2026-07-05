@@ -15,8 +15,7 @@
             <img src="{{ asset('image/Logo.jpg') }}" alt="Logo"
                 class="mx-auto mb-3 w-[min(140px,40vw)] h-[min(140px,40vw)] sm:w-40 sm:h-40 object-contain">
             <h1 class="text-lg sm:text-xl font-bold tracking-widest lowercase break-words px-1" style="color: #eab308;">
-                ລະບົບລາຍຮັບ ແລະ ລາຍຈ່າຍຂອງຄະນະ
-            </h1>
+                ລະບົບບັນທືກລາຍຮັບ ແລະ ລາຍຈ່າຍຂອງຄະນະ ວິທະຍາສາດ ທຳມະຊາດ ຄວທ
         </div>
 
         {{-- Body --}}

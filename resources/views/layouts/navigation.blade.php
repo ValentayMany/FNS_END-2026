@@ -1,16 +1,13 @@
 <!-- Desktop Sidebar & Mobile Offcanvas Menu -->
-<nav x-cloak 
-     :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'" 
+<nav :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'" 
      class="fixed lg:static inset-y-0 left-0 z-50 w-72 bg-white lg:bg-white border-r border-gray-100 flex flex-col shrink-0 transition-transform duration-300 ease-in-out shadow-[4px_0_24px_rgba(0,0,0,0.02)] lg:shadow-none h-full">
     
     <!-- Sidebar Header (Brand & Logo) -->
     <div class="h-16 lg:h-20 shrink-0 flex items-center justify-between px-6 border-b border-gray-50/80 bg-white/50 backdrop-blur-md">
         <a href="{{ route('dashboard') }}" class="flex items-center gap-3 group outline-none rounded-xl focus:ring-2 focus:ring-indigo-500 ring-offset-2">
-            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-sky-400 flex items-center justify-center text-white shadow-md shadow-indigo-200 group-hover:scale-105 group-hover:rotate-3 transition-transform duration-300">
-                <svg class="w-5 h-5 drop-shadow-sm" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-            </div>
+            <img src="{{ asset('image/Logo.jpg') }}" alt="NUOL Logo" 
+                class="w-10 h-10 object-contain rounded-full drop-shadow-sm group-hover:scale-105 transition-transform duration-300"
+                style="width: 40px; height: 40px; min-width: 40px; min-height: 40px;">
             <div class="flex flex-col">
                 <span class="text-xl font-extrabold text-gray-900 tracking-tight leading-none group-hover:text-indigo-600 transition-colors">FNS</span>
                 <span class="text-[0.65rem] font-bold text-gray-400 uppercase tracking-widest mt-0.5">Financial System</span>
@@ -99,9 +96,13 @@
                         <x-slot name="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 3.055A9.003 9.003 0 1020.945 13H11V3.055z" /><path stroke-linecap="round" stroke-linejoin="round" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" /></svg></x-slot>
                         Dashboard ລາຍຮັບ
                     </x-sidebar-link>
-                    <x-sidebar-link :href="route('revenue.index')" :active="request()->routeIs('revenue.*') && !request()->routeIs('revenue.dashboard')">
+                    <x-sidebar-link :href="route('revenue.index')" :active="request()->routeIs('revenue.index') || request()->routeIs('revenue.edit')">
                         <x-slot name="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v4.125c0 .621-.504 1.125-1.125 1.125h-2.25A1.125 1.125 0 013 17.25v-4.125zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v8.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125v-8.25zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v12.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" /></svg></x-slot>
                         🛡️ ບັນທຶກລາຍຮັບ
+                    </x-sidebar-link>
+                    <x-sidebar-link :href="route('revenue.history')" :active="request()->routeIs('revenue.history')">
+                        <x-slot name="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg></x-slot>
+                        ປະຫວັດການຮັບເງິນ
                     </x-sidebar-link>
                     <x-sidebar-link :href="route('reports.index')" :active="request()->routeIs('reports.*') && !request()->routeIs('reports.budget_expense')">
                         <x-slot name="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6a7.5 7.5 0 107.5 7.5h-7.5V6zM13.5 10.5H21A7.5 7.5 0 0013.5 3v7.5z" /></svg></x-slot>
@@ -147,15 +148,20 @@
                 @endif
 
                 @if($role === 'head_of_finance')
-                    <x-sidebar-link :href="route('revenue.dashboard')" :active="request()->routeIs('revenue.dashboard')">
-                        <x-slot name="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 3.055A9.003 9.003 0 1020.945 13H11V3.055z" /><path stroke-linecap="round" stroke-linejoin="round" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" /></svg></x-slot>
-                        Dashboard ລາຍຮັບ
-                    </x-sidebar-link>
                     <x-sidebar-link :href="route('reports.index')" :active="request()->routeIs('reports.*') && !request()->routeIs('reports.budget_expense')">
                         <x-slot name="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6a7.5 7.5 0 107.5 7.5h-7.5V6zM13.5 10.5H21A7.5 7.5 0 0013.5 3v7.5z" /></svg></x-slot>
                         ລາຍງານ
                     </x-sidebar-link>
+                    <x-sidebar-link :href="route('department-setup.index')" :active="request()->is('department-setup*')" color="amber">
+                        <x-slot name="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 010 3.75H5.625a1.875 1.875 0 010-3.75z"/></svg></x-slot>
+                        ຈັດການພາກ/ສ່ວນ
+                    </x-sidebar-link>
+                    <x-sidebar-link :href="route('approvals.index')" :active="request()->routeIs('approvals.*')" color="rose">
+                        <x-slot name="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg></x-slot>
+                        ອະນຸມັດຄຳຂໍ
+                    </x-sidebar-link>
                 @endif
+
 
                 @if($role === 'admin')
                     <x-sidebar-link :href="route('admin.users')" :active="request()->routeIs('admin.users*')">
@@ -179,8 +185,8 @@
 
     <!-- User Profile Footer -->
     <div class="p-4 shrink-0 border-t border-gray-100 bg-gray-50/50 mt-auto">
-        <div class="relative" x-data="{ openProfile: false }">
-            <button @click="openProfile = !openProfile" @click.away="openProfile = false" class="w-full flex items-center justify-between p-2 rounded-xl hover:bg-white hover:shadow-sm ring-1 ring-transparent hover:ring-gray-200 transition-all text-left focus:outline-none">
+        <div class="relative" x-data="{ openProfile: false }" @click.outside="openProfile = false">
+            <button @click="openProfile = !openProfile" class="w-full flex items-center justify-between p-2 rounded-xl hover:bg-white hover:shadow-sm ring-1 ring-transparent hover:ring-gray-200 transition-all text-left focus:outline-none">
                 <div class="flex items-center gap-3 overflow-hidden">
                     @php
                         $roleName = Auth::user()->role?->role_name;

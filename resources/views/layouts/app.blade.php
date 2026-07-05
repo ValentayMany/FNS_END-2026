@@ -6,6 +6,8 @@
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
         <title>{{ config('app.name', 'FNS-System') }}</title>
+        <link rel="icon" type="image/jpeg" href="{{ asset('image/Logo.jpg') }}">
+        <link rel="shortcut icon" href="{{ asset('image/Logo.jpg') }}">
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
@@ -70,7 +72,7 @@
 
                 <!-- Page Content -->
                 <main class="flex-1 w-full relative z-0">
-                    <div class="py-6 px-4 sm:px-6 lg:px-8 max-w-[1400px] mx-auto w-full">
+                    <div class="py-6 px-3 sm:px-5 lg:px-6 w-full max-w-full">
                         {{ $slot }}
                     </div>
                     

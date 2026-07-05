@@ -79,7 +79,7 @@
     </style>
 
     <div class="budget-outer py-6 sm:py-8 w-full min-w-0 no-print">
-        <div class="budget-inner max-w-[1400px] mx-auto w-full px-3 sm:px-4 lg:px-6 space-y-6">
+        <div class="budget-inner max-w-full mx-auto w-full px-4 sm:px-6 lg:px-8 space-y-6">
 
             {{-- Filter Card --}}
             <div class="fns-card bg-white shadow-md rounded-2xl border border-gray-100 overflow-hidden fns-animate">
@@ -132,6 +132,22 @@
                             </select>
                         </div>
                         
+                        <div class="flex flex-col gap-1.5 min-w-[200px]"
+                             title="ເລືອກພາກ/ສ່ວນເພື່ອສະແດງຊື່ຢູ່ໃນໃບ print">
+                            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider">ພາກ/ສ່ວນ (ສຳລັບ Print)</label>
+                            <select name="department_id" class="ui-input bg-white focus:ring-rose-500 focus:border-rose-500 shadow-sm transition-all text-sm h-10 cursor-pointer">
+                                <option value="">-- ອັດຕະໂນມັດ --</option>
+                                @foreach($departments as $dept)
+                                    @if (!str_contains($dept->department_name, 'ປະລິນ') && !str_contains($dept->department_name, 'ປະລິມ'))
+                                        <option value="{{ $dept->id }}" {{ $selectedDeptId == $dept->id ? 'selected' : '' }}>
+                                            {{ $dept->displayName() }}
+                                            {{ $dept->budget_amount > 0 ? '— ' . number_format($dept->budget_amount, 0) . ' ₭' : '' }}
+                                        </option>
+                                    @endif
+                                @endforeach
+                            </select>
+                        </div>
+
                         <button type="submit" class="ui-btn bg-rose-500 hover:bg-rose-600 text-white font-bold h-10 px-5 flex items-center justify-center gap-2 text-sm shadow-lg shadow-rose-500/25 transition-all duration-150 shrink-0">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -280,6 +296,7 @@
                 'year' => $year,
                 'selectedYear' => $selectedYear,
                 'selectedAccountId' => $selectedAccountId,
+                'selectedDeptId' => $selectedDeptId,
             ])
         </div>
     @endif
