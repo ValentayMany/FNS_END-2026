@@ -356,69 +356,16 @@
     </div>
 
     {{-- 🖨️ Printable Clean A4 Layout --}}
-    <div class="print-only">
-        <div style="text-align: center; margin-bottom: 20px;">
-            <h1 style="font-size: 18px; font-weight: bold; margin-top: 10px;">ລາຍງານ ປະຫວັດການຮັບເງິນ</h1>
-            <p style="font-size: 12px; color: #333; margin-top: 5px;">
-                ປະຈຳ: 
-                @if($type === 'daily') ວັນທີ {{ date('d/m/Y', strtotime($date)) }}
-                @elseif($type === 'monthly') ເດືອນ {{ date('m/Y', strtotime($month.'-01')) }}
-                @else ປີ {{ $year }} @endif
-            </p>
-        </div>
-
-        <table class="p-tbl">
-            <thead>
-                <tr>
-                    <th style="width: 40px; text-align: center;">ລຳດັບ</th>
-                    <th style="width: 80px;">ວັນທີ</th>
-                    <th style="width: 100px;">ເລກທີໃບບິນ</th>
-                    <th>ປະເພດລາຍຮັບ</th>
-                    <th style="width: 90px;">ພາກສ່ວນ</th>
-                    <th style="width: 80px;">ວິທີຮັບ</th>
-                    <th style="width: 120px; text-align: right;">ຈຳນວນເງິນ (ກີບ)</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse($transactions as $index => $txn)
-                    <tr>
-                        <td style="text-align: center;">{{ $index + 1 }}</td>
-                        <td>{{ date('d/m/Y', strtotime($txn->transaction_date)) }}</td>
-                        <td>{{ $txn->payment_code ?? '-' }}</td>
-                        <td>{{ $txn->category }}</td>
-                        <td>{{ $txn->department?->department_name ?? 'ພາກສ່ວນກາງ' }}</td>
-                        <td>{{ $txn->payment_method === 'cash' ? 'ເງິນສົດ' : 'ເງິນໂອນ' }}</td>
-                        <td style="text-align: right;">{{ number_format($txn->amount, 2) }}</td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="7" style="text-align: center;">ບໍ່ມີຂໍ້ມູນ</td>
-                    </tr>
-                @endforelse
-            </tbody>
-            <tfoot>
-                <tr>
-                    <td colspan="6" style="text-align: right; font-weight: bold;">ຍອດລວມທັງໝົດ:</td>
-                    <td style="text-align: right; font-weight: bold;">{{ number_format($summaryTotal, 2) }} ₭</td>
-                </tr>
-            </tfoot>
-        </table>
-
-        <div style="margin-top: 30px; display: flex; justify-content: space-between; text-align: center;">
-            <div style="width: 200px;">
-                <p style="font-weight: bold;">ຜູ້ລາຍງານ</p>
-                <br><br><br>
-                <p>.......................................</p>
-            </div>
-            <div style="width: 200px;">
-                <p style="font-weight: bold;">ວັນທີ {{ date('d/m/Y') }}</p>
-                <p style="font-weight: bold;">หัวหน้าภาควิชา / การเงิน</p>
-                <br><br><br>
-                <p>.......................................</p>
-            </div>
-        </div>
+    <div class="print-only" style="font-family: 'Noto Sans Lao', 'Phetsarath OT', sans-serif; color: #000;">
+        @include('reports.partials.revenue-print', [
+            'incomeTransactions' => $transactions,
+            'type' => $type,
+            'date' => $date,
+            'month' => $month,
+            'year' => $year,
+        ])
     </div>
-
+    
     {{-- Single Delete Confirmation Modal --}}
     @if(auth()->user()->isRevenueOfficer() || auth()->user()->isAdmin())
         <div id="deleteModal" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; z-index:99999;" aria-modal="true" role="dialog">

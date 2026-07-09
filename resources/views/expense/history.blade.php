@@ -322,13 +322,10 @@
         </div>
 
         <div style="display: flex; justify-content: space-between; align-items: flex-start; font-size: 11px; color: #000; margin-bottom: 15px; line-height: 1.6;">
-            <div style="width: 35%;">
+            <div style="width: 50%;">
                 <p style="margin: 0;">ລະຫັດລາຍຈ່າຍ: <b>{{ number_format($summaryCount, 0) }}</b></p>
             </div>
-            <div style="width: 30%; text-align: center; font-weight: bold; padding-top: 5px;">
-                ພາກວິຊາວິທະຍາສາດຄອມພິວເຕີ
-            </div>
-            <div style="width: 35%; text-align: right;">
+            <div style="width: 50%; text-align: right;">
                 <p style="margin: 0;">ຍອດລວມລາຍຈ່າຍ: <b>{{ number_format($summaryTotal, 0, ',', '.') }}</b></p>
             </div>
         </div>

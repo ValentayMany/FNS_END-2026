@@ -11,8 +11,8 @@
         ? substr($rawCode, 0, 2).'.'.substr($rawCode, 2, 2).'.'.substr($rawCode, 4, 2).'.'.substr($rawCode, 6, 2)
         : $rawCode;
 
-    // ---- Department: ໃຊ້ $selectedDeptId ທີ່ controller ສ້ົ່ງມາ (auto-default ຫາ dept ທຳອິດ) ----
-    $deptObj = $selectedDeptId ? \App\Models\Department::find($selectedDeptId) : null;
+    // ---- Department: ໃຊ້ຂອງ report ກ່อน ຖ້າບໍ່ມີຈຶ່ງໃຊ້ $selectedDeptId ----
+    $deptObj = ($report['department'] ?? null) ?: ($selectedDeptId ? \App\Models\Department::find($selectedDeptId) : null);
     $deptName  = $deptObj ? $deptObj->displayName() : '—';
     $deptCode  = $deptObj?->dept_code ?? '';
     $deptBudget = $deptObj?->budget_amount ?? null;

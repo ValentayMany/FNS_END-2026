@@ -148,6 +148,7 @@ class ReportController extends Controller
         $ledger = $ledger->sortBy('date')->values();
 
         $selectedAccountId = $accountId ? (int) $accountId : null;
+        $selectedDeptId = $deptId ? (int) $deptId : null;
         $budgetReport = null;
         if ($txnType === 'expense' || $userRole === 'accountant') {
             $budgetReport = app(BudgetExpenseReportBuilder::class)->build(
@@ -156,7 +157,7 @@ class ReportController extends Controller
                 $month,
                 $year,
                 $selectedAccountId,
-                $deptId ? (int) $deptId : null,
+                $selectedDeptId,
                 $expenseTransactions,
             );
         }
@@ -167,13 +168,13 @@ class ReportController extends Controller
             ->get();
 
         $departments = ($txnType === 'income' || $userRole === 'revenue_officer')
-            ? \App\Models\Department::whereIn('department_name', ['ປທ', 'ປຕ', 'ປອ'])->get()
+            ? \App\Models\Department::whereIn('department_name', ['ປະລິນຍາໂທ', 'ປະລິນຍາຕີ', 'ປະລິນຍาເອກ'])->get()
             : \App\Models\Department::orderedForSelect();
 
         return view('reports.report', compact(
             'incomeTransactions', 'expenseTransactions', 'requests', 'ledger',
             'totalIncome', 'totalExpense', 'type', 'date', 'month', 'year', 'txnType',
-            'budgetReport', 'selectedAccountId', 'expenseAccounts', 'departments',
+            'budgetReport', 'selectedAccountId', 'selectedDeptId', 'expenseAccounts', 'departments',
         ));
     }
 

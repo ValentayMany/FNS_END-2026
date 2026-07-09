@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\ChartOfAccount;
 use App\Models\Department;
 use App\Models\Transaction;
+use App\Models\BudgetPlan;
 use App\Services\BudgetExpenseReportBuilder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class BudgetExpenseReportController extends Controller
 {
@@ -27,16 +29,51 @@ class BudgetExpenseReportController extends Controller
             $selectedYear = $year;
         }
 
-        $lineItems = ChartOfAccount::whereHas('transactions', function ($q) use ($selectedYear) {
-            $q->where('type', 'expense');
-            if ($selectedYear) {
-                $q->whereYear('transaction_date', $selectedYear);
-            }
-        })
-            ->orderBy('account_code')
-            ->get();
+        // 1. ดึงแผนงบประมาณ (ของเราก่อน หรือของอีกทีม)
+        $plan = BudgetPlan::where('fiscal_year', $selectedYear)->first();
+        if (!$plan) {
+            $plan = DB::table('planning_years')->where('year', (int) $selectedYear)->first();
+        }
 
-        $plan   = null;
+        // 2. ดึงหมวดบัญชีที่มีการจัดสรรงบประมาณไว้ หรือเคยทำธุรกรรม
+        if ($plan && $plan instanceof BudgetPlan) {
+            $lineItems = ChartOfAccount::whereHas('budgetLineItems', function ($q) use ($plan) {
+                $q->where('budget_plan_id', $plan->id);
+            })
+                ->orderBy('account_code')
+                ->get();
+        } elseif ($plan) { // Fallback planning_year ของอีกทีม
+            $planningYearId = $plan->id;
+            $lineItems = ChartOfAccount::where(function ($query) use ($planningYearId) {
+                $query->whereHas('transactions', function ($q) {
+                    $q->where('type', 'expense');
+                })
+                ->orWhereIn('id', function ($q) use ($planningYearId) {
+                    $q->select('chart_of_account_id')
+                        ->from('expense_plans')
+                        ->where('planning_year_id', $planningYearId);
+                })
+                ->orWhereIn('id', function ($q) use ($planningYearId) {
+                    $q->select('chart_of_account_id')
+                        ->from('salary_entries')
+                        ->join('salary_plans', 'salary_plans.id', '=', 'salary_entries.plan_id')
+                        ->where('salary_plans.planning_year_id', $planningYearId);
+                });
+            })
+                ->orderBy('account_code')
+                ->get();
+        } else {
+            // Fallback เผื่อไม่มีแผนเลย
+            $lineItems = ChartOfAccount::whereHas('transactions', function ($q) use ($selectedYear) {
+                $q->where('type', 'expense');
+                if ($selectedYear) {
+                    $q->whereYear('transaction_date', $selectedYear);
+                }
+            })
+                ->orderBy('account_code')
+                ->get();
+        }
+
         $report = null;
 
         if ($selectedYear && $selectedAccountId) {

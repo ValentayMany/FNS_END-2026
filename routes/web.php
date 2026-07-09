@@ -139,6 +139,10 @@ Route::middleware(['auth', 'role:admin,accountant,head_of_finance,deputy_head_of
     ->group(function () {
         Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
         Route::get('/reports/export', [ReportController::class, 'export'])->name('reports.export');
+    });
+
+Route::middleware(['auth', 'role:head_of_finance'])
+    ->group(function () {
         Route::get('/reports/budget-expense', [\App\Http\Controllers\BudgetExpenseReportController::class, 'index'])->name('reports.budget-expense');
     });
 

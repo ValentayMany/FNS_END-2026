@@ -125,9 +125,15 @@
                             <select name="account_id" class="ui-input bg-white focus:ring-rose-500 focus:border-rose-500 shadow-sm transition-all text-sm h-10 cursor-pointer">
                                 <option value="">-- ເລືອກໝວດບັນຊີ --</option>
                                 @foreach($lineItems as $li)
-                                    <option value="{{ $li->account_id }}" {{ $selectedAccountId == $li->account_id ? 'selected' : '' }}>
-                                        {{ $li->chartOfAccount?->account_code }} — {{ $li->chartOfAccount?->account_name }}
-                                    </option>
+                                    @php
+                                        $account = $li instanceof \App\Models\ChartOfAccount ? $li : $li->chartOfAccount;
+                                        $valId = $li instanceof \App\Models\ChartOfAccount ? $li->id : $li->account_id;
+                                    @endphp
+                                    @if($account)
+                                        <option value="{{ $valId }}" {{ $selectedAccountId == $valId ? 'selected' : '' }}>
+                                            {{ $account->account_code }} — {{ $account->account_name }}
+                                        </option>
+                                    @endif
                                 @endforeach
                             </select>
                         </div>

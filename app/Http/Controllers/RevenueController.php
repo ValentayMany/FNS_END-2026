@@ -22,7 +22,10 @@ class RevenueController extends Controller
         $startDate = $request->input('start_date', now()->startOfMonth()->toDateString());
         $endDate = $request->input('end_date', now()->toDateString());
 
-        $departments = Department::where('department_type', 'income')->orderBy('id')->get();
+        $departments = Department::where('department_type', 'income')
+            ->orWhere('department_name', 'like', '%ປະລິນ%')
+            ->orderBy('id')
+            ->get();
         $deptIds = $departments->pluck('id')->toArray();
 
         // 1. Selected Period Stats
@@ -138,7 +141,10 @@ class RevenueController extends Controller
             ->latest('id')
             ->paginate(15);
 
-        $departments = Department::where('department_type', 'income')->orderBy('id')->get();
+        $departments = Department::where('department_type', 'income')
+            ->orWhere('department_name', 'like', '%ປະລິນ%')
+            ->orderBy('id')
+            ->get();
         $deptIds = $departments->pluck('id')->toArray();
         $categories = $this->incomeCategories;
 
@@ -233,7 +239,10 @@ class RevenueController extends Controller
     {
         abort_if($transaction->type !== 'income', 403);
 
-        $departments = Department::where('department_type', 'income')->orderBy('id')->get();
+        $departments = Department::where('department_type', 'income')
+            ->orWhere('department_name', 'like', '%ປະລິນ%')
+            ->orderBy('id')
+            ->get();
         $categories = $this->incomeCategories;
 
         return view('revenue.edit', compact('transaction', 'departments', 'categories'));

@@ -75,32 +75,59 @@ class DepartmentSetupController extends Controller
      */
     public function destroy(Department $department)
     {
-        $blockers = [];
+        // 1. ຫາພາກສ່ວນກາງເພື່ອເປັນບ່ອນຮອງຮັບຂໍ້ມູນ (Fallback Department)
+        $fallbackDept = Department::where('department_type', 'central')
+            ->orWhere('department_name', 'ພາກສ່ວນກາງ')
+            ->orWhere('department_name', 'ສ່ວນກາງ')
+            ->first();
 
+        // ຖ້າບໍ່ມີພາກສ່ວນກາງ ໃຫ້ໃຊ້ພາກສ່ວນທຳອິດທີ່ບໍ່ແມ່ນຕົວທີ່ຈະລຶບ
+        if (!$fallbackDept) {
+            $fallbackDept = Department::where('id', '!=', $department->id)->first();
+        }
+
+        // ຖ້າບໍ່ມີພາກສ່ວນອື່ນເລີຍ ຫຼື ພາກສ່ວນທີ່ຈະລຶບແມ່ນພາກສ່ວນກາງຫຼັກ ບໍ່ໃຫ້ລຶບ
+        if (!$fallbackDept || $department->id === $fallbackDept->id) {
+            return back()->with('error', 'ບໍ່ສາມາດລຶບພາກສ່ວນກາງຫຼັກໄດ້ — ຕ້ອງມີຢ່າງໜ້ອຍໜຶ່ງພາກສ່ວນໄວ້ຮອງຮັບຂໍ້ມູນໃນລະບົບ');
+        }
+
+        // 2. ຍ້າຍຂໍ້ມູນທີ່ກ່ຽວຂ້ອງທັງໝົດໄປຫາພາກສ່ວນກາງ (Fallback)
         $userCount = $department->users()->count();
         if ($userCount > 0) {
-            $blockers[] = "ຜູ້ໃຊ້ງານ {$userCount} ຄົນ";
+            $department->users()->update(['department_id' => $fallbackDept->id]);
         }
 
         $requestCount = $department->advanceRequests()->count();
         if ($requestCount > 0) {
-            $blockers[] = "ຄຳຂໍເບີກຈ່າຍ {$requestCount} ລາຍການ";
+            $department->advanceRequests()->update(['department_id' => $fallbackDept->id]);
         }
 
         $txnCount = $department->transactions()->count();
         if ($txnCount > 0) {
-            $blockers[] = "ລາຍການລາຍຈ່າຍ/ລາຍຮັບ {$txnCount} ລາຍການ";
+            $department->transactions()->update(['department_id' => $fallbackDept->id]);
         }
 
-        if (!empty($blockers)) {
-            return back()->with('error',
-                'ບໍ່ສາມາດລຶບ "' . $department->displayName() . '" ໄດ້ — ' .
-                'ຍັງມີຂໍ້ມູນທີ່ອ້າງອີງຢູ່: ' . implode(', ', $blockers)
-            );
-        }
-
+        // 3. ລຶບພາກສ່ວນ
+        $name = $department->displayName();
         $department->delete();
 
-        return back()->with('success', 'ລຶບ "' . $department->displayName() . '" ສຳເລັດ!');
+        // ສ້າງຂໍ້ຄວາມແຈ້ງເຕືອນໃຫ້ລະອຽດ
+        $msg = 'ລຶບ "' . $name . '" ສຳເລັດ!';
+        $transferred = [];
+        if ($userCount > 0) {
+            $transferred[] = "ຜູ້ໃຊ້ງານ {$userCount} ຄົນ";
+        }
+        if ($requestCount > 0) {
+            $transferred[] = "ຄຳຂໍເບີກ {$requestCount} ລາຍການ";
+        }
+        if ($txnCount > 0) {
+            $transferred[] = "ລາຍການລາຍຮັບ-ລາຍຈ່າຍ {$txnCount} ລາຍການ";
+        }
+
+        if (!empty($transferred)) {
+            $msg .= ' (ໄດ້ຍ້າຍ ' . implode(', ', $transferred) . ' ໄປຫາ "' . $fallbackDept->displayName() . '" ແລ້ວ)';
+        }
+
+        return back()->with('success', $msg);
     }
 }

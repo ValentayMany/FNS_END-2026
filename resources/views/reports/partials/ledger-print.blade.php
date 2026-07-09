@@ -1,7 +1,7 @@
 @php
     $deptId = request('department_id');
     $deptObj = $deptId ? \App\Models\Department::find($deptId) : null;
-    $deptName = $deptObj ? $deptObj->displayName() : 'ພາກວິຊາວິທະຍາສາດຄອມພິວເຕີ';
+    $deptName = $deptObj ? $deptObj->displayName() : (auth()->user()->department?->displayName() ?? 'ພາກສ່ວນກາງ');
     $sigDate = $type === 'daily' ? \Carbon\Carbon::parse($date)->format('d-m-Y') : now()->format('d-m-Y');
 @endphp
 

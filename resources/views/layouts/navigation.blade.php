@@ -74,10 +74,6 @@
                         <x-slot name="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6a7.5 7.5 0 107.5 7.5h-7.5V6zM13.5 10.5H21A7.5 7.5 0 0013.5 3v7.5z" /></svg></x-slot>
                         Dashboard
                     </x-sidebar-link>
-                    <x-sidebar-link :href="route('reports.budget-expense')" :active="request()->routeIs('reports.budget-expense')" color="rose">
-                        <x-slot name="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v4.125c0 .621-.504 1.125-1.125 1.125h-2.25A1.125 1.125 0 013 17.25v-4.125zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v8.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125v-8.25zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v12.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" /></svg></x-slot>
-                        ລາຍຈ່າຍງົບປະມານ
-                    </x-sidebar-link>
                 @endif
 
                 @if($role === 'cashier')
@@ -85,7 +81,7 @@
                         <x-slot name="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z" /></svg></x-slot>
                         จ่ายเງິນ
                     </x-sidebar-link>
-                    <x-sidebar-link :href="route('reports.index')" :active="request()->routeIs('reports.*') && !request()->routeIs('reports.budget_expense')">
+                    <x-sidebar-link :href="route('reports.index')" :active="request()->routeIs('reports.*') && !request()->routeIs('reports.budget-expense')">
                         <x-slot name="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6a7.5 7.5 0 107.5 7.5h-7.5V6zM13.5 10.5H21A7.5 7.5 0 0013.5 3v7.5z" /></svg></x-slot>
                         ລາຍງານ
                     </x-sidebar-link>
@@ -104,7 +100,7 @@
                         <x-slot name="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg></x-slot>
                         ປະຫວັດການຮັບເງິນ
                     </x-sidebar-link>
-                    <x-sidebar-link :href="route('reports.index')" :active="request()->routeIs('reports.*') && !request()->routeIs('reports.budget_expense')">
+                    <x-sidebar-link :href="route('reports.index')" :active="request()->routeIs('reports.*') && !request()->routeIs('reports.budget-expense')">
                         <x-slot name="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6a7.5 7.5 0 107.5 7.5h-7.5V6zM13.5 10.5H21A7.5 7.5 0 0013.5 3v7.5z" /></svg></x-slot>
                         ລາຍງານ
                     </x-sidebar-link>
@@ -119,7 +115,7 @@
                         <x-slot name="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 3.055A9.003 9.003 0 1020.945 13H11V3.055z" /><path stroke-linecap="round" stroke-linejoin="round" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" /></svg></x-slot>
                         Dashboard ລາຍຮັບ
                     </x-sidebar-link>
-                    <x-sidebar-link :href="route('reports.index')" :active="request()->routeIs('reports.*') && !request()->routeIs('reports.budget_expense')">
+                    <x-sidebar-link :href="route('reports.index')" :active="request()->routeIs('reports.*') && !request()->routeIs('reports.budget-expense')">
                         <x-slot name="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6a7.5 7.5 0 107.5 7.5h-7.5V6zM13.5 10.5H21A7.5 7.5 0 0013.5 3v7.5z" /></svg></x-slot>
                         ລາຍງານ
                     </x-sidebar-link>
@@ -134,7 +130,7 @@
                         <x-slot name="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 3.055A9.003 9.003 0 1020.945 13H11V3.055z" /><path stroke-linecap="round" stroke-linejoin="round" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" /></svg></x-slot>
                         Dashboard ລາຍຮັບ
                     </x-sidebar-link>
-                    <x-sidebar-link :href="route('reports.index')" :active="request()->routeIs('reports.*') && !request()->routeIs('reports.budget_expense')">
+                    <x-sidebar-link :href="route('reports.index')" :active="request()->routeIs('reports.*') && !request()->routeIs('reports.budget-expense')">
                         <x-slot name="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6a7.5 7.5 0 107.5 7.5h-7.5V6zM13.5 10.5H21A7.5 7.5 0 0013.5 3v7.5z" /></svg></x-slot>
                         ລາຍງານ
                     </x-sidebar-link>
@@ -148,9 +144,13 @@
                 @endif
 
                 @if($role === 'head_of_finance')
-                    <x-sidebar-link :href="route('reports.index')" :active="request()->routeIs('reports.*') && !request()->routeIs('reports.budget_expense')">
+                    <x-sidebar-link :href="route('reports.index')" :active="request()->routeIs('reports.*') && !request()->routeIs('reports.budget-expense')">
                         <x-slot name="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6a7.5 7.5 0 107.5 7.5h-7.5V6zM13.5 10.5H21A7.5 7.5 0 0013.5 3v7.5z" /></svg></x-slot>
                         ລາຍງານ
+                    </x-sidebar-link>
+                    <x-sidebar-link :href="route('reports.budget-expense')" :active="request()->routeIs('reports.budget-expense')" color="rose">
+                        <x-slot name="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v4.125c0 .621-.504 1.125-1.125 1.125h-2.25A1.125 1.125 0 013 17.25v-4.125zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v8.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125v-8.25zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v12.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" /></svg></x-slot>
+                        ລາຍຈ່າຍງົບປະມານ
                     </x-sidebar-link>
                     <x-sidebar-link :href="route('department-setup.index')" :active="request()->is('department-setup*')" color="amber">
                         <x-slot name="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 010 3.75H5.625a1.875 1.875 0 010-3.75z"/></svg></x-slot>
@@ -172,7 +172,7 @@
                         <x-slot name="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 3.055A9.003 9.003 0 1020.945 13H11V3.055z" /><path stroke-linecap="round" stroke-linejoin="round" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" /></svg></x-slot>
                         Dashboard ລາຍຮັບ
                     </x-sidebar-link>
-                    <x-sidebar-link :href="route('reports.index')" :active="request()->routeIs('reports.*') && !request()->routeIs('reports.budget_expense')">
+                    <x-sidebar-link :href="route('reports.index')" :active="request()->routeIs('reports.*') && !request()->routeIs('reports.budget-expense')">
                         <x-slot name="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6a7.5 7.5 0 107.5 7.5h-7.5V6zM13.5 10.5H21A7.5 7.5 0 0013.5 3v7.5z" /></svg></x-slot>
                         ລາຍງານ
                     </x-sidebar-link>

@@ -25,7 +25,7 @@
             <div class="fns-card fns-animate">
                 <div class="fns-card-header">
                     <div class="flex items-center gap-3">
-                        <div class="fns-card-header-icon">
+                        <div class="fns-card-header-icon" style="background: #fef2f2; color: #dc2626;">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                         </div>
                         <div>
@@ -33,7 +33,7 @@
                             <p class="fns-card-subtitle">ກວດສອບ ແລະ ອະນຸມັດຄຳຂໍຕາມລຳດັບ</p>
                         </div>
                     </div>
-                    <span class="fns-badge-count">
+                    <span class="fns-badge-count" style="background: #fef2f2; color: #dc2626;">
                         {{ $requests instanceof \Illuminate\Pagination\LengthAwarePaginator ? $requests->total() : count($requests) }} ລາຍການ
                     </span>
                 </div>
