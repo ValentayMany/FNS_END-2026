@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 namespace App\Http\Controllers;
 
@@ -10,13 +10,13 @@ use Illuminate\Validation\Rule;
 
 class ExpenseController extends Controller
 {
-    private const ADVANCE_PAYMENT_MSG = 'ບໍ່ສາມາດແກ້ໄຂລາຍຈ່າຍເບີກລ່ວງໜ້າໄດ້';
+    private const ADVANCE_PAYMENT_MSG = 'เบเปเปเบชเบฒเบกเบฒเบ”เปเบเปเปเบเบฅเบฒเบเบเปเบฒเบเป€เบเบตเบเบฅเปเบงเบเปเปเบฒเปเบ”เป';
 
     private array $expenseCategories = [
-        'ສົ່ງເສີມຊີວາການ',
-        'ງົບປະມານສົ່ງເສີມວິຊາການ',
-        'ຮັບໃຊ້ການທົດລອງ',
-        'ການເຄື່ອນໄຫວນອກຫຼັກສູດ',
+        'เบชเบปเปเบเป€เบชเบตเบกเบเบตเบงเบฒเบเบฒเบ',
+        'เบเบปเบเบเบฐเบกเบฒเบเบชเบปเปเบเป€เบชเบตเบกเบงเบดเบเบฒเบเบฒเบ',
+        'เบฎเบฑเบเปเบเปเบเบฒเบเบ—เบปเบ”เบฅเบญเบ',
+        'เบเบฒเบเป€เบเบทเปเบญเบเปเบซเบงเบเบญเบเบซเบผเบฑเบเบชเบนเบ”',
     ];
 
     public function index()
@@ -39,10 +39,13 @@ class ExpenseController extends Controller
     public function getNextCode(Request $request)
     {
         $year = $request->query('year', date('Y'));
+        
         if (!preg_match('/^\d{4}$/', $year)) {
             return response()->json(['error' => 'Invalid year format'], 400);
         }
+
         $nextCode = $this->calculateNextPaymentCode((int)$year);
+
         return response()->json(['payment_code' => $nextCode]);
     }
 
@@ -76,11 +79,11 @@ class ExpenseController extends Controller
             'channel_type'     => 'nullable|string|max:100',
         ]);
 
-        $expenseType = $request->input('expense_type', 'ງົບປະມານວິຊາການ');
-        $channelType = $request->input('channel_type', 'ເງິນບໍລິຫານທົ່ວໄປ');
+        $expenseType = $request->input('expense_type', 'เบเบปเบเบเบฐเบกเบฒเบเบงเบดเบเบฒเบเบฒเบ');
+        $channelType = $request->input('channel_type', 'เป€เบเบดเบเบเปเบฅเบดเบซเบฒเบเบ—เบปเปเบงเปเบ');
         $userDesc = $request->input('description');
 
-        $metadata = "[ປະເພດລາຍຈ່າຍ: {$expenseType}] [ຊ່ອງ ປຕ/ປທ: {$channelType}]";
+        $metadata = "[เบเบฐเป€เบเบ”เบฅเบฒเบเบเปเบฒเบ: {$expenseType}] [เบเปเบญเบ เบเบ•/เบเบ—: {$channelType}]";
         $finalDescription = $userDesc ? "{$metadata} {$userDesc}" : $metadata;
 
         Transaction::create([
@@ -89,7 +92,7 @@ class ExpenseController extends Controller
             'type'        => 'expense',
         ]);
 
-        return back()->with('success', 'ບັນທຶກລາຍຈ່າຍສຳເລັດ');
+        return back()->with('success', 'เบเบฑเบเบ—เบถเบเบฅเบฒเบเบเปเบฒเบเบชเบณเป€เบฅเบฑเบ”');
     }
 
     public function edit(Transaction $transaction)
@@ -99,15 +102,16 @@ class ExpenseController extends Controller
         $departments = Department::orderedForSelect();
         $accounts = ChartOfAccount::orderBy('account_code')->get();
 
+        // Parse metadata from description
         $desc = $transaction->getRawOriginal('description') ?? '';
-        $expenseType = 'ງົບປະມານວິຊາການ';
-        $channelType = 'ເງິນບໍລິຫານທົ່ວໄປ';
-
-        if (preg_match('/\[ປະເພດລາຍຈ່າຍ:\s*(.*?)\]/', $desc, $matches)) {
+        $expenseType = 'เบเบปเบเบเบฐเบกเบฒเบเบงเบดเบเบฒเบเบฒเบ';
+        $channelType = 'เป€เบเบดเบเบเปเบฅเบดเบซเบฒเบเบ—เบปเปเบงเปเบ';
+        
+        if (preg_match('/\[เบเบฐเป€เบเบ”เบฅเบฒเบเบเปเบฒเบ:\s*(.*?)\]/', $desc, $matches)) {
             $expenseType = $matches[1];
             $desc = str_replace($matches[0], '', $desc);
         }
-        if (preg_match('/\[ຊ່ອງ ປຕ\/ປທ:\s*(.*?)\]/', $desc, $matches)) {
+        if (preg_match('/\[เบเปเบญเบ เบเบ•\/เบเบ—:\s*(.*?)\]/', $desc, $matches)) {
             $channelType = $matches[1];
             $desc = str_replace($matches[0], '', $desc);
         }
@@ -133,11 +137,11 @@ class ExpenseController extends Controller
             'channel_type'     => 'nullable|string|max:100',
         ]);
 
-        $expenseType = $request->input('expense_type', 'ງົບປະມານວິຊາການ');
-        $channelType = $request->input('channel_type', 'ເງິນບໍລິຫານທົ່ວໄປ');
+        $expenseType = $request->input('expense_type', 'เบเบปเบเบเบฐเบกเบฒเบเบงเบดเบเบฒเบเบฒเบ');
+        $channelType = $request->input('channel_type', 'เป€เบเบดเบเบเปเบฅเบดเบซเบฒเบเบ—เบปเปเบงเปเบ');
         $userDesc = $request->input('description');
 
-        $metadata = "[ປະເພດລາຍຈ່າຍ: {$expenseType}] [ຊ່ອງ ປຕ/ປທ: {$channelType}]";
+        $metadata = "[เบเบฐเป€เบเบ”เบฅเบฒเบเบเปเบฒเบ: {$expenseType}] [เบเปเบญเบ เบเบ•/เบเบ—: {$channelType}]";
         $finalDescription = $userDesc ? "{$metadata} {$userDesc}" : $metadata;
 
         $transaction->update([
@@ -145,14 +149,16 @@ class ExpenseController extends Controller
             'description' => $finalDescription,
         ]);
 
-        return redirect()->route('expense.index')->with('success', 'ແກ້ໄຂລາຍຈ່າຍສຳເລັດ');
+        return redirect()->route('expense.index')->with('success', 'เปเบเปเปเบเบฅเบฒเบเบเปเบฒเบเบชเบณเป€เบฅเบฑเบ”');
     }
 
     public function destroy(Transaction $transaction)
     {
         $this->ensureEditableExpense($transaction);
+
         $transaction->delete();
-        return back()->with('success', 'ລຶບລາຍຈ່າຍສຳເລັດ');
+
+        return back()->with('success', 'เบฅเบถเบเบฅเบฒเบเบเปเบฒเบเบชเบณเป€เบฅเบฑเบ”');
     }
 
     public function destroyBatch(Request $request)
@@ -170,32 +176,32 @@ class ExpenseController extends Controller
                 $count++;
             }
 
-            return back()->with('success', 'ລຶບລາຍການທີ່ເລືອກສຳເລັດແລ້ວ (' . $count . ' ລາຍການ)');
+            return back()->with('success', 'เบฅเบถเบเบฅเบฒเบเบเบฒเบเบ—เบตเปเป€เบฅเบทเบญเบเบชเบณเป€เบฅเบฑเบ”เปเบฅเปเบง (' . $count . ' เบฅเบฒเบเบเบฒเบ)');
         }
-        return back()->with('error', 'ກະລຸນາເລືອກລາຍການທີ່ຕ້ອງການລຶບ');
+        return back()->with('error', 'เบเบฐเบฅเบธเบเบฒเป€เบฅเบทเบญเบเบฅเบฒเบเบเบฒเบเบ—เบตเปเบ•เปเบญเบเบเบฒเบเบฅเบถเบ');
     }
 
     public function itemSuggestions(Request $request)
     {
         $q = $request->query('q', '');
-
+        
         $query = Transaction::where('type', 'expense')
             ->whereNotNull('item_name')
             ->where('item_name', '!=', '');
-
+            
         if ($q !== '') {
             $query->where('item_name', 'like', "%{$q}%");
         }
-
+        
         $suggestions = $query->select('item_name')
             ->selectRaw('COUNT(*) as count')
             ->groupBy('item_name')
             ->orderBy('count', 'desc')
             ->limit(10)
             ->pluck('item_name');
-
+            
         $defaults = ['Cash', 'Fuel', 'Office Supplies', 'Electricity', 'Water Bill'];
-
+        
         $result = $suggestions->toArray();
         if (empty($q)) {
             $result = array_values(array_unique(array_merge($result, $defaults)));
@@ -205,7 +211,7 @@ class ExpenseController extends Controller
             });
             $result = array_values(array_unique(array_merge($result, $matchedDefaults)));
         }
-
+        
         return response()->json(array_slice($result, 0, 10));
     }
 
@@ -218,38 +224,51 @@ class ExpenseController extends Controller
     public function storeBatch(Request $request)
     {
         $request->validate([
-            'transactions'                    => 'required|array|min:1',
-            'transactions.*.transaction_date' => 'required|date',
-            'transactions.*.category'         => ['required', Rule::in($this->expenseCategories)],
-            'transactions.*.item_name'        => 'required|string|max:255',
-            'transactions.*.amount'           => 'required|numeric|min:1',
-            'transactions.*.department_id'    => 'required|exists:departments,id',
-            'transactions.*.account_id'       => 'required|exists:chart_of_accounts,id',
-            'transactions.*.expense_type'     => 'nullable|string|max:100',
-            'transactions.*.channel_type'     => 'nullable|string|max:100',
-            'transactions.*.description'      => 'nullable|string|max:500',
-        ]);
-
-        $transactionIds = [];
+            'transact        $transactionIds = [];
 
         \DB::transaction(function () use ($request, &$transactionIds) {
-            $firstTxn    = $request->input('transactions')[0];
-            $year        = (int) date('Y', strtotime($firstTxn['transaction_date']));
+            $firstTxn = $request->input('transactions')[0];
+            $year = (int) date('Y', strtotime($firstTxn['transaction_date']));
             $paymentCode = $this->calculateNextPaymentCode($year);
 
-            // ລວມ amount ຕາມ dept ກ່ອນ
+            // เธเปเบญเบเบเบฑเบเบ—เบถเบ เบเบฑเบ”เบเบฅเบธเปเบกเบขเบญเบ”เป€เบเบดเบเบ•เบฒเบกเบเบฒเบ
             $deptTotals = [];
             foreach ($request->input('transactions') as $txnData) {
-                $deptId = (int) $txnData['department_id'];
-                $deptTotals[$deptId] = ($deptTotals[$deptId] ?? 0) + (float) $txnData['amount'];
+                $deptId = $txnData['department_id'];
+                $amount = (float) $txnData['amount'];
+                $deptTotals[$deptId] = ($deptTotals[$deptId] ?? 0) + $amount;
             }
 
             foreach ($request->input('transactions') as $txnData) {
-                $expenseType = $txnData['expense_type'] ?? 'ງົບປະມານວິຊາການ';
-                $channelType = $txnData['channel_type'] ?? 'ເງິນບໍລິຫານທົ່ວໄປ';
-                $userDesc    = $txnData['description'] ?? null;
+                $expenseType = $txnData['expense_type'] ?? 'เบเบปเบเบเบฐเบกเบฒเบเบงเบดเบเบฒเบเบฒเบ';
+                $channelType = $txnData['channel_type'] ?? 'เป€เบเบดเบเบเบญเบฅเบดเบซเบฒเบเบ—เบปเปเบงเปเบ';
+                $userDesc = $txnData['description'] ?? null;
 
-                $metadata         = "[ປະເພດລາຍຈ່າຍ: {$expenseType}] [ຊ່ອງ ປຕ/ປທ: {$channelType}]";
+                $metadata = "[เบเบฐเป€เบเบ”เบฅเบฒเบเบเปเบฒเบ: {$expenseType}] [เบเปเบญเบ เบเบ•/เบเบ—: {$channelType}]";
+                $finalDescription = $userDesc ? "{$metadata} {$userDesc}" : $metadata;
+
+                $txn = Transaction::create([
+                    'transaction_date' => $txnData['transaction_date'],
+                    'category'         => $txnData['category'],
+                    'payment_code'     => $paymentCode,
+                    'item_name'        => $txnData['item_name'],
+                    'amount'           => $txnData['amount'],
+                    'department_id'    => $txnData['department_id'],
+                    'account_id'       => $txnData['account_id'],
+                    'description'      => $finalDescription,
+                    'type'             => 'expense',
+                ]);
+
+                $transactionIds[] = $txn->id;
+            }
+
+            // เบซเบเบเบปเบเบเบฐเบกเบฒเบเบเบญเบเปเบ•เปเบฅเบฐเบเบฒเบ (budget_amount)
+            foreach ($deptTotals as $deptId => $totalAmt) {
+                Department::where('id', $deptId)
+                    ->where('budget_amount', '>', 0)
+                    ->decrement('budget_amount', $totalAmt);
+            }
+        });ปเบฒเบ: {$expenseType}] [เบเปเบญเบ เบเบ•/เบเบ—: {$channelType}]";
                 $finalDescription = $userDesc ? "{$metadata} {$userDesc}" : $metadata;
 
                 $txn = Transaction::create([
@@ -271,7 +290,7 @@ class ExpenseController extends Controller
         return response()->json([
             'success' => true,
             'ids'     => $transactionIds,
-            'message' => 'ບັນທຶກລາຍຈ່າຍສຳເລັດ',
+            'message' => 'เบเบฑเบเบ—เบถเบเบฅเบฒเบเบเปเบฒเบเบชเบณเป€เบฅเบฑเบ”',
         ]);
     }
 
@@ -293,6 +312,7 @@ class ExpenseController extends Controller
             abort(404, 'Transactions not found');
         }
 
+        // Group by both account and department to keep them logically separated per sheet
         $grouped = $transactions->groupBy(function ($txn) {
             return $txn->account_id . '_' . $txn->department_id;
         });
@@ -301,27 +321,32 @@ class ExpenseController extends Controller
         $builder = app(\App\Services\BudgetExpenseReportBuilder::class);
 
         foreach ($grouped as $key => $txns) {
-            $firstTxn     = $txns->first();
-            $accountId    = $firstTxn->account_id;
+            $firstTxn = $txns->first();
+            $accountId = $firstTxn->account_id;
             $departmentId = $firstTxn->department_id;
-            $year         = $firstTxn->transaction_date->format('Y');
-            $account      = ChartOfAccount::find($accountId);
+            $year = $firstTxn->transaction_date->format('Y');
+            $account = ChartOfAccount::find($accountId);
 
-            // ດຶງສະເພາະວັນທີທີ່ print (ບໍ່ລວມວັນອື່ນ)
-            $printDates = $txns
+            // Fetch ONLY transactions of the recorded date for this account and department
+            $txnDates = $transactions->where('account_id', $accountId)
+                ->where('department_id', $departmentId)
                 ->pluck('transaction_date')
-                ->map(fn($d) => $d->format('Y-m-d'))
+                ->map(fn($d) => \Carbon\Carbon::parse($d)->toDateString())
                 ->unique()
-                ->values()
-                ->toArray();
+                ->values();
 
             $allDeptTxns = Transaction::where('type', 'expense')
                 ->whereIn('account_id', ChartOfAccount::descendantIds((int) $accountId))
                 ->where('department_id', $departmentId)
-                ->whereIn(\DB::raw('DATE(transaction_date)'), $printDates)
+                ->where(function ($q) use ($txnDates) {
+                    foreach ($txnDates as $date) {
+                        $q->orWhereDate('transaction_date', $date);
+                    }
+                })
                 ->orderBy('transaction_date')
                 ->get();
 
+            // Build the single combined report to get budget & running balances
             $reportData = $builder->build(
                 'yearly',
                 '',
@@ -334,24 +359,27 @@ class ExpenseController extends Controller
 
             $budgetLabel = $builder->budgetTypeLabel($year, (int) $accountId);
 
-            $deptObj  = $firstTxn->department;
+            $deptObj = $firstTxn->department;
             $deptCode = $deptObj?->dept_code ?? '';
 
+            // Sheet 1: เบฎเปเบงเบ level (formatted code, with budget, no department name, shows budget type label)
             $sheet1Data = [
-                'account'      => $account,
-                'transactions' => $reportData['transactions'] ?? collect(),
-                'budget'       => $reportData['budget'] ?? 0.0,
-                'totalSpent'   => $reportData['totalSpent'] ?? 0.0,
-                'periodSpent'  => $reportData['periodSpent'] ?? 0.0,
-                'remaining'    => $reportData['remaining'] ?? 0.0,
-                'selectedYear' => $year,
-                'budget_label' => $budgetLabel,
-                'dept_code'    => $deptCode,
-                'department'   => $deptObj,
+                'account'         => $account,
+                'transactions'    => $reportData['transactions'] ?? collect(),
+                'budget'          => $reportData['budget'] ?? 0.0,
+                'totalSpent'      => $reportData['totalSpent'] ?? 0.0,
+                'periodSpent'     => $reportData['periodSpent'] ?? 0.0,
+                'remaining'       => $reportData['remaining'] ?? 0.0,
+                'selectedYear'    => $year,
+                'budget_label'    => $budgetLabel,
+                'dept_code'       => $deptCode,
+                'department'      => $deptObj,
             ];
 
-            $deptBudget    = (float) ($deptObj?->budget_amount ?? 0.0);
-            $deptSpent     = (float) $allDeptTxns->sum('amount');
+            // Sheet 2: Department/เบเบฒเบเบชเปเบงเบ level (raw code, with department budget, department name)
+            // Running balance starts at department's budget_amount and decreases for each transaction
+            $deptBudget = (float) ($deptObj?->budget_amount ?? 0.0);
+            $deptSpent  = (float) $allDeptTxns->sum('amount');
             $deptRemaining = $deptBudget - $deptSpent;
 
             $deptRunning = $deptBudget;
@@ -370,7 +398,7 @@ class ExpenseController extends Controller
                 'periodSpent'     => $deptSpent,
                 'remaining'       => $deptRemaining,
                 'selectedYear'    => $year,
-                'department_name' => $deptObj?->displayName() ?? ($firstTxn->department?->expenseSectionLabel() ?? 'ພາກສ່ວນກາງ'),
+                'department_name' => $deptObj?->displayName() ?? ($firstTxn->department?->expenseSectionLabel() ?? 'เบเบฒเบเบชเปเบงเบเบเบฒเบ'),
                 'dept_code'       => $deptCode,
                 'department'      => $deptObj,
             ];
@@ -389,10 +417,10 @@ class ExpenseController extends Controller
 
     public function paymentHistory(Request $request)
     {
-        $type  = $request->query('type', 'daily');
-        $date  = $request->query('date', date('Y-m-d'));
+        $type = $request->query('type', 'daily');
+        $date = $request->query('date', date('Y-m-d'));
         $month = $request->query('month', date('Y-m'));
-        $year  = $request->query('year', date('Y'));
+        $year = $request->query('year', date('Y'));
 
         $query = Transaction::with(['department', 'chartOfAccount'])
             ->where('type', 'expense')

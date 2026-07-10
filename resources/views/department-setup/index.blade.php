@@ -1,374 +1,475 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex flex-col gap-0.5">
-            <p class="text-xs font-semibold text-indigo-500 uppercase tracking-widest">ການຈັດການ</p>
-            <h2 class="text-xl font-bold text-slate-800">ຈັດການຂໍ້ມູນພາກ/ສ່ວນ ແລະ ງົບປະມານ</h2>
+        <div class="flex items-center justify-between gap-4 w-full">
+            <div class="flex flex-col gap-0.5">
+                <p class="text-xs font-semibold text-indigo-500 uppercase tracking-widest">ການຈັດການ</p>
+                <h2 class="text-xl font-bold text-slate-800">ຈັດການຂໍ້ມູນພາກ/ສ່ວນ ແລະ ງົບປະມານ</h2>
+            </div>
+
+            {{-- Add button matching the top right "+ ເພີ່ມຂາອອກ" button style --}}
+            <button type="button" onclick="openAddModal()"
+                class="inline-flex items-center gap-1 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm shadow-md hover:shadow-lg transition-all duration-300">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
+                </svg>
+                ເພີ່ມພາກ/ສ່ວນ
+            </button>
         </div>
     </x-slot>
 
-    <div class="fns-animate space-y-5">
+    <div class="py-6 w-full bg-slate-50/50">
+        <div class="max-w-[1300px] mx-auto px-4 space-y-6">
 
-        {{-- ── Two-column layout ── --}}
-        <div style="display:grid; grid-template-columns:1fr; gap:1.25rem;">
-            @media-placeholder
-
-            {{-- ──────────────────────────────────────────────
-                 LEFT — Add Form
-            ────────────────────────────────────────────────── --}}
-            <div style="display:contents" id="col-left">
-            </div>
-
-        </div>
-
-        {{-- Real layout via inline grid (Blade doesn't support responsive CSS in markup) --}}
-    </div>
-
-    <style>
-        .ds-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 1.25rem;
-            align-items: start;
-        }
-        @media (min-width: 900px) {
-            .ds-grid { grid-template-columns: 380px 1fr; }
-        }
-
-        /* inline-edit row styling */
-        .edit-row-form { background: #fafbff !important; }
-        .edit-row-form input {
-            width: 100%;
-            border: 1.5px solid #e2e8f0;
-            border-radius: 7px;
-            padding: 5px 9px;
-            font-size: 0.8rem;
-            font-family: inherit;
-            outline: none;
-            background: #fff;
-            transition: border-color 0.15s;
-        }
-        .edit-row-form input:focus { border-color: #6366f1; box-shadow: 0 0 0 2px rgba(99,102,241,0.12); }
-
-        /* code badge — indigo style matching theme */
-        .dept-code-badge {
-            display: inline-block;
-            background: #eef2ff;
-            color: #4f46e5;
-            font-size: 0.72rem;
-            font-weight: 700;
-            padding: 2px 8px;
-            border-radius: 6px;
-            letter-spacing: 0.04em;
-            border: 1px solid #c7d2fe;
-        }
-        /* budget badge */
-        .budget-badge {
-            display: inline-block;
-            background: #ecfdf5;
-            color: #047857;
-            font-size: 0.78rem;
-            font-weight: 700;
-            padding: 3px 10px;
-            border-radius: 8px;
-            border: 1px solid #a7f3d0;
-            white-space: nowrap;
-        }
-        /* type pill */
-        .type-pill {
-            display: inline-block;
-            background: #f1f5f9;
-            color: #475569;
-            font-size: 0.72rem;
-            font-weight: 600;
-            padding: 2px 9px;
-            border-radius: 20px;
-        }
-    </style>
-
-    <div class="ds-grid fns-animate">
-
-        {{-- ── LEFT: Add Form ── --}}
-        <div>
-            <div class="fns-card">
-                {{-- Card Header --}}
-                <div class="fns-card-header">
-                    <div class="flex items-center gap-3">
-                        <div class="fns-card-header-icon">
-                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
-                            </svg>
-                        </div>
-                        <div>
-                            <div class="fns-card-title">ເພີ່ມພາກ/ສ່ວນໃໝ່</div>
-                            <div class="fns-card-subtitle">ສ້າງລາຍການ ພາກວິຊາ ຫຼື ສ່ວນ/ອົງການ</div>
-                        </div>
-                    </div>
+            {{-- Flash Alert Messages --}}
+            @if(session('success'))
+                <div class="p-4 rounded-2xl bg-emerald-50 border border-emerald-100 text-emerald-800 text-xs font-bold flex items-center gap-3 shadow-sm">
+                    <svg class="w-5 h-5 text-emerald-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4" />
+                    </svg>
+                    <div>{{ session('success') }}</div>
                 </div>
+            @endif
 
-                {{-- Card Body --}}
-                <div class="fns-card-body">
+            @if(session('error'))
+                <div class="p-4 rounded-2xl bg-rose-50 border border-rose-100 text-rose-800 text-xs font-bold flex items-center gap-3 shadow-sm">
+                    <svg class="w-5 h-5 text-rose-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8v4m0 4h.01" />
+                    </svg>
+                    <div>{{ session('error') }}</div>
+                </div>
+            @endif
 
-                    @if(session('success'))
-                        <div class="fns-alert fns-alert-success mb-4">
-                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                            </svg>
-                            {{ session('success') }}
-                        </div>
-                    @endif
-                    @if(session('error'))
-                        <div class="fns-alert fns-alert-error mb-4">
-                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                            </svg>
-                            {{ session('error') }}
-                        </div>
-                    @endif
-                    @if($errors->any())
-                        <div class="fns-alert fns-alert-error mb-4">
-                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                            </svg>
-                            <div>@foreach($errors->all() as $e)<div>{{ $e }}</div>@endforeach</div>
-                        </div>
-                    @endif
+            {{-- ── 4 Summary Cards (Matching example layout) ── --}}
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
 
-                    <form method="POST" action="{{ route('department-setup.store') }}" class="space-y-4">
-                        @csrf
-
-                        {{-- Code + Name --}}
-                        <div style="display:grid; grid-template-columns:90px 1fr; gap:12px;">
-                            <div>
-                                <label class="fns-label" for="dept_code">ລະຫັດ</label>
-                                <input id="dept_code" name="dept_code" type="text" class="fns-input"
-                                    maxlength="20" placeholder="01" value="{{ old('dept_code') }}">
-                            </div>
-                            <div>
-                                <label class="fns-label" for="department_name">ຊື່ *</label>
-                                <input id="department_name" name="department_name" type="text" required
-                                    class="fns-input" placeholder="ພາກເຄມີ, ແມ່ຍິງ…"
-                                    value="{{ old('department_name') }}">
-                            </div>
-                        </div>
-
-                        <div>
-                            <label class="fns-label" for="department_type">
-                                ປະເພດ <span style="color:#94a3b8;font-weight:400;text-transform:none">(ທາງເລືອກ)</span>
-                            </label>
-                            <input id="department_type" name="department_type" type="text" class="fns-input"
-                                placeholder="Faculty, Organization, Section…"
-                                value="{{ old('department_type') }}">
-                        </div>
-
-                        <div>
-                            <label class="fns-label" for="budget_amount">ງົບປະມານ (ກີບ)</label>
-                            <input id="budget_amount" name="budget_amount" type="number" class="fns-input"
-                                min="0" step="0.01" placeholder="0.00"
-                                value="{{ old('budget_amount') }}">
-                        </div>
-
-                        <div style="border-top:1px solid #f1f5f9; padding-top:16px; margin-top:4px;">
-                            <button type="submit" class="fns-btn fns-btn-primary w-full" style="min-height:42px;">
-                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
-                                </svg>
-                                ເພີ່ມພາກ/ສ່ວນ
-                            </button>
-                        </div>
-                    </form>
-
-                    {{-- Info tip --}}
-                    <div style="margin-top:16px; background:#eef2ff; border:1px solid #c7d2fe; border-radius:10px;
-                                padding:12px 14px; font-size:0.78rem; color:#4f46e5;
-                                display:flex; gap:9px; align-items:flex-start;">
-                        <svg style="width:16px;height:16px;flex-shrink:0;margin-top:1px" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                {{-- Card 1: Total Departments --}}
+                <div class="bg-white rounded-2xl border border-slate-100 p-5 flex items-center gap-4 shadow-sm hover:shadow transition-all duration-300">
+                    <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                         </svg>
-                        <span>ລະຫັດ ແລະ ງົບ ຂອງພາກ/ສ່ວນ ຈະຖືກດຶງໄປ <strong>ສະແດງໃນລາຍງານ</strong> ເວລາ print</span>
+                    </div>
+                    <div class="space-y-0.5">
+                        <p class="text-3xl font-black text-slate-800 font-mono leading-none">{{ $departments->count() }}</p>
+                        <p class="text-xs font-bold text-slate-400">ພາກ/ສ່ວນທັງໝົດ</p>
                     </div>
                 </div>
+
+                {{-- Card 2: Total Budget --}}
+                <div class="bg-white rounded-2xl border border-slate-100 p-5 flex items-center gap-4 shadow-sm hover:shadow transition-all duration-300">
+                    <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <div class="space-y-0.5">
+                        <p class="text-2xl font-black text-slate-800 font-mono leading-none">
+                            {{ number_format($departments->sum('_initial'), 0) }}
+                        </p>
+                        <p class="text-xs font-bold text-slate-400">ງົບປະມານຕັ້ງຕົ້ນທັງໝົດ</p>
+                    </div>
+                </div>
+
+                {{-- Card 3: Spent Budget --}}
+                <div class="bg-white rounded-2xl border border-slate-100 p-5 flex items-center gap-4 shadow-sm hover:shadow transition-all duration-300">
+                    <div class="w-12 h-12 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center shrink-0">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                        </svg>
+                    </div>
+                    <div class="space-y-0.5">
+                        <p class="text-2xl font-black text-slate-800 font-mono leading-none">
+                            {{ number_format($departments->sum('_spent'), 0) }}
+                        </p>
+                        <p class="text-xs font-bold text-slate-400">ງົບປະມານທີ່ໃຊ້ໄປແລ້ວ</p>
+                    </div>
+                </div>
+
+                {{-- Card 4: Remaining Budget --}}
+                <div class="bg-white rounded-2xl border border-slate-100 p-5 flex items-center gap-4 shadow-sm hover:shadow transition-all duration-300">
+                    <div class="w-12 h-12 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center shrink-0">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                        </svg>
+                    </div>
+                    <div class="space-y-0.5">
+                        @php
+                            $totalRemaining = $departments->sum('_initial') - $departments->sum('_spent');
+                        @endphp
+                        <p class="text-2xl font-black font-mono leading-none {{ $totalRemaining < 0 ? 'text-rose-600' : 'text-slate-800' }}">
+                            {{ number_format($totalRemaining, 0) }}
+                        </p>
+                        <p class="text-xs font-bold text-slate-400">ງົບປະມານຄົງເຫຼືອທັງໝົດ</p>
+                    </div>
+                </div>
+
             </div>
 
-            {{-- Example card --}}
-            <div class="fns-card fns-animate-delay-1" style="margin-top:1.1rem;">
-                <div class="fns-card-header">
-                    <div class="flex items-center gap-3">
-                        <div class="fns-card-header-icon" style="background:#ecfdf5;color:#059669;">
-                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z"/>
-                            </svg>
-                        </div>
-                        <div>
-                            <div class="fns-card-title">ຕົວຢ່າງໂຄງສ້າງ</div>
-                            <div class="fns-card-subtitle">ວິທີໃສ່ຂໍ້ມູນ</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="fns-card-body" style="padding:16px 20px;">
-                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;font-size:0.8rem;color:#334155;">
-                        <div>
-                            <div style="font-weight:700;color:#1e293b;margin-bottom:8px;font-size:0.72rem;text-transform:uppercase;letter-spacing:0.05em;">ພາກວິຊາ</div>
-                            <div style="display:flex;flex-direction:column;gap:6px;">
-                                <div><span class="dept-code-badge">01</span> <span style="margin-left:6px;">ພາກເຄມີ</span></div>
-                                <div><span class="dept-code-badge">02</span> <span style="margin-left:6px;">ພາກຄອມ</span></div>
-                                <div><span class="dept-code-badge">03</span> <span style="margin-left:6px;">ພາກຟີສິກ</span></div>
-                            </div>
-                        </div>
-                        <div>
-                            <div style="font-weight:700;color:#1e293b;margin-bottom:8px;font-size:0.72rem;text-transform:uppercase;letter-spacing:0.05em;">ພາກ/ສ່ວນ</div>
-                            <div style="display:flex;flex-direction:column;gap:6px;">
-                                <div><span class="type-pill">ອົງການ</span> <span style="margin-left:6px;">ສ່ວນແມ່ຍິງ</span></div>
-                                <div><span class="type-pill">ອົງການ</span> <span style="margin-left:6px;">ສ່ວນຊາວໜຸ່ມ</span></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        {{-- ── RIGHT: Departments Table ── --}}
-        <div>
-            <div class="fns-card fns-animate-delay-1">
-                {{-- Card Header --}}
-                <div class="fns-card-header">
-                    <div class="flex items-center gap-3">
-                        <div class="fns-card-header-icon">
-                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 010 3.75H5.625a1.875 1.875 0 010-3.75z"/>
-                            </svg>
-                        </div>
-                        <div>
-                            <div class="fns-card-title">ລາຍຊື່ພາກ/ສ່ວນທັງໝົດ</div>
-                            <div class="fns-card-subtitle">{{ $departments->count() }} ລາຍການ</div>
-                        </div>
-                    </div>
-                    <span class="fns-badge-count">{{ $departments->count() }}</span>
+            {{-- ── Main Table Card (Full Width) ── --}}
+            <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+                <div class="border-b border-slate-100 px-6 py-4 flex items-center justify-between">
+                    <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
+                        <span class="w-1 h-4 rounded bg-indigo-600"></span>
+                        ລາຍລະອຽດງົບປະມານແຕ່ລະພາກ/ສ່ວນ
+                    </h3>
                 </div>
 
-                {{-- Table --}}
-                <div style="overflow-x:auto;">
-                    <table class="fns-table">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-xs">
                         <thead>
-                            <tr>
-                                <th style="width:70px;">ລະຫັດ</th>
-                                <th>ຊື່ພາກ/ສ່ວນ</th>
-                                <th>ປະເພດ</th>
-                                <th class="text-right">ງົບ (ກີບ)</th>
-                                <th class="th-center" style="width:140px;">ຈັດການ</th>
+                            <tr class="bg-indigo-50/40 border-b border-indigo-100/50 text-indigo-950 font-bold">
+                                <th class="py-3 px-5 w-[100px]">ລະຫັດ</th>
+                                <th class="py-3 px-5">ຊື່ພາກ/ສ່ວນ</th>
+                                <th class="py-3 px-5">ປະເພດ</th>
+                                <th class="py-3 px-5 text-right w-[150px]">ງົບຕັ້ງຕົ້ນ</th>
+                                <th class="py-3 px-5 text-right w-[150px]">ໃຊ້ໄປແລ້ວ</th>
+                                <th class="py-3 px-5 text-right w-[150px]">ງົບຄົງເຫຼືອ</th>
+                                <th class="py-3 px-5 text-center w-[120px]">ຈັດການ</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody class="divide-y divide-slate-100">
                             @forelse($departments as $dept)
-                                {{-- View Row --}}
-                                <tr id="row-view-{{ $dept->id }}">
-                                    <td>
+                                <tr class="hover:bg-indigo-50/10 transition-colors">
+                                    <td class="py-3.5 px-5 font-mono font-bold">
                                         @if($dept->dept_code)
-                                            <span class="dept-code-badge">{{ $dept->dept_code }}</span>
+                                            <span class="bg-indigo-50 text-indigo-700 px-2.5 py-0.5 rounded-lg border border-indigo-100/30 text-[10px] font-bold font-mono">{{ $dept->dept_code }}</span>
                                         @else
-                                            <span style="color:#cbd5e0;">—</span>
+                                            <span class="text-slate-300">—</span>
                                         @endif
                                     </td>
-                                    <td class="fns-cell-name">{{ $dept->displayName() }}</td>
-                                    <td>
+                                    <td class="py-3.5 px-5 font-bold text-slate-800">
+                                        {{ $dept->displayName() }}
+                                    </td>
+                                    <td class="py-3.5 px-5">
                                         @if($dept->department_type)
-                                            <span class="type-pill">{{ $dept->department_type }}</span>
+                                            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold {{ $dept->department_type === 'income' ? 'bg-amber-50 text-amber-700 border border-amber-100/50' : 'bg-indigo-50 text-indigo-700 border border-indigo-100/30' }}">
+                                                {{ $dept->department_type }}
+                                            </span>
                                         @else
-                                            <span style="color:#cbd5e0;">—</span>
+                                            <span class="text-slate-300">—</span>
                                         @endif
                                     </td>
-                                    <td style="text-align:right;">
-                                        <span class="budget-badge">{{ number_format($dept->budget_amount ?? 0, 2) }}</span>
+                                    <td class="py-3.5 px-5 text-right font-mono font-bold text-slate-700">
+                                        {{ number_format($dept->_initial, 2) }}
                                     </td>
-                                    <td style="text-align:center;white-space:nowrap;">
-                                        <button type="button" onclick="showEditRow({{ $dept->id }})"
-                                            class="fns-btn fns-btn-secondary" style="padding:5px 12px;font-size:0.72rem;gap:4px;">
-                                            <svg style="width:12px;height:12px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                    <td class="py-3.5 px-5 text-right font-mono font-bold text-rose-600">
+                                        {{ number_format($dept->_spent, 2) }}
+                                    </td>
+                                    <td class="py-3.5 px-5 text-right font-mono font-extrabold {{ $dept->budget_amount < 0 ? 'text-red-600' : 'text-emerald-700' }}">
+                                        {{ number_format($dept->budget_amount, 2) }}
+                                        @if($dept->budget_amount < 0)
+                                            <span class="text-[9px] font-bold bg-red-50 text-red-600 px-1 py-0.5 rounded ml-1 block md:inline-block">ເກີນງົບ!</span>
+                                        @endif
+                                    </td>
+                                    <td class="py-3.5 px-5 text-center space-x-3.5 whitespace-nowrap">
+                                        {{-- Edit pencil icon matching example screen --}}
+                                        <button type="button" onclick="openEditModal({{ $dept->id }})"
+                                            class="inline-flex items-center justify-center text-amber-500 hover:text-amber-600 transition-colors p-1" title="ແກ້ໄຂ">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                                             </svg>
-                                            ແກ້ໄຂ
                                         </button>
-                                        <form method="POST"
-                                            action="{{ route('department-setup.destroy', $dept) }}"
-                                            style="display:inline-block;margin-left:4px;"
-                                            onsubmit="return confirm('ລຶບ {{ addslashes($dept->displayName()) }} ອອກ?')">
-                                            @csrf @method('DELETE')
-                                            <button type="submit" class="fns-btn fns-btn-danger" style="padding:5px 12px;font-size:0.72rem;gap:4px;">
-                                                <svg style="width:12px;height:12px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                        {{-- Delete trash icon matching example screen --}}
+                                        <form method="POST" action="{{ route('department-setup.destroy', $dept) }}" class="inline-block"
+                                            onsubmit="return confirm('ລຶບພາກສ່ວນ {{ addslashes($dept->displayName()) }}?')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit"
+                                                class="inline-flex items-center justify-center text-slate-400 hover:text-rose-600 transition-colors p-1" title="ລຶບ">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                                 </svg>
-                                                ລຶບ
                                             </button>
                                         </form>
                                     </td>
                                 </tr>
-
-                                {{-- Inline Edit Row --}}
-                                <tr id="row-edit-{{ $dept->id }}" class="edit-row-form" style="display:none;">
-                                    <form method="POST" action="{{ route('department-setup.update', $dept) }}">
-                                        @csrf @method('PUT')
-                                        <td><input name="dept_code" type="text" maxlength="20" value="{{ $dept->dept_code }}" placeholder="01"></td>
-                                        <td><input name="department_name" type="text" required value="{{ $dept->department_name }}"></td>
-                                        <td><input name="department_type" type="text" value="{{ $dept->department_type }}"></td>
-                                        <td><input name="budget_amount" type="number" min="0" step="0.01" value="{{ $dept->budget_amount }}" style="text-align:right;"></td>
-                                        <td style="text-align:center;white-space:nowrap;">
-                                            <button type="submit" class="fns-btn fns-btn-success" style="padding:5px 12px;font-size:0.72rem;gap:4px;">
-                                                <svg style="width:12px;height:12px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
-                                                </svg>
-                                                ບັນທຶກ
-                                            </button>
-                                            <button type="button" onclick="hideEditRow({{ $dept->id }})"
-                                                class="fns-btn fns-btn-ghost" style="padding:5px 12px;font-size:0.72rem;margin-left:4px;">
-                                                ຍົກເລີກ
-                                            </button>
-                                        </td>
-                                    </form>
-                                </tr>
                             @empty
                                 <tr>
-                                    <td colspan="5">
-                                        <div class="fns-empty">
-                                            <div class="fns-empty-icon">
-                                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 010 3.75H5.625a1.875 1.875 0 010-3.75z"/>
-                                                </svg>
-                                            </div>
-                                            <p class="fns-empty-text">ຍັງບໍ່ມີຂໍ້ມູນ</p>
-                                        </div>
+                                    <td colspan="7" class="py-10 text-center text-slate-400 font-bold">
+                                        ຍັງບໍ່ມີຂໍ້ມູນພາກ/ສ່ວນ
                                     </td>
                                 </tr>
                             @endforelse
                         </tbody>
-
-                        @if($departments->count() > 0)
-                        <tfoot>
-                            <tr>
-                                <td colspan="3" style="font-size:0.75rem;color:#64748b;font-weight:600;">ງົບລວມທັງໝົດ</td>
-                                <td style="text-align:right;">
-                                    <span style="font-size:0.9rem;font-weight:800;color:#4f46e5;">
-                                        {{ number_format($departments->sum('budget_amount'), 2) }}
-                                    </span>
-                                    <span style="font-size:0.72rem;color:#94a3b8;margin-left:4px;">ກີບ</span>
-                                </td>
-                                <td></td>
-                            </tr>
-                        </tfoot>
-                        @endif
                     </table>
                 </div>
             </div>
-        </div>
 
+        </div>
     </div>
 
+    {{-- ──────────────────────────────────────────────
+         ADD MODAL (Matching Example Modal Layout)
+    ────────────────────────────────────────────────── --}}
+    <div id="add-modal" class="fixed inset-0 z-50 overflow-y-auto hidden">
+        {{-- Backdrop --}}
+        <div class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity" onclick="closeAddModal()"></div>
+
+        <div class="flex min-h-full items-center justify-center p-4 text-center">
+            <div class="relative transform overflow-hidden rounded-3xl bg-white text-left shadow-xl transition-all w-full max-w-lg border border-slate-100 flex flex-col">
+
+                {{-- Header --}}
+                <div class="p-6 border-b border-slate-50 flex items-center justify-between">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                            </svg>
+                        </div>
+                        <h3 class="text-base font-extrabold text-slate-800">ເພີ່ມພາກ/ສ່ວນໃໝ່</h3>
+                    </div>
+                    <button type="button" onclick="closeAddModal()" class="text-slate-400 hover:text-slate-600 focus:outline-none">
+                        <svg class="w-5.5 h-5.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+
+                {{-- Form --}}
+                <form method="POST" action="{{ route('department-setup.store') }}">
+                    @csrf
+
+                    <div class="p-6 space-y-4">
+                        <div class="grid grid-cols-3 gap-4">
+                            <div class="col-span-1">
+                                <label class="block text-xs font-bold text-slate-500 mb-1.5" for="add_dept_code">ລະຫັດ</label>
+                                <input id="add_dept_code" name="dept_code" type="text" maxlength="20" placeholder="01"
+                                    class="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-sm font-semibold bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all font-mono">
+                            </div>
+                            <div class="col-span-2">
+                                <label class="block text-xs font-bold text-slate-500 mb-1.5" for="add_department_name">ຊື່ພາກ/ສ່ວນ *</label>
+                                <input id="add_department_name" name="department_name" type="text" required placeholder="ພາກເຄມີ, ສ່ວນກາງ..."
+                                    class="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-sm font-semibold bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 mb-1.5" for="add_department_type">ປະເພດ</label>
+                            <input id="add_department_type" name="department_type" type="text" placeholder="Faculty, Section, Major..."
+                                class="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-sm font-semibold bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 mb-1.5" for="add_budget_amount">ງົບປະມານ (ກີບ)</label>
+                            <div style="position: relative; display: block;">
+                                <input id="add_budget_amount" name="budget_amount" type="text" placeholder="0.00"
+                                    class="w-full rounded-xl border border-slate-200 pl-4 py-2.5 text-sm font-semibold bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all font-mono text-right budget-input-format"
+                                    style="padding-right: 48px;">
+                                <div style="position: absolute; right: 14px; top: 50%; transform: translateY(-50%); pointer-events: none; display: flex; align-items: center;">
+                                    <span style="font-size: 11px; font-weight: 700; color: #94a3b8;">ກີບ</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Actions --}}
+                    <div class="p-5 border-t border-slate-50 bg-slate-50/50 flex justify-end gap-2 shrink-0">
+                        <button type="button" onclick="closeAddModal()"
+                            class="rounded-xl bg-white border border-slate-200 text-slate-500 transition-all hover:bg-slate-50 inline-flex items-center justify-center"
+                            style="padding: 8px 24px; font-size: 13px; font-weight: 700; min-width: 90px; height: 38px;">
+                            ຍົກເລີກ
+                        </button>
+                        <button type="submit"
+                            class="rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white transition-all shadow-md shadow-indigo-100 hover:shadow-lg inline-flex items-center justify-center"
+                            style="padding: 8px 24px; font-size: 13px; font-weight: 700; min-width: 90px; height: 38px;">
+                            ບັນທຶກ
+                        </button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+    {{-- ──────────────────────────────────────────────
+         EDIT MODAL (Matching Example Modal Layout)
+    ────────────────────────────────────────────────── --}}
+    <div id="edit-modal" class="fixed inset-0 z-50 overflow-y-auto hidden">
+        {{-- Backdrop --}}
+        <div class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity" onclick="closeEditModal()"></div>
+
+        <div class="flex min-h-full items-center justify-center p-4 text-center">
+            <div class="relative transform overflow-hidden rounded-3xl bg-white text-left shadow-xl transition-all w-full max-w-lg border border-slate-100 flex flex-col">
+
+                {{-- Header --}}
+                <div class="p-6 border-b border-slate-50 flex items-center justify-between">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                            </svg>
+                        </div>
+                        <h3 class="text-base font-extrabold text-slate-800">ແກ້ໄຂຂໍ້ມູນພາກ/ສ່ວນ</h3>
+                    </div>
+                    <button type="button" onclick="closeEditModal()" class="text-slate-400 hover:text-slate-600 focus:outline-none">
+                        <svg class="w-5.5 h-5.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+
+                {{-- Form --}}
+                <form id="edit-form-action" method="POST" action="">
+                    @csrf
+                    @method('PUT')
+
+                    <div class="p-6 space-y-4">
+                        <div class="grid grid-cols-3 gap-4">
+                            <div class="col-span-1">
+                                <label class="block text-xs font-bold text-slate-500 mb-1.5" for="edit_dept_code">ລະຫັດ</label>
+                                <input id="edit_dept_code" name="dept_code" type="text" maxlength="20" placeholder="01"
+                                    class="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-sm font-semibold bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all font-mono">
+                            </div>
+                            <div class="col-span-2">
+                                <label class="block text-xs font-bold text-slate-500 mb-1.5" for="edit_department_name">ຊື່ພາກ/ສ່ວນ *</label>
+                                <input id="edit_department_name" name="department_name" type="text" required placeholder="ຊື່ພາກສ່ວນ..."
+                                    class="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-sm font-semibold bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 mb-1.5" for="edit_department_type">ປະເພດ</label>
+                            <input id="edit_department_type" name="department_type" type="text" placeholder="Faculty, Section, Major..."
+                                class="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-sm font-semibold bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 mb-1.5" for="edit_budget_amount">ງົບປະມານ (ກີບ)</label>
+                            <div style="position: relative; display: block;">
+                                <input id="edit_budget_amount" name="budget_amount" type="text" placeholder="0.00"
+                                    class="w-full rounded-xl border border-slate-200 pl-4 py-2.5 text-sm font-semibold bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all font-mono text-right budget-input-format"
+                                    style="padding-right: 48px;">
+                                <div style="position: absolute; right: 14px; top: 50%; transform: translateY(-50%); pointer-events: none; display: flex; align-items: center;">
+                                    <span style="font-size: 11px; font-weight: 700; color: #94a3b8;">ກີບ</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pt-2">
+                            <label class="inline-flex items-center gap-2.5 cursor-pointer select-none">
+                                <input type="checkbox" name="reset_budget" value="1"
+                                    class="w-4 h-4 rounded text-indigo-600 border-slate-300 focus:ring-indigo-500 bg-white">
+                                <span class="text-xs font-bold text-slate-700">ຣີເຊັດງົບປະມານຕັ້ງຕົ້ນ (Reset Initial Budget)</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    {{-- Actions --}}
+                    <div class="p-5 border-t border-slate-50 bg-slate-50/50 flex justify-end gap-2 shrink-0">
+                        <button type="button" onclick="closeEditModal()"
+                            class="rounded-xl bg-white border border-slate-200 text-slate-500 transition-all hover:bg-slate-50 inline-flex items-center justify-center"
+                            style="padding: 8px 24px; font-size: 13px; font-weight: 700; min-width: 90px; height: 38px;">
+                            ຍົກເລີກ
+                        </button>
+                        <button type="submit"
+                            class="rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white transition-all shadow-md shadow-indigo-100 hover:shadow-lg inline-flex items-center justify-center"
+                            style="padding: 8px 24px; font-size: 13px; font-weight: 700; min-width: 90px; height: 38px;">
+                            ບັນທຶກ
+                        </button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+    {{-- Hide input spin buttons globally on this page --}}
+    <style>
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+    </style>
+
     <script>
-        function showEditRow(id) {
-            document.getElementById('row-view-' + id).style.display = 'none';
-            document.getElementById('row-edit-' + id).style.display = '';
+        const departments = @json($departments);
+
+        // --- Currency Input Formatting with Commas ---
+        function formatNumberWithCommas(value) {
+            value = value.replace(/[^0-9.]/g, '');
+            const parts = value.split('.');
+            if (parts.length > 2) {
+                value = parts[0] + '.' + parts.slice(1).join('');
+            }
+            if (parts[0]) {
+                const formattedInt = parseInt(parts[0], 10).toLocaleString('en-US');
+                value = formattedInt + (parts[1] !== undefined ? '.' + parts[1] : '');
+            }
+            return value;
         }
-        function hideEditRow(id) {
-            document.getElementById('row-edit-' + id).style.display = 'none';
-            document.getElementById('row-view-' + id).style.display = '';
+
+        // Attach event listener to all formatted inputs
+        function initFormatting() {
+            const inputs = document.querySelectorAll('.budget-input-format');
+            inputs.forEach(input => {
+                if (input.value) {
+                    input.value = formatNumberWithCommas(input.value);
+                }
+
+                input.addEventListener('input', (e) => {
+                    const originalLength = e.target.value.length;
+                    let cursorPosition = e.target.selectionStart;
+
+                    e.target.value = formatNumberWithCommas(e.target.value);
+
+                    const newLength = e.target.value.length;
+                    cursorPosition = cursorPosition + (newLength - originalLength);
+                    e.target.setSelectionRange(cursorPosition, cursorPosition);
+                });
+            });
+
+            // Strip commas before submitting any form
+            const forms = document.querySelectorAll('form');
+            forms.forEach(form => {
+                form.addEventListener('submit', function() {
+                    const budgetInputs = this.querySelectorAll('.budget-input-format');
+                    budgetInputs.forEach(input => {
+                        input.value = input.value.replace(/,/g, '');
+                    });
+                });
+            });
         }
+
+        // --- Add Modal Controls ---
+        function openAddModal() {
+            document.getElementById('add-modal').classList.remove('hidden');
+        }
+
+        function closeAddModal() {
+            document.getElementById('add-modal').classList.add('hidden');
+        }
+
+        // --- Edit Modal Controls ---
+        function openEditModal(id) {
+            const dept = departments.find(d => d.id === id);
+            if (!dept) return;
+
+            // Fill inputs with department values
+            document.getElementById('edit_dept_code').value = dept.dept_code || '';
+            document.getElementById('edit_department_name').value = dept.department_name;
+            document.getElementById('edit_department_type').value = dept.department_type || '';
+
+            // Format budget for display
+            const budgetInput = document.getElementById('edit_budget_amount');
+            budgetInput.value = formatNumberWithCommas((dept._initial || 0).toString());
+
+            // Set form action dynamically
+            document.getElementById('edit-form-action').action = '/department-setup/' + id;
+
+            // Show modal
+            document.getElementById('edit-modal').classList.remove('hidden');
+        }
+
+        function closeEditModal() {
+            document.getElementById('edit-modal').classList.add('hidden');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initFormatting();
+        });
     </script>
 </x-app-layout>

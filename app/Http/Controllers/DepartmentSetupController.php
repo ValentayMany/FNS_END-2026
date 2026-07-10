@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Department;
+use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -13,7 +14,33 @@ class DepartmentSetupController extends Controller
      */
     public function index()
     {
-        $departments = Department::orderBy('dept_code')->orderBy('department_name')->get();
+        $year = date('Y');
+        $departments = Department::orderBy('dept_code')
+            ->orderBy('department_name')
+            ->get()
+            ->map(function ($dept) use ($year) {
+                // Calculate spent amount for current year
+                $spent = (float) Transaction::where('type', 'expense')
+                    ->where('department_id', $dept->id)
+                    ->whereYear('transaction_date', $year)
+                    ->sum('amount');
+
+                $initial = (float) ($dept->initial_budget ?? 0);
+                $remaining = (float) ($dept->budget_amount ?? 0);
+
+                if ($initial == 0 && ($remaining + $spent) > 0) {
+                    $initial = $remaining + $spent;
+                }
+
+                $pct = ($initial > 0) ? min(100, round(($spent / $initial) * 100, 1)) : 0;
+
+                $dept->_initial = $initial;
+                $dept->_spent = $spent;
+                $dept->_pct = $pct;
+
+                return $dept;
+            });
+
         return view('department-setup.index', compact('departments'));
     }
 
@@ -32,11 +59,14 @@ class DepartmentSetupController extends Controller
             'department_name.unique'   => 'ຊື່ພາກ/ສ່ວນນີ້ມີຢູ່ໃນລະບົບແລ້ວ',
         ]);
 
+        $budget = (float) ($request->budget_amount ?? 0);
+
         Department::create([
             'dept_code'       => trim($request->dept_code ?? ''),
             'department_name' => trim($request->department_name),
             'department_type' => trim($request->department_type ?? ''),
-            'budget_amount'   => $request->budget_amount ?? 0,
+            'budget_amount'   => $budget,
+            'initial_budget'  => $budget,  // ບັນທຶກງົບຕັ້ງຕົ້ນ
         ]);
 
         return back()->with('success', 'ເພີ່ມພາກ/ສ່ວນສຳເລັດ!');
@@ -60,11 +90,21 @@ class DepartmentSetupController extends Controller
             'department_name.unique'   => 'ຊື່ພາກ/ສ່ວນນີ້ມີຢູ່ໃນລະບົບແລ້ວ',
         ]);
 
+        $newBudget = (float) ($request->budget_amount ?? 0);
+
+        // Calculate spent amount for the current year
+        $year = date('Y');
+        $spent = (float) Transaction::where('type', 'expense')
+            ->where('department_id', $department->id)
+            ->whereYear('transaction_date', $year)
+            ->sum('amount');
+
         $department->update([
             'dept_code'       => trim($request->dept_code ?? ''),
             'department_name' => trim($request->department_name),
             'department_type' => trim($request->department_type ?? ''),
-            'budget_amount'   => $request->budget_amount ?? 0,
+            'budget_amount'   => $newBudget - $spent,
+            'initial_budget'  => $newBudget,
         ]);
 
         return back()->with('success', 'ແກ້ໄຂຂໍ້ມູນພາກ/ສ່ວນສຳເລັດ!');
@@ -129,5 +169,62 @@ class DepartmentSetupController extends Controller
         }
 
         return back()->with('success', $msg);
+    }
+
+    /**
+     * ໜ້າ Dashboard ງົບປະມານຂອງແຕ່ລະພາກ/ສ່ວນ
+     */
+    public function budgetDashboard()
+    {
+        $year = request()->query('year', date('Y'));
+
+        $departments = Department::orderBy('dept_code')
+            ->orderBy('department_name')
+            ->get()
+            ->map(function ($dept) use ($year) {
+                // ຍອດລາຍຈ່າຍຈິງທັງໝົດຂອງພາກສ່ວນນີ້ (ໃນປີທີ່ເລືອກ)
+                $spent = (float) Transaction::where('type', 'expense')
+                    ->where('department_id', $dept->id)
+                    ->whereYear('transaction_date', $year)
+                    ->sum('amount');
+
+                $initial   = (float) ($dept->initial_budget ?? 0);
+                $remaining = (float) ($dept->budget_amount ?? 0);
+
+                // ຖ້າ initial ຍັງ = 0 ໃຫ້ໃຊ້ remaining + spent ເປັນຕົວຄາດຄະເນ
+                if ($initial == 0 && ($remaining + $spent) > 0) {
+                    $initial = $remaining + $spent;
+                }
+
+                $pct = ($initial > 0) ? min(100, round(($spent / $initial) * 100, 1)) : 0;
+
+                $dept->_initial   = $initial;
+                $dept->_spent     = $spent;
+                $dept->_remaining = $remaining;
+                $dept->_pct       = $pct;
+
+                return $dept;
+            });
+
+        // ສະຫຼຸບລວມທຸກພາກ
+        $totalInitial   = $departments->sum('_initial');
+        $totalSpent     = $departments->sum('_spent');
+        $totalRemaining = $departments->sum('_remaining');
+
+        // ດຶງລາຍການປີທີ່ມີຂໍ້ມູນຢູ່
+        $availableYears = Transaction::where('type', 'expense')
+            ->selectRaw('YEAR(transaction_date) as yr')
+            ->groupBy('yr')
+            ->orderByDesc('yr')
+            ->pluck('yr');
+
+        return view('department-setup.budget-dashboard', compact(
+            'departments',
+            'year',
+            'totalInitial',
+            'totalSpent',
+            'totalRemaining',
+            'availableYears'
+        ));
     }
 }

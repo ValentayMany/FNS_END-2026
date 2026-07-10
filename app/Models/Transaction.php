@@ -27,6 +27,56 @@ class Transaction extends Model
         'transaction_date' => 'date',
     ];
 
+    protected static function booted()
+    {
+        static::created(function ($transaction) {
+            if ($transaction->type === 'expense' && $transaction->department_id) {
+                Department::where('id', $transaction->department_id)
+                    ->decrement('budget_amount', $transaction->amount);
+            }
+        });
+
+        static::deleted(function ($transaction) {
+            if ($transaction->type === 'expense' && $transaction->department_id) {
+                Department::where('id', $transaction->department_id)
+                    ->increment('budget_amount', $transaction->amount);
+            }
+        });
+
+        static::updated(function ($transaction) {
+            $oldType = $transaction->getOriginal('type');
+            $newType = $transaction->type;
+            $oldDeptId = $transaction->getOriginal('department_id');
+            $newDeptId = $transaction->department_id;
+            $oldAmount = (float) $transaction->getOriginal('amount');
+            $newAmount = (float) $transaction->amount;
+
+            if ($oldType === 'expense' && $newType === 'expense') {
+                if ($oldDeptId != $newDeptId) {
+                    if ($oldDeptId) {
+                        Department::where('id', $oldDeptId)->increment('budget_amount', $oldAmount);
+                    }
+                    if ($newDeptId) {
+                        Department::where('id', $newDeptId)->decrement('budget_amount', $newAmount);
+                    }
+                } else {
+                    $diff = $newAmount - $oldAmount;
+                    if ($diff != 0 && $newDeptId) {
+                        Department::where('id', $newDeptId)->decrement('budget_amount', $diff);
+                    }
+                }
+            } elseif ($oldType !== 'expense' && $newType === 'expense') {
+                if ($newDeptId) {
+                    Department::where('id', $newDeptId)->decrement('budget_amount', $newAmount);
+                }
+            } elseif ($oldType === 'expense' && $newType !== 'expense') {
+                if ($oldDeptId) {
+                    Department::where('id', $oldDeptId)->increment('budget_amount', $oldAmount);
+                }
+            }
+        });
+    }
+
     /** Fix ລຽ້ງ-style mark order for display (DB may store wrong keyboard order). */
     protected function description(): Attribute
     {

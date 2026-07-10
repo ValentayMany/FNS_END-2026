@@ -10,10 +10,11 @@ class Department extends Model
 
     public $timestamps = false;
 
-    protected $fillable = ['department_name', 'department_type', 'dept_code', 'budget_amount'];
+    protected $fillable = ['department_name', 'department_type', 'dept_code', 'budget_amount', 'initial_budget'];
 
     protected $casts = [
-        'budget_amount' => 'decimal:2',
+        'budget_amount'   => 'decimal:2',
+        'initial_budget'  => 'decimal:2',
     ];
 
     /**

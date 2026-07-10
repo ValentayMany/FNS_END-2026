@@ -607,8 +607,11 @@
             .then(data => {
                 if (data.success && data.ids) {
                     savedTransactionIds = data.ids;
-                    // Redirect directly to the print balance page in the same window
-                    window.location.href = '{{ route("expense.print-balance") }}?ids=' + savedTransactionIds.join(',');
+
+                    // ✅ ສະແດງ Toast ກ່ອນ redirect
+                    showSuccessToast('ບັນທຶກລາຍຈ່າຍສຳເລັດ', () => {
+                        window.location.href = '{{ route("expense.print-balance") }}?ids=' + savedTransactionIds.join(',');
+                    });
                 } else {
                     alert('ເກີດຂໍ້ຜິດພາດ: ' + (data.message || 'ບໍ່ສາມາດບັນທຶກໄດ້'));
                     btnSave.disabled = false;
@@ -621,6 +624,52 @@
                 btnSave.disabled = false;
                 btnSave.innerHTML = originalHtml;
             });
+        }
+
+        // ✅ Toast notification function
+        function showSuccessToast(message, callback) {
+            // Create overlay
+            const overlay = document.createElement('div');
+            overlay.style.cssText = `
+                position: fixed; inset: 0; z-index: 99999;
+                display: flex; align-items: center; justify-content: center;
+                background: rgba(0,0,0,0.35); backdrop-filter: blur(4px);
+            `;
+
+            overlay.innerHTML = `
+                <div style="
+                    background: #fff; border-radius: 20px; padding: 36px 48px;
+                    text-align: center; box-shadow: 0 24px 64px rgba(0,0,0,0.18);
+                    animation: toastIn 0.3s ease;
+                ">
+                    <div style="
+                        width: 64px; height: 64px; border-radius: 50%;
+                        background: linear-gradient(135deg, #10b981, #059669);
+                        display: flex; align-items: center; justify-content: center;
+                        margin: 0 auto 16px;
+                        box-shadow: 0 8px 24px rgba(16,185,129,0.35);
+                    ">
+                        <svg width="32" height="32" fill="none" stroke="#fff" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+                        </svg>
+                    </div>
+                    <p style="font-size: 22px; font-weight: 800; color: #065f46; margin: 0 0 6px;">${message}</p>
+                    <p style="font-size: 13px; color: #6b7280; margin: 0;">ກຳລັງໄປຫາໜ້າພິມ...</p>
+                </div>
+                <style>
+                    @keyframes toastIn {
+                        from { opacity: 0; transform: scale(0.85); }
+                        to   { opacity: 1; transform: scale(1); }
+                    }
+                </style>
+            `;
+
+            document.body.appendChild(overlay);
+
+            setTimeout(() => {
+                document.body.removeChild(overlay);
+                if (callback) callback();
+            }, 1600);
         }
 
         function saveAndPrintDirectly() {

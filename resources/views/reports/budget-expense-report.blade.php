@@ -82,7 +82,7 @@
         <div class="budget-inner max-w-full mx-auto w-full px-4 sm:px-6 lg:px-8 space-y-6">
 
             {{-- Filter Card --}}
-            <div class="fns-card bg-white shadow-md rounded-2xl border border-gray-100 overflow-hidden fns-animate">
+            <div class="fns-card bg-white shadow-md rounded-2xl border border-gray-100 fns-animate" style="position: relative; z-index: 30; overflow: visible !important;">
                 <div class="border-b border-gray-100 bg-gray-50/50 p-2 sm:px-5 sm:py-3 flex overflow-x-auto">
                     <div class="flex gap-1.5 p-1 bg-gray-200/60 rounded-lg inline-flex">
                         <a href="{{ route('reports.budget-expense', array_merge(request()->except('type'), ['type' => 'daily'])) }}" 
@@ -99,8 +99,8 @@
                         </a>
                     </div>
                 </div>
-                <div class="p-5 bg-gray-50/30">
-                    <form method="GET" action="{{ route('reports.budget-expense') }}" class="flex flex-wrap gap-4 items-end">
+                <div class="p-5 bg-gray-50/30" style="overflow: visible !important;">
+                    <form method="GET" action="{{ route('reports.budget-expense') }}" class="flex flex-wrap gap-4 items-end" style="overflow: visible !important;">
                         <input type="hidden" name="type" value="{{ $type }}">
                         
                         <div class="flex flex-col gap-1.5">
@@ -122,20 +122,113 @@
                         
                         <div class="flex flex-col gap-1.5 min-w-[240px] flex-1">
                             <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider">ໝວດບັນຊີງົບປະມານ</label>
-                            <select name="account_id" class="ui-input bg-white focus:ring-rose-500 focus:border-rose-500 shadow-sm transition-all text-sm h-10 cursor-pointer">
-                                <option value="">-- ເລືອກໝວດບັນຊີ --</option>
-                                @foreach($lineItems as $li)
-                                    @php
-                                        $account = $li instanceof \App\Models\ChartOfAccount ? $li : $li->chartOfAccount;
-                                        $valId = $li instanceof \App\Models\ChartOfAccount ? $li->id : $li->account_id;
-                                    @endphp
-                                    @if($account)
-                                        <option value="{{ $valId }}" {{ $selectedAccountId == $valId ? 'selected' : '' }}>
-                                            {{ $account->account_code }} — {{ $account->account_name }}
-                                        </option>
-                                    @endif
-                                @endforeach
-                            </select>
+                            <div x-data="reportAccountDropdown()" class="relative w-full">
+                                <!-- Trigger Button -->
+                                <button type="button" @click.stop="open = !open; if (open) { $nextTick(() => $refs.searchInput.focus()) }" @click.outside="open = false"
+                                    class="ui-input bg-white focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 shadow-sm transition-all text-sm w-full cursor-pointer pr-10 py-2 px-4 rounded-xl text-left border border-gray-200 h-10 flex items-center justify-between">
+                                    <span x-text="selectedText" class="truncate text-gray-700"></span>
+                                    <svg class="h-4 w-4 text-gray-400 shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                    </svg>
+                                </button>
+
+                                <!-- Native hidden select for form submission -->
+                                <select id="account_id" name="account_id" style="display: none !important;">
+                                    <option value="">-- ເລືອກໝວດບັນຊີ --</option>
+                                    @foreach($lineItems as $li)
+                                        @php
+                                            $account = $li instanceof \App\Models\ChartOfAccount ? $li : $li->chartOfAccount;
+                                            $valId = $li instanceof \App\Models\ChartOfAccount ? $li->id : $li->account_id;
+                                        @endphp
+                                        @if($account)
+                                            <option value="{{ $valId }}" {{ $selectedAccountId == $valId ? 'selected' : '' }}>
+                                                {{ $account->account_code }} — {{ $account->account_name }}
+                                            </option>
+                                        @endif
+                                    @endforeach
+                                </select>
+
+                                <!-- Dropdown List -->
+                                <div x-show="open"
+                                    x-transition:enter="transition ease-out duration-100"
+                                    x-transition:enter-start="transform opacity-0 scale-95"
+                                    x-transition:enter-end="transform opacity-100 scale-100"
+                                    x-transition:leave="transition ease-in duration-75"
+                                    x-transition:leave-start="transform opacity-100 scale-100"
+                                    x-transition:leave-end="transform opacity-0 scale-95"
+                                    class="absolute left-0 right-0 z-50 mt-1.5 w-full bg-white rounded-xl shadow-xl border border-gray-100 max-h-64 overflow-hidden flex flex-col">
+
+                                    <!-- Search Input -->
+                                    <div class="p-2 border-b border-gray-100 bg-gray-50/50">
+                                        <input type="text" x-model="search" x-ref="searchInput" @click.stop=""
+                                            placeholder="ຄົ້ນຫາເລກບັນຊີ..."
+                                            class="w-full px-3 py-2 text-xs border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 transition-all bg-white" />
+                                    </div>
+
+                                    <!-- Options List -->
+                                    <ul class="overflow-y-auto max-h-48 py-1 divide-y divide-gray-50">
+                                        <template x-for="acc in filteredAccounts" :key="acc.id">
+                                            <li @click="select(acc.id, acc.code + ' — ' + acc.name)"
+                                                class="cursor-pointer px-4 py-2.5 text-xs text-gray-700 hover:bg-rose-50/60 hover:text-rose-900 transition-colors flex justify-between items-center"
+                                                :class="acc.id == selectedId ? 'bg-rose-50/80 font-semibold text-rose-900' : ''">
+                                                <span x-text="acc.code + ' — ' + acc.name" class="truncate"></span>
+                                                <svg x-show="acc.id == selectedId" class="h-4 w-4 text-rose-600 shrink-0 ml-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                                </svg>
+                                            </li>
+                                        </template>
+                                        <div x-show="filteredAccounts.length === 0" class="px-4 py-4 text-xs text-gray-400 text-center">
+                                            ບໍ່ພົບຂໍ້ມູນ...
+                                        </div>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <script>
+                                function reportAccountDropdown() {
+                                    return {
+                                        open: false,
+                                        search: '',
+                                        selectedId: '{{ $selectedAccountId }}',
+                                        selectedText: '-- ເລືອກໝວດບັນຊີ --',
+                                        accounts: [
+                                            @foreach($lineItems as $li)
+                                                @php
+                                                    $account = $li instanceof \App\Models\ChartOfAccount ? $li : $li->chartOfAccount;
+                                                    $valId = $li instanceof \App\Models\ChartOfAccount ? $li->id : $li->account_id;
+                                                @endphp
+                                                @if($account)
+                                                    { id: '{{ $valId }}', code: '{{ $account->account_code }}', name: {!! json_encode($account->account_name) !!} },
+                                                @endif
+                                            @endforeach
+                                        ],
+                                        init() {
+                                            let initial = this.accounts.find(a => a.id == this.selectedId);
+                                            if (initial) {
+                                                this.selectedText = initial.code + ' — ' + initial.name;
+                                            }
+                                        },
+                                        select(id, text) {
+                                            this.selectedId = id;
+                                            this.selectedText = text;
+                                            this.open = false;
+                                            this.search = '';
+                                            // Update native select
+                                            const nativeSelect = document.getElementById('account_id');
+                                            nativeSelect.value = id;
+                                        },
+                                        get filteredAccounts() {
+                                            if (this.search === '') {
+                                                return this.accounts;
+                                            }
+                                            return this.accounts.filter(a => {
+                                                return a.code.toLowerCase().includes(this.search.toLowerCase()) ||
+                                                       a.name.toLowerCase().includes(this.search.toLowerCase());
+                                            });
+                                        }
+                                    }
+                                }
+                            </script>
                         </div>
                         
                         <div class="flex flex-col gap-1.5 min-w-[200px]"
@@ -166,7 +259,7 @@
 
             {{-- Report Table Card --}}
             @if($report)
-                <div class="fns-card bg-white shadow-md rounded-2xl border border-gray-100 overflow-hidden fns-animate">
+                <div class="fns-card bg-white shadow-md rounded-2xl border border-gray-100 overflow-hidden fns-animate" style="position: relative; z-index: 10;">
                     <div class="p-5 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                         <div>
                             <h3 class="text-base font-extrabold text-gray-800 flex items-center gap-2">
@@ -271,12 +364,12 @@
                 </div>
 
             @elseif($selectedYear && !$plan)
-                <div class="fns-card bg-white shadow-md rounded-2xl border border-gray-100 p-8 text-center fns-animate">
+                <div class="fns-card bg-white shadow-md rounded-2xl border border-gray-100 p-8 text-center fns-animate" style="position: relative; z-index: 10;">
                     <p class="text-gray-500 font-bold">ບໍ່ມີຂໍ້ມູນງົບປະມານ</p>
                     <p class="text-xs text-gray-400 mt-1">ປີ {{ $selectedYear }} ຍັງບໍ່ມີແຜນງົບປະມານທີ່ Approved</p>
                 </div>
             @else
-                <div class="fns-card bg-white shadow-md rounded-2xl border border-gray-100 p-12 text-center fns-animate">
+                <div class="fns-card bg-white shadow-md rounded-2xl border border-gray-100 p-12 text-center fns-animate" style="position: relative; z-index: 10;">
                     <div class="flex flex-col items-center justify-center">
                         <div class="w-16 h-16 rounded-2xl bg-rose-50 text-rose-500 flex items-center justify-center mb-4 border border-rose-100 shrink-0">
                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">

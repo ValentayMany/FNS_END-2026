@@ -123,12 +123,15 @@ Route::middleware(['auth', 'role:head_of_finance'])->group(function () {
     Route::post('/department-setup', [DepartmentSetupController::class, 'store'])->name('department-setup.store');
     Route::put('/department-setup/{department}', [DepartmentSetupController::class, 'update'])->name('department-setup.update');
     Route::delete('/department-setup/{department}', [DepartmentSetupController::class, 'destroy'])->name('department-setup.destroy');
+    Route::get('/budget-dashboard', [DepartmentSetupController::class, 'budgetDashboard'])->name('department-setup.budget-dashboard');
 });
 
 // ---- Admin ----
 Route::middleware(['auth', 'role:admin'])
     ->group(function () {
         Route::get('/admin/users', [AdminController::class, 'index'])->name('admin.users');
+        Route::post('/admin/users', [AdminController::class, 'store'])->name('admin.storeUser');
+        Route::put('/admin/users/{user}', [AdminController::class, 'update'])->name('admin.updateUser');
         Route::post('/admin/users/{user}/update-role', [AdminController::class, 'updateRole'])->name('admin.updateRole');
         Route::post('/admin/users/{user}/toggle-active', [AdminController::class, 'toggleActive'])->name('admin.toggleActive');
     });
