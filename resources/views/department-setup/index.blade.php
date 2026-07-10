@@ -198,6 +198,7 @@
         </div>
     </div>
 
+    @push('modals')
     {{-- ──────────────────────────────────────────────
          ADD MODAL (Matching Example Modal Layout)
     ────────────────────────────────────────────────── --}}
@@ -372,6 +373,7 @@
             </div>
         </div>
     </div>
+    @endpush
 
     {{-- Hide input spin buttons globally on this page --}}
     <style>
