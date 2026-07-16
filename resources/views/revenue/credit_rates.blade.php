@@ -23,7 +23,7 @@
     </x-slot>
 
     <div class="py-6 w-full bg-slate-50/50">
-        <div class="max-w-[1300px] mx-auto px-4 space-y-6" x-data="{ activeTab: 'credits', editFeeItem: { id: null, name: '' } }">
+        <div class="w-full px-4 space-y-6" x-data="{ activeTab: 'credits', editFeeItem: { id: null, name: '' } }">
             
             {{-- Alerts --}}
             @if (session('success'))
@@ -87,7 +87,7 @@
             </div>
 
             {{-- Tabs Navigation --}}
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 max-w-5xl">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 w-full">
                 <!-- Tab 1 Card -->
                 <button type="button" @click="activeTab = 'credits'" 
                     :class="activeTab === 'credits' ? 'bg-gradient-to-br from-indigo-500/10 via-indigo-600/5 to-transparent border-indigo-500/80 shadow-md ring-2 ring-indigo-500/20' : 'bg-white border-slate-200/60 hover:border-indigo-200 hover:shadow-md hover:-translate-y-0.5'"
@@ -262,7 +262,7 @@
                     @csrf
 
                     {{-- Main Table Card --}}
-                    <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden max-w-5xl">
+                    <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden w-full">
                         <div class="border-b border-slate-100 px-6 py-4 flex items-center justify-between">
                             <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
                                 <span class="w-1 h-4 rounded bg-indigo-600"></span>
@@ -363,7 +363,7 @@
                     </div>
 
                     {{-- Submit button --}}
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white border border-slate-100 rounded-2xl p-5 shadow-sm max-w-5xl">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white border border-slate-100 rounded-2xl p-5 shadow-sm w-full">
                         <div class="flex items-start gap-3">
                             <div class="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
                                 💡

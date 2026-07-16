@@ -18,7 +18,7 @@
     </x-slot>
 
     <div class="py-6 w-full bg-slate-50/50">
-        <div class="max-w-[1300px] mx-auto px-4 space-y-6">
+        <div class="w-full px-4 space-y-6">
 
             {{-- Flash Alert Messages --}}
             @if(session('success'))

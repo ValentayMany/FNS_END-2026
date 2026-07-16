@@ -17,7 +17,7 @@
     </x-slot>
 
     <div class="py-6 sm:py-8 w-full min-w-0">
-        <div class="max-w-[1300px] mx-auto w-full px-3 sm:px-4 lg:px-6 space-y-6">
+        <div class="w-full px-3 sm:px-4 lg:px-6 space-y-6">
 
             {{-- Year Filter --}}
             <div class="flex flex-wrap items-center gap-3">
