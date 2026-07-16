@@ -144,7 +144,7 @@
                                         </button>
 
                                         {{-- Selected student display (shown after selection) --}}
-                                        <div id="student-info-card" class="hidden ui-input bg-white border border-indigo-200 shadow-sm text-sm w-full rounded-xl flex items-center justify-between gap-3 pr-3 pl-4 py-2">
+                                        <div id="student-info-card" hidden class="ui-input bg-white border border-indigo-200 shadow-sm text-sm w-full rounded-xl flex items-center justify-between gap-3 pr-3 pl-4 py-2">
                                             <div class="flex items-center gap-3">
                                                 <div class="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold text-xs shrink-0">&#127891;</div>
                                                 <div>
@@ -169,7 +169,7 @@
                                                         placeholder="ຄົ້ນຫາລະຫັດ ຫຼື ຊື່ນັກສຶກສາ..."
                                                         class="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 transition-all bg-white"
                                                         autocomplete="off" />
-                                                    <div id="search-spinner" class="hidden absolute inset-y-0 right-2 flex items-center">
+                                                    <div id="search-spinner" class="hidden absolute inset-y-0 right-2 items-center">
                                                         <svg class="animate-spin w-4 h-4 text-indigo-500" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg>
                                                     </div>
                                                 </div>
