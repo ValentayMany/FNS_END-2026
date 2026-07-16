@@ -144,7 +144,7 @@
                                         </button>
 
                                         {{-- Selected student display (shown after selection) --}}
-                                        <div id="student-info-card" hidden class="ui-input bg-white border border-indigo-200 shadow-sm text-sm w-full rounded-xl flex items-center justify-between gap-3 pr-3 pl-4 py-2">
+                                        <div id="student-info-card" class="hidden ui-input bg-white border border-indigo-200 shadow-sm text-sm w-full rounded-xl flex items-center justify-between gap-3 pr-3 pl-4 py-2">
                                             <div class="flex items-center gap-3">
                                                 <div class="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold text-xs shrink-0">&#127891;</div>
                                                 <div>
@@ -653,6 +653,18 @@
                 badge.style.opacity = (this.value === '{{ $nextCode ?? '' }}') ? '1' : '0';
             });
         }
+
+        // Reset student state on page load to prevent stale browser-restored state
+        if (studentIdInp) studentIdInp.value = '';
+        if (searchInput) searchInput.value = '';
+        if (infoCard) infoCard.classList.add('hidden');
+        if (triggerBtn) triggerBtn.classList.remove('hidden');
+        for (let i = 0; i < feeCount; i++) {
+            const d = document.getElementById(`fee-display-${i}`);
+            const a = document.getElementById(`fee-amount-${i}`);
+            if (d && a) { a.value = 0; d.value = ''; }
+        }
+        updateTotal();
     })();
 
     // ---- Modal functions ----
