@@ -1,11 +1,11 @@
 @php
-    // Define fixed categories in the exact order requested
+    // Must match EXACTLY the value= attributes in fees[n][label] hidden inputs in revenue.blade.php
     $categories = [
-        'ຄ່າລົງທະບຽນ',
-        'ຄ່າໜ່ວຍກິດ',
-        'ປັບປຸງຫ້ອງແລັບ',
-        'ຄ່າເທີມສາມ',
-        'ຄ່າບໍລິການຕ່າງໆ',
+        'ຄ່າລົງທະບຽນ',      // fees[0]
+        'ຄ່າໜ່ວຍກິດ',       // fees[1]
+        'ຄ່າບູລະນະ ຫທລ',    // fees[2]
+        'ຄ່າໜ່ວຍກິດ ທສ',    // fees[3]
+        'ຄ່າບໍລິການອື່ນໆ',  // fees[4]
     ];
     
     // Determine the title suffix
@@ -47,6 +47,17 @@
     </thead>
     <tbody>
         @forelse($incomeTransactions as $txn)
+            @php
+                // Try to parse fee breakdown from description (JSON format)
+                $feeJson = [];
+                $descStr = $txn->getRawOriginal('description') ?? $txn->description ?? '';
+                if ($descStr && str_starts_with(trim($descStr), '{')) {
+                    $parsed = json_decode($descStr, true);
+                    if (is_array($parsed)) {
+                        $feeJson = $parsed;
+                    }
+                }
+            @endphp
             <tr>
                 <td style="text-align: center; border: 1px solid #000 !important; padding: 4px 6px; font-weight: normal;">
                     {{ $txn->payment_code ?: sprintf('%06d', $txn->id) }}
@@ -54,22 +65,40 @@
                 @foreach($categories as $cat)
                     @php
                         $amount = 0;
-                        $isMatch = false;
-                        
-                        if ($cat === 'ຄ່າລົງທະບຽນ' && $txn->category === 'ຄ່າລົງທະບຽນ') {
-                            $isMatch = true;
-                        } elseif ($cat === 'ຄ່າໜ່ວຍກິດ' && $txn->category === 'ຄ່າໜ່ວຍກິດ') {
-                            $isMatch = true;
-                        } elseif ($cat === 'ປັບປຸງຫ້ອງແລັບ' && $txn->category === 'ປັບປຸງຫ້ອງແລັບ') {
-                            $isMatch = true;
-                        } elseif ($cat === 'ຄ່າເທີມສາມ' && ($txn->category === 'ຄ່າເທີມສາມ' || $txn->category === 'ຄ່າໜ່ວຍກິດເທີມ 3')) {
-                            $isMatch = true;
-                        } elseif ($cat === 'ຄ່າບໍລິການຕ່າງໆ' && ($txn->category === 'ຄ່າບໍລິການຕ່າງໆ' || $txn->category === 'ຄ່າບໍລິການວິຊາການ')) {
-                            $isMatch = true;
-                        }
-                        
-                        if ($isMatch) {
-                            $amount = $txn->amount;
+
+                        // 1) Check JSON breakdown first (new records)
+                        if (!empty($feeJson)) {
+                            // Direct key match
+                            if (isset($feeJson[$cat])) {
+                                $amount = $feeJson[$cat];
+                            } else {
+                                // Alias match for categories with multiple names
+                                $aliases = [
+                                    'ຄ່າເທີມສາມ'       => ['ຄ່າເທີມສາມ', 'ຄ່າໜ່ວຍກິດເທີມ 3'],
+                                    'ຄ່າບໍລິການຕ່າງໆ'  => ['ຄ່າບໍລິການຕ່າງໆ', 'ຄ່າບໍລິການວິຊາການ'],
+                                ];
+                                foreach ($aliases[$cat] ?? [] as $alias) {
+                                    if (isset($feeJson[$alias])) {
+                                        $amount = $feeJson[$alias];
+                                        break;
+                                    }
+                                }
+                            }
+                        } else {
+                            // 2) Fallback: old records — match by category string
+                            $isMatch = false;
+                            if ($cat === 'ຄ່າລົງທະບຽນ' && $txn->category === 'ຄ່າລົງທະບຽນ') {
+                                $isMatch = true;
+                            } elseif ($cat === 'ຄ່າໜ່ວຍກິດ' && $txn->category === 'ຄ່າໜ່ວຍກິດ') {
+                                $isMatch = true;
+                            } elseif ($cat === 'ຄ່າບູລະນະ ຫທລ' && in_array($txn->category, ['ຄ່າບູລະນະ ຫທລ', 'ປັບປຸງຫ້ອງແລັບ'])) {
+                                $isMatch = true;
+                            } elseif ($cat === 'ຄ່າໜ່ວຍກິດ ທສ' && in_array($txn->category, ['ຄ່າໜ່ວຍກິດ ທສ', 'ຄ່າເທີມສາມ', 'ຄ່າໜ່ວຍກິດເທີມ 3'])) {
+                                $isMatch = true;
+                            } elseif ($cat === 'ຄ່າບໍລິການອື່ນໆ' && in_array($txn->category, ['ຄ່າບໍລິການອື່ນໆ', 'ຄ່າບໍລິການຕ່າງໆ', 'ຄ່າບໍລິການວິຊາການ'])) {
+                                $isMatch = true;
+                            }
+                            if ($isMatch) $amount = $txn->amount;
                         }
                     @endphp
                     @if($amount > 0)
@@ -84,6 +113,7 @@
                 @endforeach
             </tr>
         @empty
+
             <tr>
                 <td colspan="6" style="text-align: center; border: 1px solid #000 !important; padding: 12px; color: #000;">
                     ບໍ່ມີຂໍ້ມູນລາຍຮັບ
@@ -102,12 +132,12 @@
                         $sum = $incomeTransactions->where('category', 'ຄ່າລົງທະບຽນ')->sum('amount');
                     } elseif ($cat === 'ຄ່າໜ່ວຍກິດ') {
                         $sum = $incomeTransactions->where('category', 'ຄ່າໜ່ວຍກິດ')->sum('amount');
-                    } elseif ($cat === 'ປັບປຸງຫ້ອງແລັບ') {
-                        $sum = $incomeTransactions->where('category', 'ປັບປຸງຫ້ອງແລັບ')->sum('amount');
-                    } elseif ($cat === 'ຄ່າເທີມສາມ') {
-                        $sum = $incomeTransactions->whereIn('category', ['ຄ່າເທີມສາມ', 'ຄ່າໜ່ວຍກິດເທີມ 3'])->sum('amount');
-                    } elseif ($cat === 'ຄ່າບໍລິການຕ່າງໆ') {
-                        $sum = $incomeTransactions->whereIn('category', ['ຄ່າບໍລິການຕ່າງໆ', 'ຄ່າບໍລິການວິຊາການ'])->sum('amount');
+                    } elseif ($cat === 'ຄ່າບູລະນະ ຫທລ') {
+                        $sum = $incomeTransactions->whereIn('category', ['ຄ່າບູລະນະ ຫທລ', 'ປັບປຸງຫ້ອງແລັບ'])->sum('amount');
+                    } elseif ($cat === 'ຄ່າໜ່ວຍກິດ ທສ') {
+                        $sum = $incomeTransactions->whereIn('category', ['ຄ່າໜ່ວຍກິດ ທສ', 'ຄ່າເທີມສາມ', 'ຄ່າໜ່ວຍກິດເທີມ 3'])->sum('amount');
+                    } elseif ($cat === 'ຄ່າບໍລິການອື່ນໆ') {
+                        $sum = $incomeTransactions->whereIn('category', ['ຄ່າບໍລິການອື່ນໆ', 'ຄ່າບໍລິການຕ່າງໆ', 'ຄ່າບໍລິການວິຊາການ'])->sum('amount');
                     }
                 @endphp
                 @if($sum > 0)

@@ -79,6 +79,29 @@ Route::middleware(['auth', 'role:revenue_officer,admin,accountant,head_of_financ
         Route::get('/revenue/dashboard', [RevenueController::class, 'dashboard'])->name('revenue.dashboard');
     });
 
+Route::middleware(['auth', 'role:head_of_finance'])
+    ->group(function () {
+        Route::get('/revenue/credit-rates', [\App\Http\Controllers\CreditRateController::class, 'index'])->name('revenue.credit-rates.index');
+        Route::post('/revenue/credit-rates', [\App\Http\Controllers\CreditRateController::class, 'update'])->name('revenue.credit-rates.update');
+        Route::post('/revenue/courses', [\App\Http\Controllers\CreditRateController::class, 'storeCourse'])->name('revenue.courses.store');
+        Route::put('/revenue/courses/{id}', [\App\Http\Controllers\CreditRateController::class, 'updateCourse'])->name('revenue.courses.update');
+        Route::delete('/revenue/courses/{id}', [\App\Http\Controllers\CreditRateController::class, 'destroyCourse'])->name('revenue.courses.destroy');
+        Route::post('/revenue/registration-fees', [\App\Http\Controllers\CreditRateController::class, 'updateRegistrationFees'])->name('revenue.registration-fees.update');
+        Route::post('/revenue/registration-fee-items', [\App\Http\Controllers\CreditRateController::class, 'storeRegistrationFeeItem'])->name('revenue.registration-fee-items.store');
+        Route::put('/revenue/registration-fee-items/{id}', [\App\Http\Controllers\CreditRateController::class, 'updateRegistrationFeeItem'])->name('revenue.registration-fee-items.update');
+        Route::delete('/revenue/registration-fee-items/{id}', [\App\Http\Controllers\CreditRateController::class, 'destroyRegistrationFeeItem'])->name('revenue.registration-fee-items.destroy');
+        
+        // Student Management
+        Route::get('/revenue/students', [\App\Http\Controllers\StudentController::class, 'index'])->name('revenue.students.index');
+        Route::get('/revenue/students/download-template', [\App\Http\Controllers\StudentController::class, 'downloadTemplate'])->name('revenue.students.download-template');
+        Route::post('/revenue/students', [\App\Http\Controllers\StudentController::class, 'store'])->name('revenue.students.store');
+        Route::put('/revenue/students/{student}', [\App\Http\Controllers\StudentController::class, 'update'])->name('revenue.students.update');
+        Route::delete('/revenue/students/{student}', [\App\Http\Controllers\StudentController::class, 'destroy'])->name('revenue.students.destroy');
+        Route::patch('/revenue/students/{student}/toggle-status', [\App\Http\Controllers\StudentController::class, 'toggleStatus'])->name('revenue.students.toggle-status');
+        Route::post('/revenue/students/import', [\App\Http\Controllers\StudentController::class, 'import'])->name('revenue.students.import');
+    });
+
+
 Route::middleware(['auth', 'role:revenue_officer'])
     ->group(function () {
         Route::get('/revenue', [RevenueController::class, 'index'])->name('revenue.index');
@@ -87,6 +110,9 @@ Route::middleware(['auth', 'role:revenue_officer'])
         Route::get('/revenue/{transaction}/edit', [RevenueController::class, 'edit'])->name('revenue.edit');
         Route::put('/revenue/{transaction}', [RevenueController::class, 'update'])->name('revenue.update');
         Route::delete('/revenue/{transaction}', [RevenueController::class, 'destroy'])->name('revenue.destroy');
+        // AJAX: ค้นหานักศึกษา + ดึงค่าธรรมเนียม
+        Route::get('/api/students/search', [RevenueController::class, 'searchStudents'])->name('revenue.students.search');
+        Route::get('/api/students/{student}/fees', [RevenueController::class, 'getStudentFees'])->name('revenue.students.fees');
     });
 
 // ---- Expense (Accountant only) ----

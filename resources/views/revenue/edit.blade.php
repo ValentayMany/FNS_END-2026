@@ -98,6 +98,17 @@
                                 <x-input-error :messages="$errors->get('department_id')" class="mt-1" />
                             </div>
 
+                            {{-- ຊ່ວງລາຍຮັບ --}}
+                            <div>
+                                <label for="revenue_channel" class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5">ຊ່ວງລາຍຮັບ</label>
+                                <select id="revenue_channel" name="revenue_channel"
+                                    class="w-full px-4 py-2.5 bg-gray-50/50 border border-gray-200 text-gray-800 rounded-xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 focus:bg-white transition-all duration-200 outline-none text-sm font-medium appearance-none cursor-pointer">
+                                    <option value="ເງີນບໍລິຫານທົ່ວໄປ" {{ old('revenue_channel', $transaction->revenue_channel) === 'ເງີນບໍລິຫານທົ່ວໄປ' ? 'selected' : '' }}>ເງີນບໍລິຫານທົ່ວໄປ</option>
+                                </select>
+                                <x-input-error :messages="$errors->get('revenue_channel')" class="mt-1" />
+                            </div>
+
+
                             <div>
                                 <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2.5">ວິທີຮັບເງິນ <span class="text-indigo-500">*</span></label>
                                 <div class="grid grid-cols-2 gap-2.5">
@@ -118,14 +129,16 @@
                             </div>
 
                             <div class="sm:col-span-2">
-                                <label for="amount" class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5">ຈຳນວນເງິນ (ກີບ) <span class="text-indigo-500">*</span></label>
+                                <label for="amount_display" class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1.5">ຈຳນວນເງິນ (ກີບ) <span class="text-indigo-500">*</span></label>
                                 <div class="relative">
                                     <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                                         <span class="text-gray-400 font-bold sm:text-sm">&#x20AD;</span>
                                     </div>
-                                    <input id="amount" name="amount" type="number"
+                                    <input id="amount_display" type="text" inputmode="numeric"
                                         class="w-full pl-9 pr-4 py-2.5 bg-gray-50/50 border border-gray-200 text-indigo-700 rounded-xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 focus:bg-white transition-all duration-200 outline-none font-bold text-lg"
-                                        min="1" step="0.01" value="{{ old('amount', $transaction->amount) }}" placeholder="0.00" required />
+                                        placeholder="0" autocomplete="off" />
+                                    <input id="amount" name="amount" type="hidden"
+                                        value="{{ old('amount', intval($transaction->amount)) }}" />
                                 </div>
                                 <x-input-error :messages="$errors->get('amount')" class="mt-1" />
                             </div>
@@ -168,6 +181,31 @@
                 wrapper.classList.add('hidden');
                 customInput.removeAttribute('required');
                 customInput.value = '';
+            }
+        });
+
+        // Amount: comma-format display
+        const amountDisplay = document.getElementById('amount_display');
+        const amountHidden  = document.getElementById('amount');
+
+        // Format on page load
+        (function() {
+            const raw = parseInt(amountHidden.value) || 0;
+            if (raw) amountDisplay.value = raw.toLocaleString();
+        })();
+
+        amountDisplay.addEventListener('input', function() {
+            const raw = this.value.replace(/[^0-9]/g, '');
+            this.value = raw ? parseInt(raw).toLocaleString() : '';
+            amountHidden.value = raw || '';
+        });
+
+        // Require amount on submit
+        amountDisplay.closest('form').addEventListener('submit', function(e) {
+            if (!amountHidden.value || parseInt(amountHidden.value) <= 0) {
+                e.preventDefault();
+                amountDisplay.focus();
+                amountDisplay.classList.add('border-red-400');
             }
         });
     </script>

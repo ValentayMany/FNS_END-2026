@@ -1,48 +1,51 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 min-w-0">
-            <div class="flex flex-col gap-1.5 min-w-0">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 min-w-0">
+            <div class="flex flex-col gap-0.5 min-w-0">
                 <div class="flex items-center gap-2">
                     <div class="w-8 h-8 rounded-lg bg-indigo-100 text-indigo-600 flex items-center justify-center shrink-0">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                        </svg>
                     </div>
                     <h2 class="text-xl sm:text-2xl font-extrabold text-gray-900 tracking-tight leading-none">
-                        ບັນທຶກລາຍຮັບ (Revenue)
+                        ບັນທືກລາຍຮັບ
                     </h2>
                 </div>
-                <p class="text-sm font-semibold text-gray-500 pl-10">ບ່ອນບັນທຶກລາຍຮັບ: ຄ່າລົງທະບຽນ ແລະ ຄ່າໜ່ວຍກິດ</p>
+                <p class="text-sm font-semibold text-gray-400 pl-10">
+                    {{ today()->format('d/m/Y') }}
+                    &nbsp;—&nbsp;
+                    ລວມມື້ນີ້:
+                    <span class="text-indigo-600 font-extrabold">
+                        ₭ {{ number_format(collect($departments)->sum(fn($d) => $dailyStats[$d->id]['total'] ?? 0)) }}
+                    </span>
+                </p>
             </div>
-            <a href="{{ route('revenue.dashboard') }}" 
-               class="inline-flex items-center justify-center gap-2 px-4 py-2 text-xs sm:text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 rounded-xl transition-all duration-150 shadow-md shadow-indigo-100 shrink-0">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.003 9.003 0 1020.945 13H11V3.055z" />
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" />
-                </svg>
-                📊 ເບິ່ງ Dashboard ລາຍຮັບ
-            </a>
         </div>
     </x-slot>
 
-    <div class="py-6 sm:py-8 w-full min-w-0">
-        <div class="max-w-full mx-auto w-full min-w-0 px-4 sm:px-6 lg:px-8">
-
-            @if (session('success'))
-                <div class="fns-alert fns-alert-success fns-animate mb-6 shadow-sm border-l-4 border-l-indigo-500 rounded-lg">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" class="text-indigo-500 w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                    <span class="font-bold">{{ session('success') }}</span>
-                </div>
-            @endif
-            @if (session('error'))
-                <div class="fns-alert fns-alert-error fns-animate mb-6 shadow-sm border-l-4 border-l-red-500 rounded-lg">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" class="text-red-500 w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" /></svg>
-                    <span class="font-bold">{{ session('error') }}</span>
-                </div>
-            @endif
-
+    <div class="py-6">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="space-y-6">
 
+                {{-- Alert Notifications --}}
+                @if (session('success'))
+                    <div class="fns-alert fns-alert-success fns-animate shadow-sm">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                        <span class="font-bold">{{ session('success') }}</span>
+                    </div>
+                @endif
 
-                {{-- Form Card --}}
+                @if (session('error'))
+                    <div class="fns-alert fns-alert-error fns-animate shadow-sm">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                        <span class="font-bold">{{ session('error') }}</span>
+                    </div>
+                @endif
+
+
+                {{-- Main Card --}}
+
                 <div class="fns-card border-t-4 border-t-indigo-500 shadow-lg bg-white rounded-2xl overflow-hidden fns-animate">
 
                     <div class="fns-card-header bg-transparent border-b border-gray-100 py-5 px-6">
@@ -53,145 +56,253 @@
                     </div>
 
                     <div class="p-5 sm:p-6 bg-gray-50/30">
-                        <form method="POST" action="{{ route('revenue.store') }}" class="space-y-4">
+                        <form method="POST" action="{{ route('revenue.store') }}" class="space-y-4" id="revenue-form">
                             @csrf
 
-                            <div class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-                                {{-- ເລກທີ (auto-increment) --}}
+                            {{-- Section 1: ຂໍ້ມູນຫຼັກ (4 columns on large screens) --}}
+                            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+
+                                {{-- 1. ເລກທີໃບບິນ --}}
                                 <div>
                                     <label for="payment_code" class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">
-                                        ເລກທີ (ໃບບິນ) <span class="text-indigo-500">*</span>
+                                        ເລກທີໃບບິນ <span class="text-indigo-500">*</span>
                                     </label>
-                                    <div class="relative">
+                                    <div class="relative overflow-hidden rounded-xl">
                                         <input id="payment_code" name="payment_code" type="text" required
-                                            class="ui-input bg-white focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition-all text-sm font-bold w-full pr-16"
+                                            class="ui-input bg-white focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition-all text-sm font-bold w-full pr-24 h-11 rounded-xl border border-gray-200"
                                             value="{{ old('payment_code', $nextCode ?? '') }}"
-                                            placeholder="ເຊັ່ນ: 103906"
+                                            placeholder="ເຊັ່ນ: 16864"
                                             autocomplete="off" />
-                                        {{-- Badge: แสดงเมื่อค่าตรงกับ nextCode --}}
                                         @if($nextCode ?? false)
                                         <span id="auto-badge"
-                                            class="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] font-bold px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-600 pointer-events-none select-none transition-opacity"
-                                            style="white-space:nowrap;">
-                                            ອັດຕະໂນມັດ
-                                        </span>
+                                            class="absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] font-bold px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-600 pointer-events-none select-none whitespace-nowrap">ອັດຕະໂນມັດ</span>
                                         @endif
                                     </div>
-                                    @if($nextCode ?? false)
-                                    <p class="mt-1 text-[11px] text-gray-400">
-                                        ເລກຕໍ່ໄປ: <strong class="text-indigo-500">{{ $nextCode }}</strong>
-                                        — ສາມາດແກ້ໄຂໄດ້
-                                    </p>
-                                    @endif
                                     <x-input-error :messages="$errors->get('payment_code')" class="mt-1" />
                                 </div>
 
-                                {{-- ວັນທີ --}}
+                                {{-- 2. ວັນທີຮັບ --}}
                                 <div>
-                                    <label for="transaction_date" class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">ວັນທີ <span class="text-indigo-500">*</span></label>
+                                    <label for="transaction_date" class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">
+                                        ວັນທີຮັບ <span class="text-indigo-500">*</span>
+                                    </label>
                                     <input id="transaction_date" name="transaction_date" type="date"
-                                        class="ui-input bg-white focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition-all text-sm w-full"
+                                        class="ui-input bg-white focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition-all text-sm w-full h-11 rounded-xl border border-gray-200"
                                         value="{{ old('transaction_date', today()->toDateString()) }}" required />
                                     <x-input-error :messages="$errors->get('transaction_date')" class="mt-1" />
                                 </div>
 
-                                {{-- ປະເພດລາຍຮັບ --}}
-                                <div class="space-y-2">
-                                    <div>
-                                        <label for="category" class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">ປະເພດລາຍຮັບ <span class="text-indigo-500">*</span></label>
-                                        <select id="category" name="category" required class="ui-input bg-white focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition-all text-sm w-full cursor-pointer">
-                                            <option value="">-- ເລືອກປະເພດລາຍຮັບ --</option>
-                                            @foreach ($categories as $cat)
-                                                <option value="{{ $cat }}" {{ old('category') == $cat ? 'selected' : '' }}>{{ $cat }}</option>
-                                            @endforeach
-                                            <option value="__custom__" {{ old('category') == '__custom__' ? 'selected' : '' }}>+ ເພີ່ມລາຍການອື່ນໆ...</option>
-                                        </select>
-                                        <x-input-error :messages="$errors->get('category')" class="mt-1" />
-                                    </div>
-                                    <div id="custom_category_wrapper" class="{{ old('category') == '__custom__' ? '' : 'hidden' }}">
-                                        <label for="custom_category" class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">ລະບຸປະເພດລາຍຮັບອື່ນໆ <span class="text-indigo-500">*</span></label>
-                                        <input id="custom_category" name="custom_category" type="text"
-                                            class="ui-input bg-white focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition-all text-sm w-full font-bold"
-                                            value="{{ old('custom_category') }}" placeholder="ປ້ອນປະເພດລາຍຮັບອື່ນໆ..." />
-                                        <x-input-error :messages="$errors->get('custom_category')" class="mt-1" />
-                                    </div>
-                                </div>
-
-                                {{-- ພາກສ່ວນ --}}
+                                {{-- 3. ຊ່ອງລາຍຮັບ --}}
                                 <div>
-                                    <label for="department_id" class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">ພາກສ່ວນ <span class="text-indigo-500">*</span></label>
-                                    <select id="department_id" name="department_id" required class="ui-input bg-white focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition-all text-sm w-full cursor-pointer">
-                                        <option value="">-- ເລືອກພາກສ່ວນ --</option>
-                                        @foreach ($departments as $dept)
-                                            <option value="{{ $dept->id }}" {{ old('department_id') == $dept->id ? 'selected' : '' }}>
-                                                {{ $dept->displayName() }}
-                                            </option>
-                                        @endforeach
-                                    </select>
+                                    <label for="department_id" class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">
+                                        ຊ່ອງລາຍຮັບ <span class="text-indigo-500">*</span>
+                                    </label>
+                                    <x-fns.select-wrap>
+                                        <select id="department_id" name="department_id" required class="fns-select ui-input bg-white focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition-all text-sm w-full cursor-pointer pr-10 h-11 rounded-xl border border-gray-200">
+                                            <option value="">-- ເລືອກຊ່ອງລາຍຮັບ --</option>
+                                            @foreach ($departments as $dept)
+                                                <option value="{{ $dept->id }}" {{ old('department_id') == $dept->id ? 'selected' : '' }}>
+                                                    {{ $dept->displayName() }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </x-fns.select-wrap>
                                     <x-input-error :messages="$errors->get('department_id')" class="mt-1" />
                                 </div>
 
-                                {{-- ວິທີຮັບເງິນ --}}
+                                {{-- 4. ຮ່ວງລາຍຮັບ --}}
                                 <div>
-                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">ວິທີຮັບເງິນ <span class="text-indigo-500">*</span></label>
-                                    <div class="grid grid-cols-2 gap-2">
-                                        <div>
-                                            <input type="radio" name="payment_method" id="pay_cash" value="cash" required {{ old('payment_method', 'cash') == 'cash' ? 'checked' : '' }} class="sr-only peer" />
-                                            <label for="pay_cash" class="flex items-center justify-center gap-1 px-2 py-2 border border-gray-200 rounded-xl cursor-pointer hover:bg-gray-50 transition-all text-xs font-bold text-gray-600 peer-checked:border-indigo-500 peer-checked:bg-indigo-50 peer-checked:text-indigo-700 peer-checked:ring-1 peer-checked:ring-indigo-500 h-[38px] text-center">
-                                                💵 ເງິນສົດ
-                                            </label>
+                                    <label for="revenue_channel" class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">
+                                        ຮ່ວງລາຍຮັບ
+                                    </label>
+                                    <x-fns.select-wrap>
+                                        <select id="revenue_channel" name="revenue_channel"
+                                            class="fns-select ui-input bg-white focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition-all text-sm w-full cursor-pointer pr-10 h-11 rounded-xl border border-gray-200">
+                                            <option value="">-- ຮ່ວງລາຍຮັບ --</option>
+                                            <option value="ເງີນບໍລິຫານທົ່ວໄປ" {{ old('revenue_channel') === 'ເງີນບໍລິຫານທົ່ວໄປ' ? 'selected' : '' }}>ເງີນບໍລິຫານທົ່ວໄປ</option>
+                                        </select>
+                                    </x-fns.select-wrap>
+                                </div>
+
+                            </div>{{-- /Section 1 --}}
+
+                            {{-- Section 2: ລະຫັດນັກສຶກສາ  (full width) --}}
+                            <div id="student-search-wrapper">
+                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">
+                                        ລະຫັດນັກສຶກສາ
+                                    </label>
+                                    <input type="hidden" name="student_id" id="student_id" value="" />
+
+                                    <div class="relative">
+                                        {{-- Trigger button (shown when no student selected) --}}
+                                        <button type="button" id="student-trigger-btn"
+                                            class="ui-input bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 shadow-sm transition-all text-sm w-full cursor-pointer pr-10 py-2.5 px-4 rounded-xl text-left border border-gray-200 relative text-gray-500">
+                                            ...ຄົ້ນຫາລະຫັດ ຫຼື ຊື່ນັກສຶກສາ...
+                                            <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-400">
+                                                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                                            </div>
+                                        </button>
+
+                                        {{-- Selected student display (shown after selection) --}}
+                                        <div id="student-info-card" class="hidden ui-input bg-white border border-indigo-200 shadow-sm text-sm w-full rounded-xl flex items-center justify-between gap-3 pr-3 pl-4 py-2">
+                                            <div class="flex items-center gap-3">
+                                                <div class="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold text-xs shrink-0">&#127891;</div>
+                                                <div>
+                                                    <p id="student-info-name" class="font-extrabold text-gray-900 text-sm leading-tight"></p>
+                                                    <p id="student-info-detail" class="text-xs text-gray-500 mt-0.5"></p>
+                                                </div>
+                                            </div>
+                                            <button type="button" id="clear-student-btn"
+                                                class="text-xs bg-gray-100 hover:bg-red-50 hover:text-red-600 text-gray-500 border border-gray-200 px-2.5 py-1 rounded-lg font-bold shrink-0 flex items-center gap-1 transition-all">
+                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                                                ລ້າງ
+                                            </button>
                                         </div>
-                                        <div>
-                                            <input type="radio" name="payment_method" id="pay_transfer" value="transfer" required {{ old('payment_method') == 'transfer' ? 'checked' : '' }} class="sr-only peer" />
-                                            <label for="pay_transfer" class="flex items-center justify-center gap-1 px-2 py-2 border border-gray-200 rounded-xl cursor-pointer hover:bg-gray-50 transition-all text-xs font-bold text-gray-600 peer-checked:border-indigo-500 peer-checked:bg-indigo-50 peer-checked:text-indigo-700 peer-checked:ring-1 peer-checked:ring-indigo-500 h-[38px] text-center">
-                                                🏦 ໂອນເຂົ້າ
-                                            </label>
+
+                                        {{-- Dropdown panel --}}
+                                        <div id="student-dropdown-panel"
+                                            class="hidden absolute left-0 right-0 z-50 mt-1.5 w-full bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden">
+                                            {{-- Search input inside panel --}}
+                                            <div class="p-2 border-b border-gray-100 bg-gray-50/50">
+                                                <div class="relative">
+                                                    <input type="text" id="student-search-input"
+                                                        placeholder="ຄົ້ນຫາລະຫັດ ຫຼື ຊື່ນັກສຶກສາ..."
+                                                        class="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 transition-all bg-white"
+                                                        autocomplete="off" />
+                                                    <div id="search-spinner" class="hidden absolute inset-y-0 right-2 flex items-center">
+                                                        <svg class="animate-spin w-4 h-4 text-indigo-500" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {{-- Results list --}}
+                                            <div id="student-dropdown" class="divide-y divide-gray-50 py-1" style="max-height:16rem; overflow-y:auto;"></div>
                                         </div>
                                     </div>
+                            </div>{{-- /Section 2 --}}
+
+                            {{-- Section 3: ຄ່າທຳນຽມ + ວິທີຮັບ (3 columns) --}}
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+                                {{-- 5. ຄ່າລົງທະບຽນ --}}
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">ຄ່າລົງທະບຽນ</label>
+                                    <input type="hidden" name="fees[0][label]" value="ຄ່າລົງທະບຽນ" />
+                                    <div class="relative">
+                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <span class="text-gray-400 font-bold text-sm">₭</span>
+                                        </div>
+                                        <input type="text" inputmode="numeric" id="fee-display-0"
+                                            class="ui-input bg-white pl-8 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition-all font-bold text-indigo-700 text-sm w-full"
+                                            placeholder="0" autocomplete="off" />
+                                        <input type="hidden" name="fees[0][amount]" id="fee-amount-0" value="0" />
+                                    </div>
+                                </div>
+
+                                {{-- 6. ຄ່າໜ່ວຍກິດ --}}
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">ຄ່າໜ່ວຍກິດ</label>
+                                    <input type="hidden" name="fees[1][label]" value="ຄ່າໜ່ວຍກິດ" />
+                                    <div class="relative">
+                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <span class="text-gray-400 font-bold text-sm">₭</span>
+                                        </div>
+                                        <input type="text" inputmode="numeric" id="fee-display-1"
+                                            class="ui-input bg-white pl-8 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition-all font-bold text-indigo-700 text-sm w-full"
+                                            placeholder="0" autocomplete="off" />
+                                        <input type="hidden" name="fees[1][amount]" id="fee-amount-1" value="0" />
+                                    </div>
+                                </div>
+
+                                {{-- 7. ຄ່າບູລະນະ ຫທລ --}}
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">ຄ່າບູລະນະ ຫທລ</label>
+                                    <input type="hidden" name="fees[2][label]" value="ຄ່າບູລະນະ ຫທລ" />
+                                    <div class="relative">
+                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <span class="text-gray-400 font-bold text-sm">₭</span>
+                                        </div>
+                                        <input type="text" inputmode="numeric" id="fee-display-2"
+                                            class="ui-input bg-white pl-8 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition-all font-bold text-indigo-700 text-sm w-full"
+                                            placeholder="0" autocomplete="off" />
+                                        <input type="hidden" name="fees[2][amount]" id="fee-amount-2" value="0" />
+                                    </div>
+                                </div>
+
+                                {{-- 8. ຄ່າໜ່ວຍກິດ ທສ --}}
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">ຄ່າໜ່ວຍກິດ ທສ</label>
+                                    <input type="hidden" name="fees[3][label]" value="ຄ່າໜ່ວຍກິດ ທສ" />
+                                    <div class="relative">
+                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <span class="text-gray-400 font-bold text-sm">₭</span>
+                                        </div>
+                                        <input type="text" inputmode="numeric" id="fee-display-3"
+                                            class="ui-input bg-white pl-8 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition-all font-bold text-indigo-700 text-sm w-full"
+                                            placeholder="0" autocomplete="off" />
+                                        <input type="hidden" name="fees[3][amount]" id="fee-amount-3" value="0" />
+                                    </div>
+                                </div>
+
+                                {{-- 9. ຄ່າບໍລິການອື່ນໆ --}}
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">ຄ່າບໍລິການອື່ນໆ</label>
+                                    <input type="hidden" name="fees[4][label]" value="ຄ່າບໍລິການອື່ນໆ" />
+                                    <div class="relative">
+                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <span class="text-gray-400 font-bold text-sm">₭</span>
+                                        </div>
+                                        <input type="text" inputmode="numeric" id="fee-display-4"
+                                            class="ui-input bg-white pl-8 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition-all font-bold text-indigo-700 text-sm w-full"
+                                            placeholder="0" autocomplete="off" />
+                                        <input type="hidden" name="fees[4][amount]" id="fee-amount-4" value="0" />
+                                    </div>
+                                </div>
+
+                                {{-- 10. ປະເພດລາຍຮັບ --}}
+                                <div>
+                                    <label for="payment_method" class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">
+                                        ປະເພດລາຍຮັບ <span class="text-indigo-500">*</span>
+                                    </label>
+                                    <x-fns.select-wrap>
+                                        <select id="payment_method" name="payment_method" required class="fns-select ui-input bg-white focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition-all text-sm w-full cursor-pointer pr-10 h-11 rounded-xl border border-gray-200">
+                                            <option value="transfer" {{ old('payment_method') == 'transfer' ? 'selected' : '' }}>🏦 ເງິນທະນາຄານ / ໂອນເຂົ້າ</option>
+                                            <option value="cash" {{ old('payment_method', 'cash') == 'cash' ? 'selected' : '' }}>💵 ເງິນສົດ</option>
+                                        </select>
+                                    </x-fns.select-wrap>
                                     <x-input-error :messages="$errors->get('payment_method')" class="mt-1" />
                                 </div>
 
-                                {{-- ຈຳນວນເງິນ --}}
-                                <div>
-                                    <label for="amount_display" class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">ຈຳນວນເງິນ (ກີບ) <span class="text-indigo-500">*</span></label>
-                                    <div class="relative">
-                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                            <span class="text-gray-400 font-bold sm:text-sm">₭</span>
-                                        </div>
-                                        {{-- Display field: shows 300,000 --}}
-                                        <input id="amount_display" type="text" inputmode="numeric"
-                                            class="ui-input bg-white pl-8 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition-all font-bold text-indigo-700 w-full"
-                                            value="{{ old('amount') ? number_format(old('amount'), 0, '.', ',') : '' }}"
-                                            placeholder="0" autocomplete="off" />
-                                        {{-- Hidden field: stores clean number for form submit --}}
-                                        <input id="amount" name="amount" type="hidden"
-                                            value="{{ old('amount') }}" />
-                                    </div>
-                                    <x-input-error :messages="$errors->get('amount')" class="mt-1" />
-                                </div>
+                                {{-- ລາຍລະອຽດ is moved outside this grid --}}
 
-                                {{-- ລາຍລະອຽດ --}}
-                                <div class="sm:col-span-2 lg:col-span-5">
-                                    <label for="description" class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">ລາຍລະອຽດ <span class="text-gray-400 font-normal lowercase">(ບໍ່ຈຳເປັນ)</span></label>
-                                    <textarea id="description" name="description" rows="2"
-                                        class="ui-input bg-white focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition-all text-sm w-full resize-none placeholder-gray-300"
-                                        placeholder="ອະທິບາຍເພິ່ມເຕີມ..." maxlength="500">{{ old('description') }}</textarea>
-                                    <x-input-error :messages="$errors->get('description')" class="mt-1" />
-                                </div>
+                            </div>{{-- /Section 3 --}}
+
+                            {{-- ລາຍລະອຽດ full width --}}
+                            <div>
+                                <label for="description" class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">ລາຍລະອຽດ (ບໍ່ຈຳເປັນ)</label>
+                                <textarea id="description" name="description" rows="1"
+                                    class="ui-input bg-white focus:ring-indigo-500 focus:border-indigo-500 shadow-sm transition-all text-sm w-full resize-none placeholder-gray-300 h-11 py-2.5 rounded-xl border border-gray-200"
+                                    placeholder="ອະທິບາຍເພິ່ມເຕີມ..." maxlength="500">{{ old('description') }}</textarea>
+                            </div>
+                            {{-- ລວມທັງໝົດ --}}
+                            <div class="flex items-center justify-between p-4 bg-indigo-50/40 border border-indigo-100/50 rounded-xl">
+                                <span class="text-sm font-bold text-indigo-900">ລວມທັງໝົດ</span>
+                                <span id="fee-total-display" class="text-2xl font-extrabold text-indigo-700">₭ 0</span>
                             </div>
 
-                            <div class="flex items-center justify-end pt-2 gap-3">
-                                <a href="{{ url()->previous() }}" class="ui-btn bg-gray-100 text-gray-600 hover:bg-gray-200 text-sm py-2.5 px-6 flex items-center gap-2">
+                            {{-- Form Actions --}}
+                            <div class="flex items-center justify-end pt-3 gap-3 border-t border-gray-100">
+                                <a href="{{ url()->previous() }}"
+                                    class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gray-100 text-gray-600 hover:bg-gray-200 text-sm font-bold transition-all">
                                     ← ຍົກເລີກ (Cancel)
                                 </a>
-                                <button type="submit" class="ui-btn bg-indigo-600 text-white hover:bg-indigo-700 shadow-lg shadow-indigo-500/30 text-sm py-2.5 px-6 outline-none focus:ring-2 focus:ring-indigo-500 ring-offset-1 flex items-center gap-2 font-bold">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>
+                                <button type="submit"
+                                    class="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold shadow-lg shadow-indigo-500/30 hover:-translate-y-0.5 transition-all focus:outline-none focus:ring-2 focus:ring-indigo-500 ring-offset-1">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
                                     ✓ ບັນທຶກ (Save)
                                 </button>
                             </div>
                         </form>
                     </div>
-
                 </div>
 
                 {{-- Table Card --}}
@@ -224,7 +335,7 @@
                                         <input type="checkbox" id="selectAllCheckbox" onclick="toggleSelectAll(this)" class="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 border-gray-300 cursor-pointer" />
                                     </th>
                                     <th class="py-3 px-4 text-[0.7rem] font-bold text-gray-500 uppercase tracking-wider whitespace-nowrap">ວັນທີ</th>
-                                    <th class="py-3 px-4 text-[0.7rem] font-bold text-gray-500 uppercase tracking-wider whitespace-nowrap">ເລກທີ (ໃບບິນ)</th>
+                                    <th class="py-3 px-4 text-[0.7rem] font-bold text-gray-500 uppercase tracking-wider whitespace-nowrap">ເລກທີໃບບິນ</th>
                                     <th class="py-3 px-4 text-[0.7rem] font-bold text-gray-500 uppercase tracking-wider whitespace-nowrap">ປະເພດລາຍຮັບ</th>
                                     <th class="py-3 px-4 text-[0.7rem] font-bold text-gray-500 uppercase tracking-wider whitespace-nowrap">ພາກສ່ວນ</th>
                                     <th class="py-3 px-4 text-[0.7rem] font-bold text-gray-500 uppercase tracking-wider whitespace-nowrap">ວິທີຮັບເງິນ</th>
@@ -295,7 +406,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="6" class="py-12">
+                                        <td colspan="8" class="py-12">
                                             <div class="flex flex-col items-center justify-center text-center">
                                                 <div class="w-16 h-16 rounded-2xl bg-gray-50 flex items-center justify-center text-gray-400 mb-4 border border-gray-100">
                                                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" class="w-8 h-8"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v4.125c0 .621-.504 1.125-1.125 1.125h-2.25A1.125 1.125 0 013 17.25v-4.125zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v8.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125v-8.25zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v12.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" /></svg>
@@ -351,6 +462,7 @@
         </div>
     </div>
 
+
     {{-- Batch Delete Confirmation Modal --}}
     <div id="batchDeleteModal" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; z-index:99999;" aria-modal="true" role="dialog">
         <div style="position:absolute; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px);" onclick="closeBatchDeleteModal()"></div>
@@ -380,157 +492,240 @@
         </div>
     </div>
 
+    {{-- ===== JavaScript ===== --}}
     <script>
-        function toggleSelectAll(master) {
-            const checkboxes = document.querySelectorAll('.item-checkbox');
-            checkboxes.forEach(cb => cb.checked = master.checked);
-            updateBatchDeleteBtn();
+    (function () {
+        const SEARCH_URL = '{{ route('revenue.students.search') }}';
+        const FEES_URL   = '{{ url('/api/students') }}';
+
+        const searchInput    = document.getElementById('student-search-input');
+        const dropdown       = document.getElementById('student-dropdown');
+        const dropdownPanel  = document.getElementById('student-dropdown-panel');
+        const triggerBtn     = document.getElementById('student-trigger-btn');
+        const spinner        = document.getElementById('search-spinner');
+        const studentIdInp   = document.getElementById('student_id');
+        const infoCard       = document.getElementById('student-info-card');
+        const infoName       = document.getElementById('student-info-name');
+        const infoDetail     = document.getElementById('student-info-detail');
+        const clearBtn       = document.getElementById('clear-student-btn');
+        const feeTotalEl     = document.getElementById('fee-total-display');
+        const wrapper        = document.getElementById('student-search-wrapper');
+
+        const feeCount = 5;
+        let searchTimer = null;
+
+        // ---- Open/close dropdown panel ----
+        function openPanel() {
+            dropdownPanel.classList.remove('hidden');
+            searchInput.focus();
+        }
+        function closePanel() {
+            dropdownPanel.classList.add('hidden');
         }
 
-        function updateBatchDeleteBtn() {
-            const checkboxes = document.querySelectorAll('.item-checkbox:checked');
-            const btn = document.getElementById('batchDeleteBtn');
-            const countSpan = document.getElementById('selectedCount');
-            if (checkboxes.length > 0) {
-                btn.style.display = 'inline-flex';
-                countSpan.innerText = checkboxes.length;
+        triggerBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            openPanel();
+        });
+
+        // ---- Student autocomplete search ----
+        searchInput.addEventListener('input', function () {
+            const q = this.value.trim();
+            clearTimeout(searchTimer);
+            if (q.length < 2) { dropdown.innerHTML = ''; return; }
+            searchTimer = setTimeout(() => doSearch(q), 300);
+        });
+
+        async function doSearch(q) {
+            spinner.classList.remove('hidden');
+            try {
+                const res  = await fetch(SEARCH_URL + '?q=' + encodeURIComponent(q), {
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                });
+                const data = await res.json();
+                renderDropdown(data);
+            } catch (e) { dropdown.innerHTML = ''; }
+            spinner.classList.add('hidden');
+        }
+
+        function renderDropdown(items) {
+            if (!items.length) {
+                dropdown.innerHTML = '<div class="px-4 py-3 text-sm text-gray-400">ບໍ່ພົບນັກສຶກສາ</div>';
             } else {
-                btn.style.display = 'none';
-                countSpan.innerText = '0';
-                const master = document.getElementById('selectAllCheckbox');
-                if (master) master.checked = false;
+                dropdown.innerHTML = items.map(s => `
+                    <div class="student-option px-4 py-2.5 hover:bg-indigo-50 cursor-pointer border-b border-gray-50 last:border-0 transition-colors"
+                        data-id="${s.id}">
+                        <div class="font-bold text-sm text-gray-800">${s.student_code}</div>
+                        <div class="text-xs text-gray-500">${s.name_prefix || ''} ${s.full_name} &mdash; ${s.program_name} ປີ ${s.study_year ?? '?'}</div>
+                    </div>`).join('');
+                dropdown.querySelectorAll('.student-option').forEach(el => {
+                    el.addEventListener('click', () => {
+                        const sid = el.dataset.id;
+                        selectStudent(sid, items.find(s => s.id == sid));
+                    });
+                });
             }
         }
 
-        function openBatchDeleteModal() {
-            const checkboxes = document.querySelectorAll('.item-checkbox:checked');
-            if (checkboxes.length === 0) return;
-            
-            const container = document.getElementById('batchDeleteInputs');
-            container.innerHTML = '';
-            checkboxes.forEach(cb => {
-                const input = document.createElement('input');
-                input.type = 'hidden';
-                input.name = 'ids[]';
-                input.value = cb.value;
-                container.appendChild(input);
+        async function selectStudent(id, info) {
+            closePanel();
+            spinner.classList.remove('hidden');
+            studentIdInp.value = id;
+
+            // Show info card, hide trigger button
+            triggerBtn.classList.add('hidden');
+            infoName.textContent   = (info.name_prefix || '') + ' ' + info.full_name;
+            infoDetail.textContent = info.student_code + ' — ' + info.program_name + ' ປີ ' + (info.study_year ?? '?');
+            infoCard.classList.remove('hidden');
+
+            // Fetch student fees
+            try {
+                const res  = await fetch(FEES_URL + '/' + id + '/fees', {
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                });
+                const data = await res.json();
+                fillFees(data.fees);
+            } catch (e) { console.error(e); }
+            spinner.classList.add('hidden');
+        }
+
+        function fillFees(fees) {
+            fees.forEach((fee, idx) => {
+                if (idx < feeCount) {
+                    const displayInp = document.getElementById(`fee-display-${idx}`);
+                    const amountInp  = document.getElementById(`fee-amount-${idx}`);
+                    if (displayInp && amountInp) {
+                        amountInp.value  = fee.amount || 0;
+                        displayInp.value = fee.amount ? parseInt(fee.amount).toLocaleString() : '';
+                    }
+                }
             });
-            
-            document.getElementById('batchCountText').innerText = checkboxes.length + ' ';
-            const modal = document.getElementById('batchDeleteModal');
-            modal.style.display = 'block';
-            if (modal.parentElement !== document.body) {
-                document.body.appendChild(modal);
-            }
-            document.body.style.overflow = 'hidden';
+            updateTotal();
         }
 
-        function closeBatchDeleteModal() {
-            const modal = document.getElementById('batchDeleteModal');
-            if (modal) modal.style.display = 'none';
-            document.body.style.overflow = '';
+        function updateTotal() {
+            let total = 0;
+            for (let i = 0; i < feeCount; i++) {
+                const a = document.getElementById(`fee-amount-${i}`);
+                if (a) total += parseFloat(a.value) || 0;
+            }
+            feeTotalEl.textContent = '₭ ' + total.toLocaleString();
         }
 
-        function teleportModal() {
-            const modal = document.getElementById('deleteModal');
-            if (modal && modal.parentElement !== document.body) {
-                document.body.appendChild(modal);
+        // ---- Live comma-format for 5 fee inputs ----
+        for (let i = 0; i < feeCount; i++) {
+            const displayInp = document.getElementById(`fee-display-${i}`);
+            const amountInp  = document.getElementById(`fee-amount-${i}`);
+            if (displayInp && amountInp) {
+                displayInp.addEventListener('input', function() {
+                    const raw = this.value.replace(/[^0-9]/g, '');
+                    this.value = raw ? parseInt(raw).toLocaleString() : '';
+                    amountInp.value = raw || 0;
+                    updateTotal();
+                });
             }
         }
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', teleportModal);
+
+        // ---- Clear student ----
+        clearBtn.addEventListener('click', function () {
+            studentIdInp.value = '';
+            searchInput.value  = '';
+            infoCard.classList.add('hidden');
+            triggerBtn.classList.remove('hidden');
+            for (let i = 0; i < feeCount; i++) {
+                const d = document.getElementById(`fee-display-${i}`);
+                const a = document.getElementById(`fee-amount-${i}`);
+                if (d && a) { a.value = 0; d.value = ''; }
+            }
+            updateTotal();
+        });
+
+        // ---- Close dropdown panel on outside click ----
+        document.addEventListener('click', function (e) {
+            if (wrapper && !wrapper.contains(e.target)) closePanel();
+        });
+
+        // ---- Auto-badge on payment_code change ----
+        const pcInput = document.getElementById('payment_code');
+        const badge   = document.getElementById('auto-badge');
+        if (pcInput && badge) {
+            pcInput.addEventListener('input', function () {
+                badge.style.opacity = (this.value === '{{ $nextCode ?? '' }}') ? '1' : '0';
+            });
+        }
+    })();
+
+    // ---- Modal functions ----
+    function toggleSelectAll(master) {
+        const checkboxes = document.querySelectorAll('.item-checkbox');
+        checkboxes.forEach(cb => cb.checked = master.checked);
+        updateBatchDeleteBtn();
+    }
+
+    function updateBatchDeleteBtn() {
+        const checkboxes = document.querySelectorAll('.item-checkbox:checked');
+        const btn = document.getElementById('batchDeleteBtn');
+        const countSpan = document.getElementById('selectedCount');
+        if (checkboxes.length > 0) {
+            btn.style.display = 'inline-flex';
+            countSpan.innerText = checkboxes.length;
         } else {
-            teleportModal();
+            btn.style.display = 'none';
+            countSpan.innerText = '0';
+            const master = document.getElementById('selectAllCheckbox');
+            if (master) master.checked = false;
         }
+    }
 
-        function openDeleteModal(id, name) {
-            document.getElementById('deleteForm').action = '/revenue/' + id;
-            document.getElementById('deleteItemName').textContent = name;
-            const modal = document.getElementById('deleteModal');
-            if (modal) {
-                modal.style.display = 'block';
-            }
-            document.body.style.overflow = 'hidden';
-        }
-        function closeDeleteModal() {
-            const modal = document.getElementById('deleteModal');
-            if (modal) {
-                modal.style.display = 'none';
-            }
-            document.body.style.overflow = '';
-        }
-        document.addEventListener('keydown', e => { 
-            if (e.key === 'Escape') {
-                closeDeleteModal();
-                closeBatchDeleteModal();
-            }
+    function openBatchDeleteModal() {
+        const checkboxes = document.querySelectorAll('.item-checkbox:checked');
+        if (checkboxes.length === 0) return;
+        const container = document.getElementById('batchDeleteInputs');
+        container.innerHTML = '';
+        checkboxes.forEach(cb => {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'ids[]';
+            input.value = cb.value;
+            container.appendChild(input);
         });
+        document.getElementById('batchCountText').innerText = checkboxes.length + ' ';
+        const modal = document.getElementById('batchDeleteModal');
+        modal.style.display = 'block';
+        if (modal.parentElement !== document.body) document.body.appendChild(modal);
+        document.body.style.overflow = 'hidden';
+    }
 
-        // Toggle custom category input
-        document.getElementById('category').addEventListener('change', function() {
-            const wrapper = document.getElementById('custom_category_wrapper');
-            const customInput = document.getElementById('custom_category');
-            if (this.value === '__custom__') {
-                wrapper.classList.remove('hidden');
-                customInput.setAttribute('required', 'required');
-                customInput.focus();
-            } else {
-                wrapper.classList.add('hidden');
-                customInput.removeAttribute('required');
-                customInput.value = '';
-            }
-        });
+    function closeBatchDeleteModal() {
+        const modal = document.getElementById('batchDeleteModal');
+        if (modal) modal.style.display = 'none';
+        document.body.style.overflow = '';
+    }
 
-        // Auto-badge toggle for payment_code
-        (function() {
-            const input  = document.getElementById('payment_code');
-            const badge  = document.getElementById('auto-badge');
-            if (!input || !badge) return;
-            const autoVal = input.value.trim(); // value pre-filled from server = nextCode
-            input.addEventListener('input', function() {
-                if (this.value.trim() === autoVal) {
-                    badge.style.opacity = '1';
-                } else {
-                    badge.style.opacity = '0';
-                }
-            });
-        })();
+    function openDeleteModal(id, name) {
+        document.getElementById('deleteItemName').textContent = name;
+        const form = document.getElementById('deleteForm');
+        form.action = '{{ url('/revenue') }}/' + id;
+        const modal = document.getElementById('deleteModal');
+        modal.style.display = 'block';
+        if (modal.parentElement !== document.body) document.body.appendChild(modal);
+        document.body.style.overflow = 'hidden';
+    }
 
-        // Live comma-format for amount (300000 → 300,000)
-        (function() {
-            const display = document.getElementById('amount_display');
-            const hidden  = document.getElementById('amount');
-            if (!display || !hidden) return;
+    function closeDeleteModal() {
+        const modal = document.getElementById('deleteModal');
+        if (modal) modal.style.display = 'none';
+        document.body.style.overflow = '';
+    }
 
-            function formatComma(val) {
-                const clean = val.replace(/[^0-9]/g, '');
-                if (!clean) return '';
-                return parseInt(clean, 10).toLocaleString('en-US');
-            }
-
-            display.addEventListener('input', function() {
-                const pos   = this.selectionStart;
-                const before = this.value.length;
-                const formatted = formatComma(this.value);
-                this.value = formatted;
-                // restore cursor as best we can
-                const diff = formatted.length - before;
-                this.setSelectionRange(pos + diff, pos + diff);
-                // sync to hidden
-                hidden.value = formatted.replace(/,/g, '') || '';
-            });
-
-            // validate on form submit
-            display.closest('form').addEventListener('submit', function(e) {
-                const raw = display.value.replace(/,/g, '');
-                if (!raw || parseInt(raw) < 1) {
-                    e.preventDefault();
-                    display.focus();
-                    display.style.borderColor = '#ef4444';
-                    return;
-                }
-                hidden.value = raw;
-            });
-        })();
+    function teleportModal() {
+        const modal = document.getElementById('deleteModal');
+        if (modal && modal.parentElement !== document.body) document.body.appendChild(modal);
+    }
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', teleportModal);
+    } else {
+        teleportModal();
+    }
     </script>
 </x-app-layout>

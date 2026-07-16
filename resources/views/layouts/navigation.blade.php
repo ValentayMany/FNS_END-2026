@@ -1,11 +1,11 @@
 <!-- Desktop Sidebar & Mobile Offcanvas Menu -->
-<nav :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'" 
+<nav :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'"
      class="fixed lg:static inset-y-0 left-0 z-50 w-72 bg-white lg:bg-white border-r border-gray-100 flex flex-col shrink-0 transition-transform duration-300 ease-in-out shadow-[4px_0_24px_rgba(0,0,0,0.02)] lg:shadow-none h-full">
-    
+
     <!-- Sidebar Header (Brand & Logo) -->
     <div class="h-16 lg:h-20 shrink-0 flex items-center justify-between px-6 border-b border-gray-50/80 bg-white/50 backdrop-blur-md">
         <a href="{{ route('dashboard') }}" class="flex items-center gap-3 group outline-none rounded-xl focus:ring-2 focus:ring-indigo-500 ring-offset-2">
-            <img src="{{ asset('image/Logo.jpg') }}" alt="NUOL Logo" 
+            <img src="{{ asset('image/Logo.jpg') }}" alt="NUOL Logo"
                 class="w-10 h-10 object-contain rounded-full drop-shadow-sm group-hover:scale-105 transition-transform duration-300"
                 style="width: 40px; height: 40px; min-width: 40px; min-height: 40px;">
             <div class="flex flex-col">
@@ -13,7 +13,7 @@
                 <span class="text-[0.65rem] font-bold text-gray-400 uppercase tracking-widest mt-0.5">Financial System</span>
             </div>
         </a>
-        
+
         <!-- Mobile Close Button -->
         <button @click="sidebarOpen = false" class="lg:hidden p-2 -mr-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500">
             <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
@@ -25,7 +25,7 @@
         $role = Auth::user()->role?->role_name;
     @endphp
     <div class="flex-1 px-4 py-6 overflow-y-auto overflow-x-hidden space-y-6 scrollbar-hide touch-pan-y text-gray-500">
-        
+
 
 
         <div>
@@ -160,12 +160,19 @@
                         <x-slot name="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg></x-slot>
                         Dashboard ງົບປະມານ
                     </x-sidebar-link>
+                    <x-sidebar-link :href="route('revenue.credit-rates.index')" :active="request()->routeIs('revenue.credit-rates.*')" color="emerald">
+                        <x-slot name="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg></x-slot>
+                        ⚙️ ຈັດການອັດຕາໜ່ວຍກິດ
+                    </x-sidebar-link>
+                    <x-sidebar-link :href="route('revenue.students.index')" :active="request()->routeIs('revenue.students.*')" color="blue">
+                        <x-slot name="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" /><path stroke-linecap="round" stroke-linejoin="round" d="M4.263 15.541A1 1 0 013 14.547V7.384a1 1 0 01.34-.753l7-5.999a1 1 0 011.32 0l7 5.999a1 1 0 01.34.753v7.163a1 1 0 01-1.263.953L12 14.58l-7.737.96z" /></svg></x-slot>
+                        🎓 ຈັດການຂໍ້ມູນນັກສຶກສາ
+                    </x-sidebar-link>
                     <x-sidebar-link :href="route('approvals.index')" :active="request()->routeIs('approvals.*')" color="rose">
                         <x-slot name="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg></x-slot>
                         ອະນຸມັດຄຳຂໍ
                     </x-sidebar-link>
                 @endif
-
 
                 @if($role === 'admin')
                     <x-sidebar-link :href="route('admin.users')" :active="request()->routeIs('admin.users*')">
@@ -215,24 +222,24 @@
                 </div>
                 <svg class="w-4 h-4 text-gray-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l4-4 4 4m0 6l-4 4-4-4" /></svg>
             </button>
-            
+
             <!-- Dropup Menu -->
-            <div x-show="openProfile" 
-                 x-transition:enter="transition ease-out duration-100" 
-                 x-transition:enter-start="transform opacity-0 scale-95" 
-                 x-transition:enter-end="transform opacity-100 scale-100" 
-                 x-transition:leave="transition ease-in duration-75" 
-                 x-transition:leave-start="transform opacity-100 scale-100" 
-                 x-transition:leave-end="transform opacity-0 scale-95" 
+            <div x-show="openProfile"
+                 x-transition:enter="transition ease-out duration-100"
+                 x-transition:enter-start="transform opacity-0 scale-95"
+                 x-transition:enter-end="transform opacity-100 scale-100"
+                 x-transition:leave="transition ease-in duration-75"
+                 x-transition:leave-start="transform opacity-100 scale-100"
+                 x-transition:leave-end="transform opacity-0 scale-95"
                  class="absolute bottom-full left-0 w-full mb-2 bg-white rounded-xl shadow-lg border border-gray-100 py-1.5 z-50 overflow-hidden transform origin-bottom">
-                
+
                 <a href="{{ route('profile.edit') }}" class="flex items-center gap-2 px-4 py-2.5 text-sm font-semibold text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors cursor-pointer">
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
                     ຈັດການໂປຣໄຟລ໌
                 </a>
-                
+
                 <div class="h-px bg-gray-100 my-1"></div>
-                
+
                 <form method="POST" action="{{ route('logout') }}" class="block">
                     @csrf
                     <button type="submit" class="w-full flex items-center gap-2 px-4 py-2.5 text-sm font-semibold text-red-600 hover:bg-red-50 transition-colors text-left cursor-pointer">

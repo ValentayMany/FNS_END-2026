@@ -21,6 +21,9 @@ class Transaction extends Model
         'category',
         'payment_code',
         'payment_method',
+        'receipt_no',
+        'student_id',
+        'revenue_channel',
     ];
 
     protected $casts = [
