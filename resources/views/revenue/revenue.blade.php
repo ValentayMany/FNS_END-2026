@@ -144,7 +144,7 @@
                                         </button>
 
                                         {{-- Selected student display (shown after selection) --}}
-                                        <div id="student-info-card" class="hidden ui-input bg-white border border-indigo-200 shadow-sm text-sm w-full rounded-xl flex items-center justify-between gap-3 pr-3 pl-4 py-2">
+                                        <div id="student-info-card" class="hidden ui-input bg-white border border-indigo-200 shadow-sm text-sm w-full rounded-xl items-center justify-between gap-3 pr-3 pl-4 py-2">
                                             <div class="flex items-center gap-3">
                                                 <div class="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold text-xs shrink-0">&#127891;</div>
                                                 <div>
@@ -577,6 +577,7 @@
             infoName.textContent   = (info.name_prefix || '') + ' ' + info.full_name;
             infoDetail.textContent = info.student_code + ' — ' + info.program_name + ' ປີ ' + (info.study_year ?? '?');
             infoCard.classList.remove('hidden');
+            infoCard.classList.add('flex');
 
             // Fetch student fees
             try {
@@ -631,6 +632,7 @@
             studentIdInp.value = '';
             searchInput.value  = '';
             infoCard.classList.add('hidden');
+            infoCard.classList.remove('flex');
             triggerBtn.classList.remove('hidden');
             for (let i = 0; i < feeCount; i++) {
                 const d = document.getElementById(`fee-display-${i}`);
@@ -657,7 +659,10 @@
         // Reset student state on page load to prevent stale browser-restored state
         if (studentIdInp) studentIdInp.value = '';
         if (searchInput) searchInput.value = '';
-        if (infoCard) infoCard.classList.add('hidden');
+        if (infoCard) {
+            infoCard.classList.add('hidden');
+            infoCard.classList.remove('flex');
+        }
         if (triggerBtn) triggerBtn.classList.remove('hidden');
         for (let i = 0; i < feeCount; i++) {
             const d = document.getElementById(`fee-display-${i}`);
